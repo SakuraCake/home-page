@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-cn" class="mdui-theme-auto">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SakuraCake</title>
+    <!-- Material Icons -->
+    <link href="https://fonts.font.im/css2?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.font.im/css2?family=Material+Icons+Outlined" rel="stylesheet">
+    <!-- MDUI 框架 -->
+    <link rel="stylesheet" href="https://unpkg.com/mdui@2/mdui.css" />
+    <script src="https://unpkg.com/mdui@2/mdui.global.js"></script>
+    <!--资源文件-->
+    <link rel="stylesheet" href="/assets/css/index.css" />
+    <script src="/assets/js/index.js"></script>
+
+</head>
+
+<body>
+    <mdui-navigation-rail divider value="home">
+        <mdui-button-icon icon="menu" slot="top" class="nav-meun"></mdui-button-icon>
+        <mdui-fab lowered icon="edit--outlined" slot="top" class="nav-edit"></mdui-fab>
+        <mdui-button-icon icon="account_circle--outlined" slot="bottom" class="nav-account"></mdui-button-icon>
+
+
+        <mdui-navigation-rail-item icon="home--outlined" active-icon="home" value="home" class="nav-home">主页</mdui-navigation-rail-item>
+        <mdui-navigation-rail-item href="https://pan.sorange.top" target="_blank" icon="cloud_queue--outlined"
+            active-icon="cloud_queue" value="pan" class="nav-pan">个人网盘</mdui-navigation-rail-item>
+    </mdui-navigation-rail>
+    <mdui-navigation-bar scroll-behavior="hide" value="home">
+        <mdui-navigation-bar-item icon="home--outlined" active-icon="home" value="home" class="nav-home">主页</mdui-navigation-bar-item>
+        <mdui-navigation-bar-item href="https://pan.sorange.top" target="_blank" icon="cloud_queue--outlined"
+            active-icon="cloud_queue" value="pan" class="nav-pan">网盘</mdui-navigation-bar-item>
+    </mdui-navigation-bar>
+    <div class="example-scroll-behavior">
+        <div style="height: 1000px">页面内容</div>
+    </div>
+</body>
+
+</html>
