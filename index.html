@@ -12,30 +12,48 @@
     <link rel="stylesheet" href="https://unpkg.com/mdui@2/mdui.css" />
     <script src="https://unpkg.com/mdui@2/mdui.global.js"></script>
     <!--资源文件-->
-    <link rel="stylesheet" href="/assets/css/index.css" />
-    <script src="/assets/js/index.js"></script>
+    <link rel="stylesheet" href="./assets/css/index.css" />
 
 </head>
 
 <body>
-    <mdui-navigation-rail divider value="home">
-        <mdui-button-icon icon="menu" slot="top" class="nav-meun"></mdui-button-icon>
-        <mdui-fab lowered icon="edit--outlined" slot="top" class="nav-edit"></mdui-fab>
-        <mdui-button-icon icon="account_circle--outlined" slot="bottom" class="nav-account"></mdui-button-icon>
+    <mdui-top-app-bar style="position: relative;">
+        <mdui-button-icon id="menu-button" icon="menu"></mdui-button-icon>
+        <mdui-top-app-bar-title>SakuraCakeの个人主页</mdui-top-app-bar-title>
+        <div style="flex-grow: 1"></div>
+        <mdui-dropdown>
+            <mdui-button-icon id="more-actions" icon="more_vert" slot="trigger"></mdui-button-icon>
+            <mdui-menu>
+                <mdui-menu-item>Item 1</mdui-menu-item>
+                <mdui-menu-item href="https://pan.sorange.top/" target="_blank">Item 2</mdui-menu-item>
+            </mdui-menu>
+        </mdui-dropdown>
+        
+    </mdui-top-app-bar>
 
+    <mdui-layout>
+        <!-- 侧边抽屉栏 -->
+        <mdui-navigation-drawer id="navigation-drawer" close-on-esc close-on-overlay-click data-nosnippet=""
+            placement="left">
+            <mdui-list>
+                <mdui-list-item icon="home" headline="首页"></mdui-list-item>
+                <mdui-list-item icon="person" headline="关于我"></mdui-list-item>
+            </mdui-list>
+        </mdui-navigation-drawer>
 
-        <mdui-navigation-rail-item icon="home--outlined" active-icon="home" value="home" class="nav-home">主页</mdui-navigation-rail-item>
-        <mdui-navigation-rail-item href="https://pan.sorange.top" target="_blank" icon="cloud_queue--outlined"
-            active-icon="cloud_queue" value="pan" class="nav-pan">个人网盘</mdui-navigation-rail-item>
-    </mdui-navigation-rail>
-    <mdui-navigation-bar scroll-behavior="hide" value="home">
-        <mdui-navigation-bar-item icon="home--outlined" active-icon="home" value="home" class="nav-home">主页</mdui-navigation-bar-item>
-        <mdui-navigation-bar-item href="https://pan.sorange.top" target="_blank" icon="cloud_queue--outlined"
-            active-icon="cloud_queue" value="pan" class="nav-pan">网盘</mdui-navigation-bar-item>
-    </mdui-navigation-bar>
-    <div class="example-scroll-behavior">
-        <div style="height: 1000px">页面内容</div>
-    </div>
+        <!-- 主内容区域 -->
+        <mdui-layout-main>
+            <div style="padding: 20px;">
+                <h2>欢迎来到我的主页</h2>
+                <p>这里是一些主要内容...</p>
+                <!-- 预留其他功能按钮的位置 -->
+                <mdui-button id="action-button-1" variant="outlined" style="margin: 5px;">功能按钮1</mdui-button>
+                <mdui-button id="action-button-2" variant="outlined" style="margin: 5px;">功能按钮2</mdui-button>
+            </div>
+        </mdui-layout-main>
+    </mdui-layout>
+
+    <script src="./assets/js/index.js"></script>
 </body>
 
 </html>
