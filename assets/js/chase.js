@@ -198,9 +198,12 @@ function calculateStatistics(collections) {
   };
 }
 
-// 追番页面功能
+// 全局变量
 let animeData = [];
 let filteredAnimeData = [];
+let currentPageNum = 0;
+let pageSize = 20;
+let hasMoreData = true;
 
 // 页面加载完成后初始化
 function initChasePageOnLoad() {
@@ -223,16 +226,32 @@ document.addEventListener('DOMContentLoaded', () => {
  */
 function initChasePage() {
     // 加载真实的Bangumi API数据
-    loadBangumiData();
+    loadBangumiData(true);
     
     // 初始化搜索和筛选功能
     initSearchAndFilter();
+    
+    // 初始化加载更多按钮
+    initLoadMoreButton();
+    
+    // 初始化详情对话框
+    initDetailDialog();
+}
+
+/**
+ * 初始化加载更多按钮
+ */
+function initLoadMoreButton() {
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', loadMoreData);
+    }
 }
 
 /**
  * 加载真实Bangumi API数据
  */
-async function loadBangumiData() {
+async function loadBangumiData(reset = false) {
     const animeList = document.getElementById('anime-list');
     
     // 检查元素是否存在
@@ -242,24 +261,32 @@ async function loadBangumiData() {
     }
     
     try {
-        // 显示加载状态
-        animeList.innerHTML = `
-            <div class="loading-state">
-                <mdui-circular-progress></mdui-circular-progress>
-                <p>正在从Bangumi加载追番数据...</p>
-            </div>
-        `;
+        if (reset) {
+            // 重置分页状态
+            currentPageNum = 0;
+            animeData = [];
+            filteredAnimeData = [];
+            hasMoreData = true;
+            
+            // 显示加载状态
+            animeList.innerHTML = `
+                <div class="loading-state">
+                    <mdui-circular-progress></mdui-circular-progress>
+                    <p>正在从Bangumi加载追番数据...</p>
+                </div>
+            `;
+        }
         
         // 调用真实的Bangumi API
         const result = await getBangumiCollections({
             username: 'sakuracake', // 可以修改为实际的用户名
             subject_type: 2, // 动画类型
             limit: 50, // 加载更多数据
-            offset: 0
+            offset: currentPageNum * 50
         });
         
         // 转换API数据为前端格式
-        animeData = result.collections.map(collection => {
+        const newAnimeData = result.collections.map(collection => {
             const subject = collection.subject;
             const collectionInfo = collection.collectionInfo;
             
@@ -277,9 +304,19 @@ async function loadBangumiData() {
             };
         });
         
+        // 合并数据
+        animeData = [...animeData, ...newAnimeData];
+        
+        // 检查是否还有更多数据
+        hasMoreData = newAnimeData.length >= 50;
+        
         filteredAnimeData = [...animeData];
         renderAnimeList();
         updateStatistics();
+        showLoadMoreButton();
+        
+        // 更新当前页码
+        currentPageNum++;
         
     } catch (error) {
         console.error('加载Bangumi数据失败:', error);
@@ -291,7 +328,7 @@ async function loadBangumiData() {
                     <mdui-icon name="error_outline"></mdui-icon>
                     <p>加载Bangumi数据失败</p>
                     <p style="font-size: 12px; margin-top: 10px;">${error.message}</p>
-                    <mdui-button onclick="loadBangumiData()" style="margin-top: 15px;">
+                    <mdui-button onclick="loadBangumiData(true)" style="margin-top: 15px;">
                         <mdui-icon slot="icon" name="refresh"></mdui-icon>
                         重试
                     </mdui-button>
@@ -398,27 +435,44 @@ function renderAnimeList() {
     }
     
     animeList.innerHTML = filteredAnimeData.map(anime => `
-        <div class="anime-item" data-id="${anime.id}">
-            <div class="anime-header">
-                <img src="${anime.cover}" alt="${anime.title}" class="anime-cover" onerror="this.src='https://via.placeholder.com/60x80?text=封面'">
-                <div class="anime-info">
-                    <div class="anime-title">${anime.title}</div>
-                    <div class="anime-meta">${anime.originalTitle}</div>
-                    <span class="anime-status status-${anime.status}">${getStatusText(anime.status)}</span>
+        <mdui-card clickable class="anime-card" data-id="${anime.id}">
+            <div class="anime-card-content">
+                <div class="anime-card-header">
+                    <img src="${anime.cover}" alt="${anime.title}" class="anime-cover" onerror="this.src='https://via.placeholder.com/60x80?text=封面'">
+                    <div class="anime-card-info">
+                        <div class="anime-card-title">${anime.title}</div>
+                        <div class="anime-card-original">${anime.originalTitle}</div>
+                        <mdui-chip class="status-${anime.status}">${getStatusText(anime.status)}</mdui-chip>
+                    </div>
+                </div>
+                <div class="anime-card-description">${anime.description}</div>
+                <div class="anime-card-progress">
+                    <div class="progress-info">
+                        <span>进度: ${anime.progress}/${anime.totalEpisodes} 集</span>
+                        ${anime.score ? `<span class="anime-score">评分: ${anime.score}</span>` : ''}
+                    </div>
+                    <mdui-linear-progress 
+                        value="${anime.progress}" 
+                        max="${anime.totalEpisodes}"
+                        class="anime-progress-bar">
+                    </mdui-linear-progress>
                 </div>
             </div>
-            <div class="anime-description">${anime.description}</div>
-            <div class="anime-progress">
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: ${(anime.progress / anime.totalEpisodes) * 100}%"></div>
-                </div>
-                <div class="progress-text">
-                    进度: ${anime.progress}/${anime.totalEpisodes} 集
-                    ${anime.score ? `| 评分: ${anime.score}` : ''}
-                </div>
+            <div slot="action">
+                <mdui-button onclick="showAnimeDetail('${anime.id}')" variant="text">
+                    <mdui-icon slot="icon" name="info"></mdui-icon>
+                    查看详情
+                </mdui-button>
+                <mdui-button href="${anime.bangumiUrl}" target="_blank" variant="text">
+                    <mdui-icon slot="icon" name="open_in_new"></mdui-icon>
+                    Bangumi
+                </mdui-button>
             </div>
-        </div>
+        </mdui-card>
     `).join('');
+    
+    // 添加卡片点击事件
+    addCardClickEvents();
 }
 
 /**
@@ -463,7 +517,143 @@ function updateStatistics() {
     averageScore.textContent = stats.average;
     
     // 显示统计信息
-    statisticsSection.style.display = 'block';
+        statisticsSection.style.display = 'block';
+}
+
+/**
+ * 显示加载更多按钮
+ */
+function showLoadMoreButton() {
+    const loadMoreSection = document.getElementById('load-more-section');
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    const loadingMore = document.getElementById('loading-more');
+    
+    if (loadMoreSection && loadMoreBtn && loadingMore) {
+        if (hasMoreData && filteredAnimeData.length > 0) {
+            loadMoreSection.style.display = 'block';
+            loadMoreBtn.style.display = 'block';
+            loadingMore.style.display = 'none';
+        } else {
+            loadMoreSection.style.display = 'none';
+        }
+    }
+}
+
+/**
+ * 加载更多数据
+ */
+async function loadMoreData() {
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    const loadingMore = document.getElementById('loading-more');
+    
+    if (loadMoreBtn && loadingMore) {
+        loadMoreBtn.style.display = 'none';
+        loadingMore.style.display = 'block';
+    }
+    
+    try {
+        await loadBangumiData(false);
+    } catch (error) {
+        console.error('加载更多数据失败:', error);
+        showLoadMoreButton();
+    }
+}
+
+/**
+ * 添加卡片点击事件
+ */
+function addCardClickEvents() {
+    const cards = document.querySelectorAll('.anime-card');
+    cards.forEach(card => {
+        card.addEventListener('click', (e) => {
+            // 防止按钮点击触发卡片点击
+            if (e.target.closest('mdui-button')) {
+                return;
+            }
+            const animeId = card.getAttribute('data-id');
+            showAnimeDetail(animeId);
+        });
+    });
+}
+
+/**
+ * 显示动画详情对话框
+ */
+function showAnimeDetail(animeId) {
+    const anime = animeData.find(a => a.id === animeId);
+    if (!anime) return;
+    
+    const dialog = document.getElementById('anime-detail-dialog');
+    const content = document.getElementById('anime-detail-content');
+    const viewBangumiBtn = document.getElementById('view-bangumi-btn');
+    
+    if (!dialog || !content || !viewBangumiBtn) return;
+    
+    // 填充详情内容
+    content.innerHTML = `
+        <div class="anime-detail-header">
+            <img src="${anime.cover}" alt="${anime.title}" class="anime-detail-cover" onerror="this.src='https://via.placeholder.com/120x160?text=封面'">
+            <div class="anime-detail-info">
+                <div class="anime-detail-title">${anime.title}</div>
+                <div class="anime-detail-original">${anime.originalTitle}</div>
+                <div class="anime-detail-meta">
+                    <div class="anime-detail-meta-item">
+                        <span class="anime-detail-meta-label">状态</span>
+                        <span class="anime-detail-meta-value">${getStatusText(anime.status)}</span>
+                    </div>
+                    <div class="anime-detail-meta-item">
+                        <span class="anime-detail-meta-label">类型</span>
+                        <span class="anime-detail-meta-value">${anime.type}</span>
+                    </div>
+                    ${anime.score ? `
+                    <div class="anime-detail-meta-item">
+                        <span class="anime-detail-meta-label">评分</span>
+                        <span class="anime-detail-meta-value">${anime.score}</span>
+                    </div>
+                    ` : ''}
+                    <div class="anime-detail-meta-item">
+                        <span class="anime-detail-meta-label">排名</span>
+                        <span class="anime-detail-meta-value">${anime.rank || 'N/A'}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="anime-detail-description">
+            ${anime.description}
+        </div>
+        <div class="anime-detail-progress">
+            <div class="progress-info">
+                <span>观看进度: ${anime.progress}/${anime.totalEpisodes} 集</span>
+            </div>
+            <mdui-linear-progress 
+                value="${anime.progress}" 
+                max="${anime.totalEpisodes}"
+                class="anime-progress-bar">
+            </mdui-linear-progress>
+        </div>
+    `;
+    
+    // 设置Bangumi链接
+    viewBangumiBtn.onclick = () => {
+        window.open(anime.bangumiUrl, '_blank');
+    };
+    
+    // 显示对话框
+    dialog.open = true;
+}
+
+/**
+ * 初始化详情对话框事件
+ */
+function initDetailDialog() {
+    const dialog = document.getElementById('anime-detail-dialog');
+    const closeBtn = document.getElementById('close-detail-btn');
+    
+    if (dialog && closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            dialog.open = false;
+        });
+    }
 }
 
 // 导出函数供其他模块使用

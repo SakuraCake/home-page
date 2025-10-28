@@ -10,13 +10,10 @@ let currentPage = 'index';
 document.addEventListener('DOMContentLoaded', () => {
     initNavigation();
     initActionButtons();
-    
-    // 确保DOM完全加载后再加载首页内容
-    setTimeout(() => {
-        loadPage('index'); // 默认加载首页
-    }, 100);
-    
+
     showWelcomeLog();
+
+    loadPage('index');
 });
 
 /**
@@ -28,7 +25,7 @@ function initNavigation() {
     const navItems = document.querySelectorAll('#navigation-drawer mdui-list-item');
 
     // 检测是否为PC端，如果是则默认展开侧边栏
-    const isDesktop = window.innerWidth >= 768;
+    const isDesktop = window.innerWidth >= 800;
     if (isDesktop) {
         navigationDrawer.open = true;
     }
@@ -44,7 +41,7 @@ function initNavigation() {
     // 导航项点击事件
     navItems.forEach((item, index) => {
         item.addEventListener('click', () => {
-            switch(index) {
+            switch (index) {
                 case 0: // 首页
                     loadPage('index');
                     break;
@@ -98,20 +95,20 @@ function initActionButtons() {
  */
 function loadPage(pageName) {
     if (currentPage === pageName) return; // 避免重复加载
-    
+
     const contentContainer = document.querySelector('.centered-content');
-    
+
     // 检查内容容器是否存在
     if (!contentContainer) {
         console.error('内容容器未找到，页面结构可能有问题');
         return;
     }
-    
+
     const pagePath = `./page/${pageName}.html`;
-    
+
     // 显示加载状态
     contentContainer.innerHTML = '<mdui-circular-progress></mdui-circular-progress><p>加载中...</p>';
-    
+
     fetch(pagePath)
         .then(response => {
             if (!response.ok) {
@@ -122,10 +119,10 @@ function loadPage(pageName) {
         .then(html => {
             contentContainer.innerHTML = html;
             currentPage = pageName;
-            
+
             // 重新初始化按钮事件
             initActionButtons();
-            
+
             // 如果是追番页面，初始化追番功能
             if (pageName === 'chase') {
                 setTimeout(() => {
@@ -134,7 +131,7 @@ function loadPage(pageName) {
                     }
                 }, 50);
             }
-            
+
             // 更新页面标题
             updatePageTitle(pageName);
         })
@@ -158,7 +155,7 @@ function updatePageTitle(pageName) {
         'index': '首页',
         'chase': '追番'
     };
-    
+
     const pageTitle = titleMap[pageName] || 'SakuraCake';
     document.title = `${pageTitle} - SakuraCake`;
 }

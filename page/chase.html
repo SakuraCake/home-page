@@ -25,26 +25,28 @@
         </div>
     </div>
     
-    <!-- 统计信息 -->
-    <div class="statistics-section" id="statistics-section" style="display: none;">
-        <h3>追番统计</h3>
-        <div class="stats-grid">
-            <div class="stat-item">
-                <span class="stat-number" id="total-count">0</span>
-                <span class="stat-label">总收藏</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-number" id="watching-count">0</span>
-                <span class="stat-label">在看</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-number" id="completed-count">0</span>
-                <span class="stat-label">已看完</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-number" id="average-score">0</span>
-                <span class="stat-label">平均评分</span>
-            </div>
+    <!-- 加载更多 -->
+    <div class="load-more-section" id="load-more-section" style="display: none;">
+        <mdui-button id="load-more-btn" variant="outlined" full-width>
+            <mdui-icon slot="icon" name="expand_more"></mdui-icon>
+            加载更多
+        </mdui-button>
+        <div class="loading-more" id="loading-more" style="display: none;">
+            <mdui-circular-progress></mdui-circular-progress>
+            <p>正在加载更多...</p>
         </div>
     </div>
+    
+    <!-- 详情对话框 -->
+    <mdui-dialog id="anime-detail-dialog">
+        <div class="anime-detail-content" id="anime-detail-content">
+            <!-- 详情内容将通过JavaScript动态填充 -->
+        </div>
+        <div slot="action">
+            <mdui-button id="close-detail-btn">关闭</mdui-button>
+            <mdui-button id="view-bangumi-btn" variant="filled">查看Bangumi页面</mdui-button>
+        </div>
+    </mdui-dialog>
+    
+
 </div>

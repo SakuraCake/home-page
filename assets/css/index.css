@@ -17,7 +17,6 @@
 .centered-content p {
     margin-bottom: 30px;
     color: #666;
-    max-width: 600px;
     line-height: 1.6;
 }
 
@@ -66,103 +65,117 @@
     min-width: 200px;
 }
 
-/* 追番列表样式 */
+/* 追番列表样式 - MDUI卡片版本 */
 .anime-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     gap: 20px;
-    margin-bottom: 40px;
+    margin-top: 20px;
 }
 
-.anime-item {
-    background: #fff;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+/* PC端大屏幕显示更多卡片 */
+@media (min-width: 1200px) {
+    .anime-list {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    }
+}
+
+@media (min-width: 1600px) {
+    .anime-list {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+}
+
+.anime-card {
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.anime-item:hover {
+.anime-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
 }
 
-.anime-header {
+.anime-card-content {
+    padding: 16px;
+}
+
+.anime-card-header {
     display: flex;
-    align-items: center;
-    margin-bottom: 15px;
+    align-items: flex-start;
+    margin-bottom: 16px;
 }
 
 .anime-cover {
     width: 60px;
     height: 80px;
-    border-radius: 8px;
     object-fit: cover;
-    margin-right: 15px;
+    border-radius: 6px;
+    margin-right: 16px;
 }
 
-.anime-info {
+.anime-card-info {
     flex: 1;
 }
 
-.anime-title {
+.anime-card-title {
     font-size: 16px;
     font-weight: 600;
-    margin-bottom: 5px;
-    color: #333;
+    margin-bottom: 4px;
+    color: var(--mdui-color-on-surface);
 }
 
-.anime-meta {
+.anime-card-original {
     font-size: 14px;
-    color: #666;
-    margin-bottom: 5px;
+    color: var(--mdui-color-on-surface-variant);
+    margin-bottom: 8px;
 }
 
-.anime-status {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 500;
-}
-
-.status-watching {
-    background: #e3f2fd;
-    color: #1976d2;
-}
-
-.status-completed {
-    background: #e8f5e8;
-    color: #2e7d32;
-}
-
-.status-planned {
-    background: #fff3e0;
-    color: #f57c00;
-}
-
-.anime-progress {
-    margin-top: 10px;
-}
-
-.progress-bar {
-    width: 100%;
-    height: 6px;
-    background: #f0f0f0;
-    border-radius: 3px;
+.anime-card-description {
+    font-size: 14px;
+    color: var(--mdui-color-on-surface-variant);
+    line-height: 1.5;
+    margin-bottom: 16px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
-.progress-fill {
-    height: 100%;
-    background: #2196f3;
-    transition: width 0.3s;
+.anime-card-progress {
+    margin-top: 12px;
 }
 
-.progress-text {
-    font-size: 12px;
-    color: #666;
-    margin-top: 5px;
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: var(--mdui-color-on-surface-variant);
+}
+
+.anime-score {
+    font-weight: 500;
+    color: var(--mdui-color-primary);
+}
+
+.anime-progress-bar {
+    width: 100%;
+}
+
+/* MDUI芯片状态样式 */
+.status-watching {
+    --mdui-chip-background-color: #e3f2fd;
+    --mdui-chip-label-text-color: #1976d2;
+}
+
+.status-completed {
+    --mdui-chip-background-color: #e8f5e8;
+    --mdui-chip-label-text-color: #2e7d32;
+}
+
+.status-planned {
+    --mdui-chip-background-color: #fff3e0;
+    --mdui-chip-label-text-color: #f57c00;
 }
 
 /* 统计信息样式 */
@@ -270,6 +283,95 @@
     animation: fadeIn 0.5s ease-out;
 }
 
+/* 加载更多样式 */
+.load-more-section {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.loading-more {
+    text-align: center;
+    padding: 20px;
+}
+
+.loading-more p {
+    margin-top: 10px;
+    color: #666;
+}
+
+/* 详情对话框样式 */
+.anime-detail-content {
+    max-width: 600px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.anime-detail-header {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.anime-detail-cover {
+    width: 120px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-right: 20px;
+}
+
+.anime-detail-info {
+    flex: 1;
+}
+
+.anime-detail-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--mdui-color-on-surface);
+}
+
+.anime-detail-original {
+    font-size: 16px;
+    color: var(--mdui-color-on-surface-variant);
+    margin-bottom: 12px;
+}
+
+.anime-detail-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.anime-detail-meta-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.anime-detail-meta-label {
+    font-size: 12px;
+    color: var(--mdui-color-on-surface-variant);
+    margin-bottom: 4px;
+}
+
+.anime-detail-meta-value {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--mdui-color-on-surface);
+}
+
+.anime-detail-description {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--mdui-color-on-surface);
+    margin-bottom: 20px;
+}
+
+.anime-detail-progress {
+    margin-top: 20px;
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
     .chase-container {
@@ -290,11 +392,7 @@
         grid-template-columns: 1fr;
     }
     
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .anime-header {
+    .anime-card-header {
         flex-direction: column;
         text-align: center;
     }
@@ -302,5 +400,19 @@
     .anime-cover {
         margin-right: 0;
         margin-bottom: 10px;
+    }
+    
+    .anime-card-content {
+        padding: 12px;
+    }
+    
+    .anime-detail-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .anime-detail-cover {
+        margin-right: 0;
+        margin-bottom: 15px;
     }
 }
