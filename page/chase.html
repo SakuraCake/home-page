@@ -1,0 +1,50 @@
+<!-- 追番页面 -->
+<div class="chase-container">
+    <h2>我的追番列表</h2>
+    <p>这里展示我的动画收藏和追番进度</p>
+    
+    <!-- 搜索和筛选区域 -->
+    <div class="filter-section">
+        <mdui-text-field id="search-input" placeholder="搜索动画..." type="search">
+            <mdui-icon slot="leading-icon" name="search"></mdui-icon>
+        </mdui-text-field>
+        
+        <mdui-select id="status-filter" value="all">
+            <mdui-menu-item value="all">全部状态</mdui-menu-item>
+            <mdui-menu-item value="watching">在看</mdui-menu-item>
+            <mdui-menu-item value="completed">已看完</mdui-menu-item>
+            <mdui-menu-item value="planned">计划看</mdui-menu-item>
+        </mdui-select>
+    </div>
+    
+    <!-- 追番列表 -->
+    <div class="anime-list" id="anime-list">
+        <div class="loading-state">
+            <mdui-circular-progress></mdui-circular-progress>
+            <p>正在加载追番数据...</p>
+        </div>
+    </div>
+    
+    <!-- 统计信息 -->
+    <div class="statistics-section" id="statistics-section" style="display: none;">
+        <h3>追番统计</h3>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-number" id="total-count">0</span>
+                <span class="stat-label">总收藏</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="watching-count">0</span>
+                <span class="stat-label">在看</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="completed-count">0</span>
+                <span class="stat-label">已看完</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="average-score">0</span>
+                <span class="stat-label">平均评分</span>
+            </div>
+        </div>
+    </div>
+</div>

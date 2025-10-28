@@ -1,22 +1,36 @@
+/**
+ * SakuraCake 个人主页 - 主脚本文件
+ * 初始化页面交互功能
+ */
+
+// 页面状态管理
+let currentPage = 'index';
+
+// DOM加载完成后执行
 document.addEventListener('DOMContentLoaded', () => {
-    // 获取核心元素
+    initNavigation();
+    initActionButtons();
+    
+    // 确保DOM完全加载后再加载首页内容
+    setTimeout(() => {
+        loadPage('index'); // 默认加载首页
+    }, 100);
+    
+    showWelcomeLog();
+});
+
+/**
+ * 初始化导航功能
+ */
+function initNavigation() {
     const navigationDrawer = document.getElementById('navigation-drawer');
     const menuButton = document.getElementById('menu-button');
-    const moreActionsButton = document.getElementById('more-actions');
+    const navItems = document.querySelectorAll('#navigation-drawer mdui-list-item');
 
-    // 预留其他功能按钮
-    const actionButton1 = document.getElementById('action-button-1');
-    const actionButton2 = document.getElementById('action-button-2');
-
-    // 验证核心元素是否存在
-    if (!navigationDrawer) {
-        console.error('未找到侧边抽屉栏元素');
-        return;
-    }
-
-    if (!menuButton) {
-        console.error('未找到菜单按钮元素');
-        return;
+    // 检测是否为PC端，如果是则默认展开侧边栏
+    const isDesktop = window.innerWidth >= 768;
+    if (isDesktop) {
+        navigationDrawer.open = true;
     }
 
     // 抽屉栏控制函数
@@ -27,46 +41,148 @@ document.addEventListener('DOMContentLoaded', () => {
     // 菜单按钮事件 - 控制抽屉栏开关
     menuButton.addEventListener('click', toggleDrawer);
 
-    // 更多操作按钮预留逻辑
-    if (moreActionsButton) {
-        moreActionsButton.addEventListener('click', () => {
-            console.log('更多操作按钮被点击');
-            // 预留功能：可以在这里添加菜单、对话框等
-            // 例如：mdui.dialog({...});
+    // 导航项点击事件
+    navItems.forEach((item, index) => {
+        item.addEventListener('click', () => {
+            switch(index) {
+                case 0: // 首页
+                    loadPage('index');
+                    break;
+                case 1: // 追番
+                    loadPage('chase');
+                    break;
+                case 2: // 个人网盘（外部链接，不处理）
+                    break;
+            }
+            // 在移动端点击后关闭抽屉栏，PC端保持展开
+            if (!isDesktop) {
+                navigationDrawer.open = false;
+            }
         });
-    }
+    });
 
-    // 预留功能按钮1的逻辑
-    if (actionButton1) {
-        actionButton1.addEventListener('click', () => {
-            console.log('功能按钮1被点击');
-            // 预留具体功能逻辑
-        });
-    }
-
-    // 预留功能按钮2的逻辑
-    if (actionButton2) {
-        actionButton2.addEventListener('click', () => {
-            console.log('功能按钮2被点击');
-            // 预留具体功能逻辑
-        });
-    }
-
-    // ESC键关闭抽屉栏（备用）
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && navigationDrawer.open) {
-            navigationDrawer.open = false;
+    // 监听窗口大小变化，自适应侧边栏状态
+    window.addEventListener('resize', () => {
+        const currentIsDesktop = window.innerWidth >= 768;
+        if (currentIsDesktop !== isDesktop) {
+            navigationDrawer.open = currentIsDesktop;
         }
     });
+}
 
-    // 点击遮罩层关闭抽屉栏（由MDUI自动处理，这里作为备用）
-    navigationDrawer.addEventListener('overlay-click', () => {
-        navigationDrawer.open = false;
-    });
-});
+/**
+ * 初始化功能按钮
+ */
+function initActionButtons() {
+    const bilibili_button = document.getElementById('bilibili-button');
+    const steam_button = document.getElementById('steam-button');
 
-// 控制台日志，用于调试
-console.log(`===============================================
+    // Bilibili按钮
+    if (bilibili_button) {
+        bilibili_button.addEventListener('click', () => {
+            handleButtonClick('Bilibili按钮被点击');
+        });
+    }
+
+    // Steam按钮
+    if (steam_button) {
+        steam_button.addEventListener('click', () => {
+            handleButtonClick('Steam按钮被点击');
+        });
+    }
+}
+
+/**
+ * 加载页面内容
+ * @param {string} pageName - 页面名称
+ */
+function loadPage(pageName) {
+    if (currentPage === pageName) return; // 避免重复加载
+    
+    const contentContainer = document.querySelector('.centered-content');
+    
+    // 检查内容容器是否存在
+    if (!contentContainer) {
+        console.error('内容容器未找到，页面结构可能有问题');
+        return;
+    }
+    
+    const pagePath = `./page/${pageName}.html`;
+    
+    // 显示加载状态
+    contentContainer.innerHTML = '<mdui-circular-progress></mdui-circular-progress><p>加载中...</p>';
+    
+    fetch(pagePath)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`页面加载失败: ${response.status}`);
+            }
+            return response.text();
+        })
+        .then(html => {
+            contentContainer.innerHTML = html;
+            currentPage = pageName;
+            
+            // 重新初始化按钮事件
+            initActionButtons();
+            
+            // 如果是追番页面，初始化追番功能
+            if (pageName === 'chase') {
+                setTimeout(() => {
+                    if (typeof initChasePage === 'function') {
+                        initChasePage();
+                    }
+                }, 50);
+            }
+            
+            // 更新页面标题
+            updatePageTitle(pageName);
+        })
+        .catch(error => {
+            console.error('页面加载错误:', error);
+            contentContainer.innerHTML = `
+                <mdui-alert type="error" closeable>
+                    <mdui-alert-title>页面加载失败</mdui-alert-title>
+                    <mdui-alert-description>${error.message}</mdui-alert-description>
+                </mdui-alert>
+            `;
+        });
+}
+
+/**
+ * 更新页面标题
+ * @param {string} pageName - 页面名称
+ */
+function updatePageTitle(pageName) {
+    const titleMap = {
+        'index': '首页',
+        'chase': '追番'
+    };
+    
+    const pageTitle = titleMap[pageName] || 'SakuraCake';
+    document.title = `${pageTitle} - SakuraCake`;
+}
+
+/**
+ * 处理按钮点击事件
+ * @param {string} buttonName - 按钮名称
+ */
+function handleButtonClick(buttonName) {
+    console.log(`${buttonName}被点击`);
+
+    //显示用户反馈
+    // mdui.snackbar({
+    //    message: `${buttonName}被点击`,
+    //    position: 'top',
+    //    timeout: 2000
+    // });
+}
+
+/**
+ * 显示欢迎日志
+ */
+function showWelcomeLog() {
+    console.log(`===============================================
   ____            _                          
  / ___|    __ _  | | __  _   _   _ __    __ _ 
  \\___ \\   / _\` | | |/ / | | | | | '__|  / _\` |
@@ -81,3 +197,4 @@ console.log(`===============================================
 ===============================================
 v0.0.1 sorange.top
 `);
+}

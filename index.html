@@ -11,49 +11,45 @@
     <!-- MDUI 框架 -->
     <link rel="stylesheet" href="https://unpkg.com/mdui@2/mdui.css" />
     <script src="https://unpkg.com/mdui@2/mdui.global.js"></script>
-    <!--资源文件-->
+    <!-- 自定义样式 -->
     <link rel="stylesheet" href="./assets/css/index.css" />
-
 </head>
 
 <body>
-    <mdui-top-app-bar style="position: relative;">
-        <mdui-button-icon id="menu-button" icon="menu"></mdui-button-icon>
-        <mdui-top-app-bar-title>SakuraCakeの个人主页</mdui-top-app-bar-title>
-        <div style="flex-grow: 1"></div>
-        <mdui-dropdown>
-            <mdui-button-icon id="more-actions" icon="more_vert" slot="trigger"></mdui-button-icon>
-            <mdui-menu>
-                <mdui-menu-item>Item 1</mdui-menu-item>
-                <mdui-menu-item href="https://pan.sorange.top/" target="_blank">Item 2</mdui-menu-item>
-            </mdui-menu>
-        </mdui-dropdown>
-        
-    </mdui-top-app-bar>
-
     <mdui-layout>
+        <!-- 顶部应用栏 -->
+        <mdui-top-app-bar scroll-behavior="elevate" order="-1">
+            <mdui-button-icon id="menu-button" icon="menu"></mdui-button-icon>
+            <mdui-top-app-bar-title>SakuraCakeの个人主页</mdui-top-app-bar-title>
+            <mdui-dropdown>
+                <mdui-button-icon id="more-actions" icon="more_vert" slot="trigger"></mdui-button-icon>
+                <mdui-menu>
+                    <mdui-menu-item>Item 1</mdui-menu-item>
+                    <mdui-menu-item href="https://pan.sorange.top/" target="_blank">Item 2</mdui-menu-item>
+                </mdui-menu>
+            </mdui-dropdown>
+        </mdui-top-app-bar>
+
         <!-- 侧边抽屉栏 -->
-        <mdui-navigation-drawer id="navigation-drawer" close-on-esc close-on-overlay-click data-nosnippet=""
-            placement="left">
+        <mdui-navigation-drawer id="navigation-drawer" close-on-esc close-on-overlay-click placement="left">
             <mdui-list>
                 <mdui-list-item icon="home" headline="首页"></mdui-list-item>
-                <mdui-list-item icon="person" headline="关于我"></mdui-list-item>
+                <mdui-list-item icon="video_library" headline="追番"></mdui-list-item>
+                <mdui-list-item icon="cloud" headline="个人网盘" href="https://pan.sorange.top/"
+                    target="_blank"></mdui-list-item>
             </mdui-list>
         </mdui-navigation-drawer>
 
         <!-- 主内容区域 -->
         <mdui-layout-main>
-            <div style="padding: 20px;">
-                <h2>欢迎来到我的主页</h2>
-                <p>这里是一些主要内容...</p>
-                <!-- 预留其他功能按钮的位置 -->
-                <mdui-button id="action-button-1" variant="outlined" style="margin: 5px;">功能按钮1</mdui-button>
-                <mdui-button id="action-button-2" variant="outlined" style="margin: 5px;">功能按钮2</mdui-button>
+            <div class="centered-content">
+                <!-- 通过JS动态加载，默认加载index.html -->
             </div>
         </mdui-layout-main>
     </mdui-layout>
 
     <script src="./assets/js/index.js"></script>
+    <script src="./assets/js/chase.js"></script>
 </body>
 
 </html>
