@@ -2,21 +2,19 @@
 <div class="chase-container">
     <h2>我的追番列表</h2>
     <p>这里展示我的动画收藏和追番进度</p>
-    
-    <!-- 搜索和筛选区域 -->
+
+    <!-- 状态筛选区域 -->
     <div class="filter-section">
-        <mdui-text-field id="search-input" placeholder="搜索动画..." type="search">
-            <mdui-icon slot="leading-icon" name="search"></mdui-icon>
-        </mdui-text-field>
-        
-        <mdui-select id="status-filter" value="all">
-            <mdui-menu-item value="all">全部状态</mdui-menu-item>
-            <mdui-menu-item value="watching">在看</mdui-menu-item>
-            <mdui-menu-item value="completed">已看完</mdui-menu-item>
-            <mdui-menu-item value="planned">计划看</mdui-menu-item>
-        </mdui-select>
+        <mdui-segmented-button-group selects="single" value="all">
+            <mdui-segmented-button value="all" selected onclick="filterByStatus('all')">全部状态</mdui-segmented-button>
+            <mdui-segmented-button value="watching" onclick="filterByStatus('watching')">在看</mdui-segmented-button>
+            <mdui-segmented-button value="completed" onclick="filterByStatus('completed')">已看完</mdui-segmented-button>
+            <mdui-segmented-button value="planned" onclick="filterByStatus('planned')">想看</mdui-segmented-button>
+            <mdui-segmented-button value="on_hold" onclick="filterByStatus('on_hold')">搁置</mdui-segmented-button>
+            <mdui-segmented-button value="dropped" onclick="filterByStatus('dropped')">抛弃</mdui-segmented-button>
+        </mdui-segmented-button-group>
     </div>
-    
+
     <!-- 追番列表 -->
     <div class="anime-list" id="anime-list">
         <div class="loading-state">
@@ -24,7 +22,7 @@
             <p>正在加载追番数据...</p>
         </div>
     </div>
-    
+
     <!-- 加载更多 -->
     <div class="load-more-section" id="load-more-section" style="display: none;">
         <mdui-button id="load-more-btn" variant="outlined" full-width>
@@ -36,7 +34,7 @@
             <p>正在加载更多...</p>
         </div>
     </div>
-    
+
     <!-- 详情对话框 -->
     <mdui-dialog id="anime-detail-dialog">
         <div class="anime-detail-content" id="anime-detail-content">
@@ -47,6 +45,6 @@
             <mdui-button id="view-bangumi-btn" variant="filled">查看Bangumi页面</mdui-button>
         </div>
     </mdui-dialog>
-    
+
 
 </div>

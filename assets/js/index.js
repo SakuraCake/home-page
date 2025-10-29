@@ -3,16 +3,12 @@
  * 初始化页面交互功能
  */
 
-// 页面状态管理
-let currentPage = 'index';
+let currentPage;
 
-// DOM加载完成后执行
 document.addEventListener('DOMContentLoaded', () => {
     initNavigation();
     initActionButtons();
-
     showWelcomeLog();
-
     loadPage('index');
 });
 
@@ -24,44 +20,41 @@ function initNavigation() {
     const menuButton = document.getElementById('menu-button');
     const navItems = document.querySelectorAll('#navigation-drawer mdui-list-item');
 
-    // 检测是否为PC端，如果是则默认展开侧边栏
     const isDesktop = window.innerWidth >= 800;
-    if (isDesktop) {
-        navigationDrawer.open = true;
-    }
+    navigationDrawer.open = false;
 
-    // 抽屉栏控制函数
+    let userManuallyOpened = false;
+
     const toggleDrawer = () => {
         navigationDrawer.open = !navigationDrawer.open;
+        if (navigationDrawer.open) {
+            userManuallyOpened = true;
+        }
     };
 
-    // 菜单按钮事件 - 控制抽屉栏开关
     menuButton.addEventListener('click', toggleDrawer);
 
-    // 导航项点击事件
     navItems.forEach((item, index) => {
         item.addEventListener('click', () => {
             switch (index) {
-                case 0: // 首页
+                case 0:
                     loadPage('index');
                     break;
-                case 1: // 追番
+                case 1:
                     loadPage('chase');
                     break;
-                case 2: // 个人网盘（外部链接，不处理）
+                case 2:
                     break;
             }
-            // 在移动端点击后关闭抽屉栏，PC端保持展开
-            if (!isDesktop) {
+            if (!isDesktop || !userManuallyOpened) {
                 navigationDrawer.open = false;
             }
         });
     });
 
-    // 监听窗口大小变化，自适应侧边栏状态
     window.addEventListener('resize', () => {
-        const currentIsDesktop = window.innerWidth >= 768;
-        if (currentIsDesktop !== isDesktop) {
+        if (!userManuallyOpened) {
+            const currentIsDesktop = window.innerWidth >= 768;
             navigationDrawer.open = currentIsDesktop;
         }
     });
@@ -74,14 +67,12 @@ function initActionButtons() {
     const bilibili_button = document.getElementById('bilibili-button');
     const steam_button = document.getElementById('steam-button');
 
-    // Bilibili按钮
     if (bilibili_button) {
         bilibili_button.addEventListener('click', () => {
             handleButtonClick('Bilibili按钮被点击');
         });
     }
 
-    // Steam按钮
     if (steam_button) {
         steam_button.addEventListener('click', () => {
             handleButtonClick('Steam按钮被点击');
@@ -94,11 +85,10 @@ function initActionButtons() {
  * @param {string} pageName - 页面名称
  */
 function loadPage(pageName) {
-    if (currentPage === pageName) return; // 避免重复加载
+    if (currentPage === pageName) return;
 
     const contentContainer = document.querySelector('.centered-content');
 
-    // 检查内容容器是否存在
     if (!contentContainer) {
         console.error('内容容器未找到，页面结构可能有问题');
         return;
@@ -106,7 +96,6 @@ function loadPage(pageName) {
 
     const pagePath = `./page/${pageName}.html`;
 
-    // 显示加载状态
     contentContainer.innerHTML = '<mdui-circular-progress></mdui-circular-progress><p>加载中...</p>';
 
     fetch(pagePath)
@@ -120,10 +109,8 @@ function loadPage(pageName) {
             contentContainer.innerHTML = html;
             currentPage = pageName;
 
-            // 重新初始化按钮事件
             initActionButtons();
 
-            // 如果是追番页面，初始化追番功能
             if (pageName === 'chase') {
                 setTimeout(() => {
                     if (typeof initChasePage === 'function') {
@@ -132,7 +119,6 @@ function loadPage(pageName) {
                 }, 50);
             }
 
-            // 更新页面标题
             updatePageTitle(pageName);
         })
         .catch(error => {
@@ -144,6 +130,7 @@ function loadPage(pageName) {
                 </mdui-alert>
             `;
         });
+    console.log(`页面${pageName}加载完成`);
 }
 
 /**
