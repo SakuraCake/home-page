@@ -30,6 +30,9 @@ function initNavigation() {
         if (navigationDrawer.open) {
             userManuallyOpened = true;
         }
+        
+        // 记录菜单栏展开状态到localStorage
+        localStorage.setItem('navigationDrawerOpen', navigationDrawer.open.toString());
     };
 
     menuButton.addEventListener('click', toggleDrawer);
@@ -148,7 +151,7 @@ function updatePageTitle(pageName) {
 }
 
 /**
- * 处理按钮点击事件
+ * 处理测试按钮点击事件
  * @param {string} buttonName - 按钮名称
  */
 function handleButtonClick(buttonName) {

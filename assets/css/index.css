@@ -536,7 +536,32 @@
 }
 
 .anime-detail-original {
-    font-size: 16px;
+    font-size: 16px
+}
+
+/* 页脚样式 */
+.footer {
+    background: var(--mdui-color-surface-container-low);
+    border-top: 1px solid var(--mdui-color-outline);
+    padding: 20px 0;
+    margin-top: 40px;
+    text-align: center;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.footer p {
+    margin: 5px 0;
+    color: var(--mdui-color-on-surface-variant);
+    font-size: 14px;
+}
+
+.footer p:first-child {
+    font-weight: 500;
     color: var(--mdui-color-on-surface-variant);
     margin-bottom: 12px;
 }

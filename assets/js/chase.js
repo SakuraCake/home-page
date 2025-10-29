@@ -423,6 +423,16 @@ function renderAnimeList() {
                     </mdui-linear-progress>
                 </div>
             </div>
+            <div slot="action">
+                <mdui-button onclick="showAnimeDetail('${anime.id}')" variant="text">
+                    <mdui-icon slot="icon" name="info"></mdui-icon>
+                    查看详情
+                </mdui-button>
+                <mdui-button href="${anime.bangumiUrl}" target="_blank" variant="text">
+                    <mdui-icon slot="icon" name="open_in_new"></mdui-icon>
+                    Bangumi
+                </mdui-button>
+            </div>
         </mdui-card>
     `).join('');
 
@@ -496,16 +506,30 @@ async function loadMoreData() {
 
     try {
         await loadBangumiData(false);
+        // 加载更多数据后，重新应用当前筛选状态
+        const currentStatus = getCurrentFilterStatus();
+        filterByStatus(currentStatus);
     } catch (error) {
         console.error('加载更多数据失败:', error);
         showLoadMoreButton();
     }
 }
 
+function getCurrentFilterStatus() {
+    const buttons = document.querySelectorAll('mdui-segmented-button');
+    for (const button of buttons) {
+        if (button.selected) {
+            return button.getAttribute('value');
+        }
+    }
+    return 'all';
+}
+
 function addCardClickEvents() {
     const cards = document.querySelectorAll('.anime-card');
     cards.forEach(card => {
         card.addEventListener('click', (e) => {
+            // 阻止按钮点击事件冒泡
             if (e.target.closest('mdui-button')) {
                 return;
             }
