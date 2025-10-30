@@ -5,12 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SakuraCake</title>
-    <!-- Material Icons -->
-    <link href="https://fonts.font.im/css2?family=Material+Icons" rel="stylesheet">
-    <link href="https://fonts.font.im/css2?family=Material+Icons+Outlined" rel="stylesheet">
-    <!-- MDUI 框架 -->
-    <link rel="stylesheet" href="https://s4.zstatic.net/npm/mdui@2/mdui.css" />
-    <script src="https://s4.zstatic.net/npm/mdui@2/mdui.global.js"></script>
+    <!-- Material Icons - 主备链接 -->
+    <link href="https://fonts.font.im/css2?family=Material+Icons" rel="stylesheet" onerror="this.onerror=null;this.href='https://fonts.googleapis.com/icon?family=Material+Icons'">
+    <link href="https://fonts.font.im/css2?family=Material+Icons+Outlined" rel="stylesheet" onerror="this.onerror=null;this.href='https://fonts.googleapis.com/icon?family=Material+Icons+Outlined'">
+    
+    <!-- MDUI 框架 - 主备链接 -->
+    <link rel="stylesheet" href="https://s4.zstatic.net/npm/mdui@2/mdui.css" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/mdui@2/mdui.css'">
+    <script src="https://s4.zstatic.net/npm/mdui@2/mdui.global.js" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/mdui@2/mdui.global.js'"></script>
+
+    
+    <!-- 主脚本文件 -->
+    <script src="./assets/js/index.js"></script>
+    <!-- 其他页面脚本将通过JavaScript动态加载 -->
     <!-- 自定义样式 -->
     <link rel="stylesheet" href="./assets/css/index.css" />
 </head>
@@ -18,7 +24,7 @@
 <body>
     <mdui-layout>
         <!-- 顶部应用栏 -->
-        <mdui-top-app-bar scroll-behavior="elevate" order="-1">
+        <mdui-top-app-bar scroll-behavior="elevate" order="1">
             <mdui-button-icon id="menu-button" icon="menu"></mdui-button-icon>
             <mdui-top-app-bar-title>SakuraCakeの个人主页</mdui-top-app-bar-title>
             <mdui-dropdown>
@@ -31,12 +37,9 @@
         </mdui-top-app-bar>
 
         <!-- 侧边抽屉栏 -->
-        <mdui-navigation-drawer id="navigation-drawer" close-on-esc close-on-overlay-click placement="left">
+        <mdui-navigation-drawer id="navigation-drawer" close-on-esc close-on-overlay-click placement="left" order="2">
             <mdui-list>
-                <mdui-list-item icon="home" headline="首页"></mdui-list-item>
-                <mdui-list-item icon="video_library" headline="追番"></mdui-list-item>
-                <mdui-list-item icon="cloud" headline="个人网盘" href="https://pan.sorange.top/"
-                    target="_blank"></mdui-list-item>
+                <!-- 导航菜单由JavaScript动态生成 -->
             </mdui-list>
         </mdui-navigation-drawer>
 
@@ -47,10 +50,6 @@
             </div>
         </mdui-layout-main>
     </mdui-layout>
-
-    <!-- 页脚版权信息 -->
-    <script src="./assets/js/index.js"></script>
-    <script src="./assets/js/chase.js"></script>
 </body>
 
 </html>

@@ -5,9 +5,6 @@
     justify-content: center;
     align-items: center;
     min-height: calc(100vh - 64px);
-    /* 减去顶部应用栏高度 */
-    text-align: center;
-    padding: 20px;
 }
 
 .centered-content h2 {
