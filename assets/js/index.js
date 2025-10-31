@@ -8,7 +8,7 @@
 // 应用常量
 const APP_CONFIG = {
     NAME: 'SakuraCake',
-    VERSION: '0.1.0',
+    VERSION: '0.1.1',
     DOMAIN: 'sorange.top'
 };
 
