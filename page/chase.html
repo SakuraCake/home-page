@@ -5,14 +5,14 @@
 
     <!-- 状态筛选区域 -->
     <div class="filter-section">
-        <mdui-segmented-button-group selects="single" value="all">
-            <mdui-segmented-button value="all" selected onclick="filterByStatus('all')">全部</mdui-segmented-button>
-            <mdui-segmented-button value="watching" onclick="filterByStatus('watching')">在看</mdui-segmented-button>
-            <mdui-segmented-button value="completed" onclick="filterByStatus('completed')">已看完</mdui-segmented-button>
-            <mdui-segmented-button value="planned" onclick="filterByStatus('planned')">想看</mdui-segmented-button>
-            <mdui-segmented-button value="on_hold" onclick="filterByStatus('on_hold')">搁置</mdui-segmented-button>
-            <mdui-segmented-button value="dropped" onclick="filterByStatus('dropped')">抛弃</mdui-segmented-button>
-        </mdui-segmented-button-group>
+        <mdui-select id="status-select" value="all" label="筛选状态" helper="选择要筛选的追番状态">
+            <mdui-menu-item value="all">全部</mdui-menu-item>
+            <mdui-menu-item value="watching">在看</mdui-menu-item>
+            <mdui-menu-item value="completed">已看完</mdui-menu-item>
+            <mdui-menu-item value="planned">想看</mdui-menu-item>
+            <mdui-menu-item value="on_hold">搁置</mdui-menu-item>
+            <mdui-menu-item value="dropped">抛弃</mdui-menu-item>
+        </mdui-select>
     </div>
 
     <!-- 追番列表 -->

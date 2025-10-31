@@ -196,6 +196,8 @@ let filteredAnimeData = [];
 let currentPageNum = 0;
 let pageSize = 20;
 let hasMoreData = true;
+let currentFilterStatus = 'all'; // 当前筛选状态
+let currentSearchTerm = ''; // 当前搜索关键词
 
 function initChasePageOnLoad() {
     if (window.location.pathname.includes('chase') || currentPage === 'chase') {
@@ -258,12 +260,27 @@ async function loadBangumiData(reset = false) {
             `;
         }
 
-        const result = await getBangumiCollections({
+        // 构建API请求参数
+        const apiOptions = {
             username: 'sakuracake',
             subject_type: 2,
             limit: 50,
             offset: currentPageNum * 50
-        });
+        };
+
+        // 根据当前筛选状态添加type参数
+        if (currentFilterStatus !== 'all') {
+            const statusMap = {
+                'watching': 3,    // 在看
+                'completed': 2,   // 看过
+                'planned': 1,     // 想看
+                'on_hold': 4,    // 搁置
+                'dropped': 5      // 抛弃
+            };
+            apiOptions.type = statusMap[currentFilterStatus];
+        }
+
+        const result = await getBangumiCollections(apiOptions);
 
         const newAnimeData = result.collections.map(collection => {
             const subject = collection.subject;
@@ -304,8 +321,7 @@ async function loadBangumiData(reset = false) {
                     <mdui-icon name="error_outline"></mdui-icon>
                     <p>加载Bangumi数据失败</p>
                     <p style="font-size: 12px; margin-top: 10px;">${error.message}</p>
-                    <mdui-button onclick="loadBangumiData(true)" style="margin-top: 15px;">
-                        <mdui-icon slot="icon" name="refresh"></mdui-icon>
+                    <mdui-button icon="refresh" onclick="loadBangumiData(true)" style="margin-top: 15px;">
                         重试
                     </mdui-button>
                 </div>
@@ -348,27 +364,26 @@ function initSearchAndFilter() {
         }, 300));
     }
 
-    const filterButtons = document.querySelectorAll('mdui-segmented-button');
-    filterButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            filterByStatus(button.getAttribute('value'));
+    const statusSelect = document.getElementById('status-select');
+    if (statusSelect) {
+        statusSelect.addEventListener('change', (e) => {
+            filterByStatus(e.target.value);
         });
-    });
+    }
 }
 
 function filterByStatus(statusValue) {
-    const buttons = document.querySelectorAll('mdui-segmented-button');
-    buttons.forEach(button => {
-        button.selected = button.getAttribute('value') === statusValue;
-    });
+    // 更新当前筛选状态
+    currentFilterStatus = statusValue;
 
-    filteredAnimeData = animeData.filter(anime => {
-        const matchesStatus = statusValue === 'all' || anime.status === statusValue;
-        return matchesStatus;
-    });
+    // 重置数据并重新加载（根据筛选条件）
+    currentPageNum = 0;
+    animeData = [];
+    filteredAnimeData = [];
+    hasMoreData = true;
 
-    renderAnimeList();
-    updateStatistics();
+    // 重新加载数据，应用筛选条件
+    loadBangumiData(true);
 }
 
 function debounce(func, wait) {
@@ -383,7 +398,27 @@ function debounce(func, wait) {
     };
 }
 
+function filterAnimeList(searchTerm) {
+    // 更新当前搜索关键词
+    currentSearchTerm = searchTerm;
 
+    // 如果搜索关键词为空，且当前没有筛选状态，则显示所有数据
+    if (!searchTerm && currentFilterStatus === 'all') {
+        filteredAnimeData = [...animeData];
+        renderAnimeList();
+        updateStatistics();
+        return;
+    }
+
+    // 如果有搜索关键词或筛选状态，重置数据并重新加载
+    currentPageNum = 0;
+    animeData = [];
+    filteredAnimeData = [];
+    hasMoreData = true;
+
+    // 重新加载数据，应用搜索和筛选条件
+    loadBangumiData(true);
+}
 
 function renderAnimeList() {
     const animeList = document.getElementById('anime-list');
@@ -505,10 +540,8 @@ async function loadMoreData() {
     }
 
     try {
+        // 直接调用loadBangumiData(false)会基于当前筛选条件加载更多数据
         await loadBangumiData(false);
-        // 加载更多数据后，重新应用当前筛选状态
-        const currentStatus = getCurrentFilterStatus();
-        filterByStatus(currentStatus);
     } catch (error) {
         console.error('加载更多数据失败:', error);
         showLoadMoreButton();
@@ -516,11 +549,9 @@ async function loadMoreData() {
 }
 
 function getCurrentFilterStatus() {
-    const buttons = document.querySelectorAll('mdui-segmented-button');
-    for (const button of buttons) {
-        if (button.selected) {
-            return button.getAttribute('value');
-        }
+    const statusSelect = document.getElementById('status-select');
+    if (statusSelect) {
+        return statusSelect.value;
     }
     return 'all';
 }

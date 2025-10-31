@@ -6,14 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SakuraCake</title>
     <!-- Material Icons - 主备链接 -->
-    <link href="https://fonts.font.im/css2?family=Material+Icons" rel="stylesheet" onerror="this.onerror=null;this.href='https://fonts.googleapis.com/icon?family=Material+Icons'">
-    <link href="https://fonts.font.im/css2?family=Material+Icons+Outlined" rel="stylesheet" onerror="this.onerror=null;this.href='https://fonts.googleapis.com/icon?family=Material+Icons+Outlined'">
-    
-    <!-- MDUI 框架 - 主备链接 -->
-    <link rel="stylesheet" href="https://s4.zstatic.net/npm/mdui@2/mdui.css" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/mdui@2/mdui.css'">
-    <script src="https://s4.zstatic.net/npm/mdui@2/mdui.global.js" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/mdui@2/mdui.global.js'"></script>
+    <link href="https://fonts.font.im/css2?family=Material+Icons" rel="stylesheet"
+        onerror="this.onerror=null;this.href='https://fonts.googleapis.com/icon?family=Material+Icons'">
+    <link href="https://fonts.font.im/css2?family=Material+Icons+Outlined" rel="stylesheet"
+        onerror="this.onerror=null;this.href='https://fonts.googleapis.com/icon?family=Material+Icons+Outlined'">
 
-    
+    <!-- MDUI 框架 - 主备链接 -->
+    <link rel="stylesheet" href="https://s4.zstatic.net/npm/mdui@2/mdui.css"
+        onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/mdui@2/mdui.css'">
+    <script src="https://s4.zstatic.net/npm/mdui@2/mdui.global.js"
+        onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/mdui@2/mdui.global.js'"></script>
+
+
     <!-- 主脚本文件 -->
     <script src="./assets/js/index.js"></script>
     <!-- 其他页面脚本将通过JavaScript动态加载 -->
@@ -22,9 +26,9 @@
 </head>
 
 <body>
-    <mdui-layout>
+    
         <!-- 顶部应用栏 -->
-        <mdui-top-app-bar scroll-behavior="elevate" order="1">
+        <mdui-top-app-bar scroll-behavior="elevate" variant="small" order="1" scrolling="true">
             <mdui-button-icon id="menu-button" icon="menu"></mdui-button-icon>
             <mdui-top-app-bar-title>SakuraCakeの个人主页</mdui-top-app-bar-title>
             <mdui-dropdown>
@@ -35,7 +39,7 @@
                 </mdui-menu>
             </mdui-dropdown>
         </mdui-top-app-bar>
-
+<mdui-layout>
         <!-- 侧边抽屉栏 -->
         <mdui-navigation-drawer id="navigation-drawer" close-on-esc close-on-overlay-click placement="left" order="2">
             <mdui-list>

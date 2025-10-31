@@ -36,9 +36,32 @@ const PAGE_CONFIG = {
 
 // 导航菜单配置
 const NAV_CONFIG = [
-    { icon: 'home', headline: '首页', page: 'index' },
-    { icon: 'video_library', headline: '追番', page: 'chase' },
-    { icon: 'cloud', headline: '个人网盘', href: 'https://pan.sorange.top/', target: '_blank' }
+    {
+        icon: 'home',
+        headline: '首页',
+        page: 'index'
+    },
+    {
+        icon: 'video_library',
+        headline: '追番',
+        page: 'chase'
+    },
+    {
+        icon: 'cloud',
+        headline: '个人网盘',
+        href: 'https://pan.sorange.top/',
+        target: '_blank'
+    },
+    // { 
+    //     type: 'collapse', 
+    //     headline: '社交链接', 
+    //     icon: 'share',
+    //     items: [
+    //         { icon: 'smart_display', headline: 'B站主页', href: 'https://space.bilibili.com/123456', target: '_blank' },
+    //         { icon: 'sports_esports', headline: 'Steam主页', href: 'https://steamcommunity.com/id/123456', target: '_blank' },
+    //         { icon: 'music_note', headline: '网易云音乐', href: 'https://music.163.com/#/user/home?id=123456', target: '_blank' }
+    //     ]
+    // }
 ];
 
 // 页面脚本配置
@@ -56,10 +79,10 @@ const ERROR_MESSAGES = {
     SCRIPT_LOAD_FAILED: (scriptName) => `脚本加载失败: ${scriptName}`
 };
 
-// ==================== 全局变量 ====================
+// 全局变量
 
 let currentPage;
-let loadedScripts = new Set(); // 跟踪已加载的脚本
+let loadedScripts = new Set();
 
 document.addEventListener('DOMContentLoaded', () => {
     // 初始化页面
@@ -73,16 +96,16 @@ function initializeApplication() {
     try {
         // 初始化导航菜单
         initializeNavigation();
-        
+
         // 初始化功能按钮
         initActionButtons();
-        
+
         // 显示欢迎日志
         showWelcomeLog();
-        
+
         // 加载首页
         loadPage('index');
-        
+
         console.log(`${APP_CONFIG.NAME} v${APP_CONFIG.VERSION} 初始化完成`);
     } catch (error) {
         console.error('应用程序初始化失败:', error);
@@ -103,15 +126,47 @@ function initializeNavigation() {
     }
 
     // 动态生成导航菜单
-    navList.innerHTML = NAV_CONFIG.map(item => {
+    const collapseItems = NAV_CONFIG.filter(item => item.type === 'collapse');
+    const regularItems = NAV_CONFIG.filter(item => item.type !== 'collapse');
+
+    let navHTML = '';
+
+    // 添加普通菜单项
+    regularItems.forEach(item => {
         if (item.href) {
             // 外部链接
-            return `<mdui-list-item rounded icon="${item.icon}" headline="${item.headline}" href="${item.href}" target="${item.target || '_self'}"></mdui-list-item>`;
+            navHTML += `<mdui-list-item rounded icon="${item.icon}" headline="${item.headline}" href="${item.href}" target="${item.target || '_self'}"></mdui-list-item>`;
         } else {
             // 内部页面
-            return `<mdui-list-item rounded icon="${item.icon}" headline="${item.headline}"></mdui-list-item>`;
+            navHTML += `<mdui-list-item rounded icon="${item.icon}" headline="${item.headline}"></mdui-list-item>`;
         }
-    }).join('');
+    });
+
+    // 添加折叠面板
+    if (collapseItems.length > 0) {
+        navHTML += `
+            <mdui-collapse accordion>
+                ${collapseItems.map(item => `
+                    <mdui-collapse-item>
+                        <mdui-list-item rounded slot="header" icon="${item.icon}" headline="${item.headline}">
+                            <mdui-icon slot="end-icon" name="keyboard_arrow_down"></mdui-icon>
+                        </mdui-list-item>
+                        <div style="margin-left: 1.5rem">
+                            ${item.items.map(subItem => {
+            if (subItem.href) {
+                return `<mdui-list-item rounded icon="${subItem.icon}" headline="${subItem.headline}" href="${subItem.href}" target="${subItem.target || '_self'}"></mdui-list-item>`;
+            } else {
+                return `<mdui-list-item rounded icon="${subItem.icon}" headline="${subItem.headline}"></mdui-list-item>`;
+            }
+        }).join('')}
+                        </div>
+                    </mdui-collapse-item>
+                `).join('')}
+            </mdui-collapse>
+        `;
+    }
+
+    navList.innerHTML = navHTML;
 
     const isDesktop = window.innerWidth >= 750;
     navigationDrawer.open = false;
@@ -132,14 +187,55 @@ function initializeNavigation() {
 
     // 为内部页面添加点击事件
     const navItems = document.querySelectorAll('#navigation-drawer mdui-list-item');
-    navItems.forEach((item, index) => {
-        const navItem = NAV_CONFIG[index];
-        if (navItem.page) {
+    let itemIndex = 0;
+
+    navItems.forEach((item) => {
+        // 跳过折叠面板头部的列表项（它们已经有折叠功能）
+        if (item.closest('mdui-collapse-item [slot="header"]')) {
+            return;
+        }
+
+        // 处理普通菜单项和折叠面板内部的子项
+        const navItem = findNavItemByIndex(itemIndex);
+        if (navItem && (navItem.page || (navItem.href && !item.hasAttribute('href')))) {
             item.addEventListener('click', () => {
-                handleNavigationClick(navItem, isDesktop, userManuallyOpened, navigationDrawer);
+                if (navItem.page) {
+                    handleNavigationClick(navItem, isDesktop, userManuallyOpened, navigationDrawer);
+                } else if (navItem.href) {
+                    // 对于折叠面板内部的链接，点击后关闭抽屉（在移动端）
+                    if (!isDesktop || !userManuallyOpened) {
+                        navigationDrawer.open = false;
+                    }
+                }
             });
         }
+
+        itemIndex++;
     });
+
+    /**
+     * 根据索引查找导航项（考虑折叠面板结构）
+     */
+    function findNavItemByIndex(index) {
+        let currentIndex = 0;
+        for (const item of NAV_CONFIG) {
+            if (item.type === 'collapse') {
+                // 折叠面板本身不占用点击索引
+                for (const subItem of item.items) {
+                    if (currentIndex === index) {
+                        return subItem;
+                    }
+                    currentIndex++;
+                }
+            } else {
+                if (currentIndex === index) {
+                    return item;
+                }
+                currentIndex++;
+            }
+        }
+        return null;
+    }
 
     window.addEventListener('resize', () => {
         if (!userManuallyOpened) {
@@ -177,13 +273,13 @@ function initActionButtons() {
 function initializeSocialButtons() {
     const bilibiliButton = document.getElementById('bilibili-button');
     const steamButton = document.getElementById('steam-button');
-    
+
     if (bilibiliButton) {
         bilibiliButton.addEventListener('click', () => {
             window.open('https://space.bilibili.com/123456', '_blank');
         });
     }
-    
+
     if (steamButton) {
         steamButton.addEventListener('click', () => {
             window.open('https://steamcommunity.com/id/123456', '_blank');
@@ -197,7 +293,7 @@ function initializeSocialButtons() {
 function initializeNightModeToggle() {
     const nightModeToggle = document.getElementById('night-mode-toggle');
     if (!nightModeToggle) return;
-    
+
     nightModeToggle.addEventListener('click', toggleNightMode);
 }
 
@@ -207,7 +303,7 @@ function initializeNightModeToggle() {
 function toggleNightMode() {
     const body = document.body;
     const isNightMode = body.classList.contains('mdui-theme-layout-dark');
-    
+
     if (isNightMode) {
         body.classList.remove('mdui-theme-layout-dark');
         localStorage.setItem('nightMode', 'false');
@@ -223,7 +319,7 @@ function toggleNightMode() {
 function initializeBackToTopButton() {
     const backToTop = document.getElementById('back-to-top');
     if (!backToTop) return;
-    
+
     backToTop.addEventListener('click', scrollToTop);
     window.addEventListener('scroll', () => toggleBackToTopButton(backToTop));
 }
@@ -315,9 +411,9 @@ function loadPage(pageName) {
 
             const pageConfig = validatePageConfig(pageName);
             const contentContainer = getContentContainer();
-            
+
             showLoadingState(contentContainer);
-            
+
             loadPageContent(pageConfig, pageName)
                 .then(() => resolve())
                 .catch(error => reject(error));
@@ -364,9 +460,9 @@ function loadPageContent(pageConfig, pageName) {
         fetchPageHtml(pageConfig.path),
         loadPageScript(pageName)
     ])
-    .then(([html]) => {
-        updatePageContent(html, pageConfig, pageName);
-    });
+        .then(([html]) => {
+            updatePageContent(html, pageConfig, pageName);
+        });
 }
 
 /**
@@ -402,7 +498,7 @@ function updatePageContent(htmlContent, pageConfig, pageName) {
 
     updatePageTitle(pageName);
     updateActiveNavigationItem(pageName);
-    
+
     console.log(`页面${pageName}加载完成`);
 }
 
@@ -422,11 +518,11 @@ function updatePageTitle(pageName) {
  */
 function updateActiveNavigationItem(pageName) {
     const navItems = document.querySelectorAll('#navigation-drawer mdui-list-item');
-    
+
     navItems.forEach((item, index) => {
         // 移除所有列表项的active属性
         item.removeAttribute('active');
-        
+
         // 根据页面配置设置对应的列表项为激活状态
         const navItem = NAV_CONFIG[index];
         if (navItem && navItem.page === pageName) {
