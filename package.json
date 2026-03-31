@@ -1,0 +1,25 @@
+{
+  "name": "home-page-v2",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@pinia/nuxt": "^0.11.3",
+    "nuxt": "^3.21.2",
+    "pinia": "^3.0.4",
+    "vue": "^3.5.31",
+    "vue-router": "^5.0.4",
+    "vue3-simple-icons": "^16.10.0",
+    "vuetify": "^3.12.4",
+    "vuetify-nuxt-module": "^0.19.5"
+  },
+  "devDependencies": {
+    "sass-embedded": "^1.98.0"
+  }
+}

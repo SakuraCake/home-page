@@ -1,1 +1,30 @@
-MDUI-llms-full.txt
+# Nuxt dev/build outputs
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
+
+# Node dependencies
+node_modules
+
+# Logs
+logs
+*.log
+
+# Misc
+.DS_Store
+.fleet
+.idea
+
+# Local env files
+.env
+.env.*
+!.env.example
+
+# IDE files
+.vscode
+.vscode/*
+.trae
+.trae/*
