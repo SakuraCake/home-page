@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <LayoutAppHeader :toggle-drawer="toggleDrawer" />
+    <LayoutAppHeader />
     <ClientOnly>
       <LayoutAppDrawer />
     </ClientOnly>
@@ -11,13 +11,17 @@
 </template>
 
 <script setup lang="ts">
-import { useDisplay } from 'vuetify'
+const drawer = ref(true)
+const isExpanded = ref(false)
 
 const { mobile } = useDisplay()
-const drawer = ref(true)
 
-const toggleDrawer = () => {
-  drawer.value = !drawer.value
+const toggleExpand = () => {
+  if (mobile.value) {
+    drawer.value = !drawer.value
+  } else {
+    isExpanded.value = !isExpanded.value
+  }
 }
 
 onMounted(() => {
@@ -25,5 +29,6 @@ onMounted(() => {
 })
 
 provide('drawer', drawer)
-provide('toggleDrawer', toggleDrawer)
+provide('isExpanded', isExpanded)
+provide('toggleExpand', toggleExpand)
 </script>

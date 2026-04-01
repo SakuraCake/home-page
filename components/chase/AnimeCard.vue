@@ -4,16 +4,18 @@
     hover
     @click="showDialog = true"
   >
-    <v-img
-      :src="collection.subject.images.large"
-      :alt="collection.subject.name"
-      cover
-      aspect-ratio="0.7"
-    >
-      <template #placeholder>
-        <v-skeleton-loader type="image" />
-      </template>
-    </v-img>
+    <div class="anime-image-container">
+      <v-img
+        :src="collection.subject.images.large"
+        :alt="collection.subject.name"
+        cover
+        class="h-100"
+      >
+        <template #placeholder>
+          <v-skeleton-loader type="image" height="100%" />
+        </template>
+      </v-img>
+    </div>
     
     <v-card-title class="text-subtitle-1 text-truncate pa-2">
       {{ collection.subject.name_cn || collection.subject.name }}
@@ -182,9 +184,21 @@ const getStatusColor = (type: number): string => {
 .anime-card {
   cursor: pointer;
   transition: transform 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .anime-card:hover {
   transform: translateY(-4px);
+}
+
+.anime-image-container {
+  height: 240px;
+  overflow: hidden;
+}
+
+.anime-card :deep(.v-card-text) {
+  flex-grow: 1;
 }
 </style>

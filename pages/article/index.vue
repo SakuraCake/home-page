@@ -2,26 +2,114 @@
   <v-container max-width="900">
     <v-row>
       <v-col cols="12">
+        <div class="d-flex justify-space-between align-center mb-4">
+          <h1 class="text-h4">文章列表</h1>
+          <v-btn
+            v-if="userStore.isLoggedIn"
+            color="primary"
+            to="/article/create"
+          >
+            <v-icon start>mdi-plus</v-icon>
+            写文章
+          </v-btn>
+        </div>
+      </v-col>
+    </v-row>
+
+    <v-row v-if="articleStore.loading">
+      <v-col cols="12" md="6" v-for="i in 4" :key="i">
+        <v-skeleton-loader type="card" />
+      </v-col>
+    </v-row>
+
+    <v-row v-else-if="articleStore.articles.length === 0">
+      <v-col cols="12">
         <v-card>
           <v-card-text class="text-center py-16">
-            <v-icon size="80" color="primary" class="mb-4">mdi-file-document-multiple-outline</v-icon>
-            <h2 class="text-h4 mb-2">文章列表</h2>
-            <p class="text-body-1 text-medium-emphasis mb-6">
-              该功能正在开发中，敬请期待...
+            <v-icon size="80" color="primary" class="mb-4">mdi-file-document-outline</v-icon>
+            <h2 class="text-h5 mb-2">暂无文章</h2>
+            <p class="text-body-1 text-medium-emphasis">
+              {{ userStore.isLoggedIn ? '点击"写文章"开始创作' : '登录后即可开始创作' }}
             </p>
-            <v-btn color="primary" variant="tonal" disabled>
-              <v-icon start>mdi-plus</v-icon>
-              暂无文章
-            </v-btn>
           </v-card-text>
         </v-card>
+      </v-col>
+    </v-row>
+
+    <v-row v-else>
+      <v-col cols="12" md="6" v-for="article in articleStore.articles" :key="article.id">
+        <v-card :to="`/article/${article.id}`" height="100%">
+          <v-img
+            v-if="article.coverImage"
+            :src="article.coverImage"
+            height="200"
+            cover
+          />
+          <v-card-title class="text-h6">
+            {{ article.title }}
+          </v-card-title>
+          <v-card-subtitle>
+            <v-chip size="x-small" label class="mr-1">
+              <v-icon start>mdi-account</v-icon>
+              {{ article.author?.username || '未知' }}
+            </v-chip>
+            <v-chip size="x-small" label class="mr-1">
+              <v-icon start>mdi-calendar</v-icon>
+              {{ formatDate(article.createdAt) }}
+            </v-chip>
+            <v-chip size="x-small" label>
+              <v-icon start>mdi-eye</v-icon>
+              {{ article.viewCount }}
+            </v-chip>
+          </v-card-subtitle>
+          <v-card-text>
+            {{ article.summary || '暂无摘要' }}
+          </v-card-text>
+          <v-card-actions v-if="article.tags?.length">
+            <v-chip
+              v-for="tag in article.tags"
+              :key="tag.id"
+              size="x-small"
+              class="mr-1"
+            >
+              {{ tag.name }}
+            </v-chip>
+          </v-card-actions>
+        </v-card>
+      </v-col>
+
+      <v-col cols="12" class="text-center" v-if="articleStore.hasMore">
+        <v-btn
+          variant="tonal"
+          :loading="articleStore.loading"
+          @click="loadMore"
+        >
+          加载更多
+        </v-btn>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script setup lang="ts">
+const articleStore = useArticleStore()
+const userStore = useUserStore()
+
 useHead({
   title: '文章'
+})
+
+const formatDate = (timestamp: number) => {
+  return new Date(timestamp).toLocaleDateString('zh-CN')
+}
+
+const loadMore = async () => {
+  await articleStore.fetchArticles({
+    page: articleStore.page + 1
+  })
+}
+
+onMounted(async () => {
+  await articleStore.fetchArticles()
 })
 </script>

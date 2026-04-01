@@ -7,10 +7,21 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@casl/ability": "^6.8.0",
     "@pinia/nuxt": "^0.11.3",
+    "bcrypt": "^6.0.0",
+    "better-sqlite3": "^12.8.0",
+    "drizzle-orm": "^0.45.2",
+    "highlight.js": "^11.11.1",
+    "jose": "^6.2.2",
+    "marked": "^17.0.5",
     "nuxt": "^3.21.2",
     "pinia": "^3.0.4",
     "vue": "^3.5.31",
@@ -20,6 +31,8 @@
     "vuetify-nuxt-module": "^0.19.5"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "drizzle-kit": "^0.31.0",
     "sass-embedded": "^1.98.0"
   }
 }

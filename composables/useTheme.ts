@@ -1,11 +1,16 @@
 export const useAppTheme = () => {
   const theme = useTheme()
 
-  const isDark = computed(() => theme.global.current.value.dark)
+  const isDark = computed(() => {
+    if (import.meta.client) {
+      return theme.global.current.value.dark
+    }
+    return false
+  })
 
   const toggleTheme = () => {
-    theme.global.name.value = isDark.value ? 'light' : 'dark'
     if (import.meta.client) {
+      theme.global.name.value = isDark.value ? 'light' : 'dark'
       localStorage.setItem('theme', theme.global.name.value)
     }
   }
