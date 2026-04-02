@@ -174,7 +174,7 @@
                     </v-form>
                   </v-col>
                 </v-row>
-              </div>
+              </v-container>
               
               <div class="d-flex justify-between mt-6">
                 <v-btn
@@ -250,8 +250,6 @@ import { navigateTo } from 'nuxt/app'
 
 const step = ref(1)
 
-// 移除表单引用，使用简单的字段检查
-
 const siteConfig = ref({
   siteName: 'SakuraCake',
   siteDescription: '个人博客和追番管理系统',
@@ -270,7 +268,7 @@ const adminConfig = ref({
   password: ''
 })
 
-const nextStep = async (currentStep) => {
+const nextStep = async (currentStep: number) => {
   let isValid = true
   
   // 验证当前步骤的表单
