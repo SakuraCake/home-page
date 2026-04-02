@@ -1,27 +1,22 @@
-import { defineEventHandler, getHeader } from '#imports'
+import { defineCachedEventHandler, getHeader } from '#imports'
 import { eq } from 'drizzle-orm'
 import { db } from '~/database'
 import { users } from '~/database/schema'
 import { verifyToken } from '~/server/utils/auth'
+import { AppError } from '~/server/utils/errors'
 
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
   const authorization = getHeader(event, 'Authorization')
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    return {
-      success: false,
-      message: '未授权'
-    }
+    throw AppError.unauthorized('未授权')
   }
 
   const token = authorization.replace('Bearer ', '')
   const payload = await verifyToken(token)
 
   if (!payload) {
-    return {
-      success: false,
-      message: '无效的 token'
-    }
+    throw AppError.unauthorized('无效的 token')
   }
 
   const user = await db.query.users.findFirst({
@@ -29,10 +24,7 @@ export default defineEventHandler(async (event) => {
   })
 
   if (!user) {
-    return {
-      success: false,
-      message: '用户不存在'
-    }
+    throw AppError.notFound('用户不存在')
   }
 
   return {
@@ -47,4 +39,18 @@ export default defineEventHandler(async (event) => {
       updatedAt: user.updatedAt
     }
   }
+}, {
+  maxAge: 60 * 5,
+  swr: true,
+  staleMaxAge: 60 * 10,
+  varies: ['Authorization'],
+  getKey: (event) => {
+    const authorization = getHeader(event, 'Authorization') || ''
+    return `user:me:${authorization}`
+  },
+  shouldBypassCache: async (event) => {
+    // 当用户更新个人信息时，应该绕过缓存
+    const headers = getHeader(event, 'X-No-Cache')
+    return headers === 'true'
+  },
 })

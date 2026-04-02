@@ -3,7 +3,14 @@
     <div class="d-flex align-start">
       <v-avatar size="40" class="mr-3">
         <v-icon v-if="!displayAvatar">mdi-account</v-icon>
-        <v-img v-else :src="displayAvatar" />
+        <v-img v-else :src="displayAvatar" cover>
+          <template #placeholder>
+            <v-skeleton-loader type="image" />
+          </template>
+          <template #error>
+            <v-icon>mdi-account</v-icon>
+          </template>
+        </v-img>
       </v-avatar>
       <div class="flex-grow-1">
         <div class="d-flex align-center mb-1">

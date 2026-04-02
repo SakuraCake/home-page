@@ -1,26 +1,24 @@
 import { defineEventHandler } from '#imports'
 import { db } from '~/database'
 import { categories, articles } from '~/database/schema'
-import { eq, sql } from 'drizzle-orm'
+import { eq, sql, leftJoin, groupBy, isNull } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
-  const allCategories = await db.query.categories.findMany({
-    orderBy: (categories, { desc }) => [desc(categories.createdAt)],
-  })
-
-  const categoriesWithCount = await Promise.all(
-    allCategories.map(async (category) => {
-      const count = await db
-        .select({ count: sql<number>`count(*)` })
-        .from(articles)
-        .where(eq(articles.categoryId, category.id))
-
-      return {
-        ...category,
-        articleCount: count[0]?.count || 0,
-      }
+  const categoriesWithCount = await db
+    .select({
+      id: categories.id,
+      name: categories.name,
+      slug: categories.slug,
+      description: categories.description,
+      createdAt: categories.createdAt,
+      updatedAt: categories.updatedAt,
+      articleCount: sql<number>`count(${articles.id})`,
     })
-  )
+    .from(categories)
+    .leftJoin(articles, eq(categories.id, articles.categoryId))
+    .where(isNull(articles.deletedAt))
+    .groupBy(categories.id)
+    .orderBy((categories, { desc }) => [desc(categories.createdAt)])
 
   return {
     success: true,

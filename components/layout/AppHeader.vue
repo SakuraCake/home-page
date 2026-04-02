@@ -14,7 +14,14 @@
             <v-btn icon v-bind="props">
               <v-avatar size="32">
                 <v-icon v-if="!userStore.user?.avatar">mdi-account</v-icon>
-                <v-img v-else :src="userStore.user.avatar" />
+                <v-img v-else :src="userStore.user.avatar" cover>
+                  <template #placeholder>
+                    <v-skeleton-loader type="image" />
+                  </template>
+                  <template #error>
+                    <v-icon>mdi-account</v-icon>
+                  </template>
+                </v-img>
               </v-avatar>
             </v-btn>
           </template>

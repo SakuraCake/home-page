@@ -1,7 +1,7 @@
 import { Ability, AbilityBuilder, AbilityClass, MongoQuery, ExtractSubjectType } from '@casl/ability'
-import { createError } from 'h3'
 import type { UserSession } from './session'
 import type { users, articles, categories, tags, comments } from '~/database/schema'
+import { AppError } from './errors'
 
 type User = typeof users.$inferSelect
 type Article = typeof articles.$inferSelect
@@ -94,9 +94,5 @@ export function can(
 }
 
 export function forbid(): never {
-  throw createError({
-    statusCode: 403,
-    statusMessage: 'Forbidden',
-    message: 'You do not have permission to perform this action',
-  })
+  throw AppError.forbidden('You do not have permission to perform this action')
 }

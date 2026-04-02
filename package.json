@@ -11,7 +11,9 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@casl/ability": "^6.8.0",
@@ -37,6 +39,7 @@
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
     "drizzle-kit": "^0.31.0",
-    "sass-embedded": "^1.98.0"
+    "sass-embedded": "^1.98.0",
+    "vitest": "^4.1.2"
   }
 }

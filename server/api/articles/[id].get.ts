@@ -1,20 +1,17 @@
-import { defineCachedEventHandler } from '#imports'
+import { defineCachedEventHandler, getRouterParam, getHeader } from '#imports'
 import { eq, inArray } from 'drizzle-orm'
 import { db } from '~/database'
 import { articles, users, categories, tags, articleTags } from '~/database/schema'
 import { renderMarkdown } from '~/server/utils/markdown'
 import { getSession } from '~/server/utils/session'
 import { incrementViewCount } from '~/server/utils/viewCount'
+import { AppError } from '~/server/utils/errors'
 
 export default defineCachedEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')
 
   if (!id || isNaN(Number(id))) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Bad Request',
-      message: '无效的文章 ID',
-    })
+    throw AppError.badRequest('无效的文章 ID')
   }
 
   const article = await db.query.articles.findFirst({
@@ -22,22 +19,14 @@ export default defineCachedEventHandler(async (event) => {
   })
 
   if (!article || article.deletedAt) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: 'Not Found',
-      message: '文章不存在',
-    })
+    throw AppError.notFound('文章不存在')
   }
 
   const session = await getSession(event)
   const isAdmin = session?.role === 'admin'
 
   if (article.status !== 'published' && !isAdmin) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: 'Not Found',
-      message: '文章不存在',
-    })
+    throw AppError.notFound('文章不存在')
   }
 
   await incrementViewCount(article.id, event)

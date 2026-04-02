@@ -24,8 +24,8 @@ export async function getCaptchaSettings(): Promise<CaptchaSettings> {
   
   if (!config) {
     return {
-      siteKey: process.env.GEETEST_ID || '6ee08588ab316e0d6b6363fe997c6dc8',
-      secretKey: process.env.GEETEST_KEY || '76ebe69604c10b14336b8b79d390b461',
+      siteKey: process.env.GEETEST_ID || '',
+      secretKey: process.env.GEETEST_KEY || '',
     }
   }
   

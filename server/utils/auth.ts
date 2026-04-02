@@ -1,7 +1,7 @@
 import { hash, compare } from 'bcrypt'
 import { SignJWT, jwtVerify } from 'jose'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
+const JWT_SECRET = process.env.JWT_SECRET || ''
 
 export async function hashPassword(password: string): Promise<string> {
   return await hash(password, 10)

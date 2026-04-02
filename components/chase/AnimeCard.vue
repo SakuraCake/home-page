@@ -14,6 +14,11 @@
         <template #placeholder>
           <v-skeleton-loader type="image" height="100%" />
         </template>
+        <template #error>
+          <div class="d-flex align-center justify-center h-100 bg-gray-100">
+            <v-icon color="gray">mdi-image</v-icon>
+          </div>
+        </template>
       </v-img>
     </div>
     
@@ -58,7 +63,13 @@
           :alt="collection.subject.name"
           max-height="300"
           cover
-        />
+        >
+          <template #error>
+            <div class="d-flex align-center justify-center h-100 bg-gray-100">
+              <v-icon color="gray">mdi-image</v-icon>
+            </div>
+          </template>
+        </v-img>
         
         <v-card-title class="text-h5">
           {{ collection.subject.name_cn || collection.subject.name }}
