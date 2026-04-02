@@ -88,7 +88,7 @@
                 </v-btn>
                 <v-btn
                   color="primary"
-                  @click="step = 3"
+                  @click="nextStep(2)"
                 >
                   下一步
                 </v-btn>
@@ -130,7 +130,7 @@
                 </v-btn>
                 <v-btn
                   color="primary"
-                  @click="step = 4"
+                  @click="nextStep(3)"
                 >
                   下一步
                 </v-btn>
@@ -174,7 +174,7 @@
                     </v-form>
                   </v-col>
                 </v-row>
-              </v-container>
+              </div>
               
               <div class="d-flex justify-between mt-6">
                 <v-btn
@@ -184,7 +184,7 @@
                 </v-btn>
                 <v-btn
                   color="primary"
-                  @click="step = 5"
+                  @click="nextStep(4)"
                 >
                   下一步
                 </v-btn>
@@ -250,6 +250,8 @@ import { navigateTo } from 'nuxt/app'
 
 const step = ref(1)
 
+// 移除表单引用，使用简单的字段检查
+
 const siteConfig = ref({
   siteName: 'SakuraCake',
   siteDescription: '个人博客和追番管理系统',
@@ -268,30 +270,76 @@ const adminConfig = ref({
   password: ''
 })
 
+const nextStep = async (currentStep) => {
+  let isValid = true
+  
+  // 验证当前步骤的表单
+  if (currentStep === 2) {
+    // 验证站点设置
+    if (!siteConfig.value.siteName.trim()) {
+      isValid = false
+      alert('请输入站点名称')
+    }
+  } else if (currentStep === 4) {
+    // 验证管理员设置
+    if (!adminConfig.value.username.trim()) {
+      isValid = false
+      alert('请输入用户名')
+    } else if (!adminConfig.value.email.trim()) {
+      isValid = false
+      alert('请输入邮箱')
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(adminConfig.value.email)) {
+      isValid = false
+      alert('请输入有效的邮箱地址')
+    } else if (!adminConfig.value.password || adminConfig.value.password.length < 6) {
+      isValid = false
+      alert('密码长度至少为6位')
+    }
+  }
+  
+  if (isValid) {
+    step.value = currentStep + 1
+  }
+}
+
 const completeOobe = async () => {
   try {
+    // 再次验证管理员设置
+    if (!adminConfig.value.username.trim()) {
+      alert('请输入用户名')
+      return
+    } else if (!adminConfig.value.email.trim()) {
+      alert('请输入邮箱')
+      return
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(adminConfig.value.email)) {
+      alert('请输入有效的邮箱地址')
+      return
+    } else if (!adminConfig.value.password || adminConfig.value.password.length < 6) {
+      alert('密码长度至少为6位')
+      return
+    }
+    
     // 保存配置
-    if (adminConfig.value.username && adminConfig.value.email && adminConfig.value.password) {
-      // 创建管理员用户
-      const response = await $fetch('/api/auth/register', {
-        method: 'POST',
-        body: {
-          username: adminConfig.value.username,
-          email: adminConfig.value.email,
-          password: adminConfig.value.password
-        }
-      })
-      
-      if (response.success) {
-        // 设置 OOBE 完成标志
-        localStorage.setItem('oobeCompleted', 'true')
-        
-        // 跳转到登录页面
-        navigateTo('/login')
+    // 创建管理员用户
+    const response = await $fetch('/api/auth/register', {
+      method: 'POST',
+      body: {
+        username: adminConfig.value.username,
+        email: adminConfig.value.email,
+        password: adminConfig.value.password
       }
+    })
+    
+    if (response.success) {
+      // 设置 OOBE 完成标志
+      localStorage.setItem('oobeCompleted', 'true')
+      
+      // 跳转到登录页面
+      navigateTo('/login')
     }
   } catch (error) {
     console.error('OOBE 完成失败:', error)
+    alert('创建管理员账号失败，请检查输入内容')
   }
 }
 
