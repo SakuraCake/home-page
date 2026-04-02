@@ -2,21 +2,52 @@
   <v-container max-width="900">
     <v-row v-if="loading">
       <v-col cols="12">
-        <v-skeleton-loader type="card" />
+        <v-card>
+          <v-skeleton-loader type="image" height="300" />
+          <v-card-title class="py-4 px-6">
+            <v-skeleton-loader type="text" width="60%" height="36" />
+          </v-card-title>
+          <v-card-subtitle class="px-6">
+            <v-skeleton-loader type="text" width="80%" />
+          </v-card-subtitle>
+          <v-divider class="my-4" />
+          <v-card-text class="px-6 py-8">
+            <v-skeleton-loader type="paragraph@8" />
+          </v-card-text>
+          <v-divider />
+          <v-card-actions class="pa-6">
+            <v-skeleton-loader type="button" />
+            <v-spacer />
+            <v-skeleton-loader type="button@2" />
+          </v-card-actions>
+        </v-card>
+      </v-col>
+
+      <v-col cols="12" class="mt-4">
+        <v-card>
+          <v-card-title>
+            <v-skeleton-loader type="text" width="80" />
+          </v-card-title>
+          <v-card-text>
+            <v-skeleton-loader type="paragraph@3" />
+          </v-card-text>
+        </v-card>
       </v-col>
     </v-row>
 
     <v-row v-else-if="error">
       <v-col cols="12">
-        <v-card>
-          <v-card-text class="text-center py-16">
-            <v-icon size="80" color="error" class="mb-4">mdi-alert-circle-outline</v-icon>
-            <h2 class="text-h5 mb-2">{{ error }}</h2>
+        <v-empty-state
+          icon="mdi-alert-circle-outline"
+          :text="error"
+          title="加载失败"
+        >
+          <template #actions>
             <v-btn color="primary" to="/article">
               返回列表
             </v-btn>
-          </v-card-text>
-        </v-card>
+          </template>
+        </v-empty-state>
       </v-col>
     </v-row>
 

@@ -16,20 +16,42 @@
         </div>
       </v-col>
 
-      <v-col cols="12" v-if="loading">
-        <v-skeleton-loader type="card" />
-      </v-col>
+      <template v-if="loading">
+        <v-col cols="12" v-for="i in 3" :key="i">
+          <v-card>
+            <div class="d-flex">
+              <v-skeleton-loader type="image" width="200" height="150" class="flex-shrink-0" />
+              <div class="flex-grow-1">
+                <v-card-title>
+                  <v-skeleton-loader type="text" width="60%" />
+                </v-card-title>
+                <v-card-subtitle>
+                  <v-skeleton-loader type="text" width="40%" />
+                </v-card-subtitle>
+                <v-card-text>
+                  <v-skeleton-loader type="text@2" />
+                </v-card-text>
+                <v-card-actions>
+                  <v-skeleton-loader type="button@3" />
+                </v-card-actions>
+              </div>
+            </div>
+          </v-card>
+        </v-col>
+      </template>
 
       <v-col cols="12" v-else-if="articles.length === 0">
-        <v-card>
-          <v-card-text class="text-center py-16">
-            <v-icon size="80" color="primary" class="mb-4">mdi-file-document-outline</v-icon>
-            <h2 class="text-h5 mb-2">暂无文章</h2>
+        <v-empty-state
+          icon="mdi-file-document-outline"
+          title="暂无文章"
+          text="还没有创作任何文章"
+        >
+          <template #actions>
             <v-btn color="primary" to="/article/create">
               开始创作
             </v-btn>
-          </v-card-text>
-        </v-card>
+          </template>
+        </v-empty-state>
       </v-col>
 
       <template v-else>
@@ -94,6 +116,7 @@
 <script setup lang="ts">
 const userStore = useUserStore()
 const router = useRouter()
+const snackbar = useSnackbar()
 
 const breadcrumbs = [
   { title: '首页', to: '/' },
@@ -118,7 +141,6 @@ const fetchArticles = async () => {
       articles.value = response.data
     }
   } catch (e) {
-    // ignore
   } finally {
     loading.value = false
   }
@@ -134,10 +156,11 @@ const handleDelete = async (id: number) => {
     })
 
     if (response.success) {
+      snackbar.success('文章已删除')
       articles.value = articles.value.filter(a => a.id !== id)
     }
   } catch (e) {
-    // ignore
+    snackbar.error('删除失败')
   }
 }
 

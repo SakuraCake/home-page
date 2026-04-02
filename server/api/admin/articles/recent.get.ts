@@ -2,7 +2,7 @@ import { defineEventHandler } from '#imports'
 import { db } from '~/database'
 import { articles } from '~/database/schema'
 import { requireAuth } from '~/server/utils/session'
-import { desc } from 'drizzle-orm'
+import { desc, isNull } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
@@ -15,6 +15,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const recentArticles = await db.query.articles.findMany({
+    where: isNull(articles.deletedAt),
     orderBy: [desc(articles.createdAt)],
     limit: 5,
     columns: {

@@ -21,7 +21,7 @@ interface Tag {
   articleCount: number
 }
 
-interface Article {
+export interface Article {
   id: number
   title: string
   slug: string
@@ -82,10 +82,13 @@ export const useArticleStore = defineStore('article', {
       this.error = null
 
       try {
+        const { postsPerPage } = useSiteConfig()
+        
         const query: Record<string, any> = {
           page: params?.page || this.page,
-          pageSize: params?.pageSize || this.pageSize,
+          pageSize: params?.pageSize || postsPerPage.value || this.pageSize,
         }
+
         if (params?.categoryId) query.categoryId = params.categoryId
         if (params?.tagId) query.tagId = params.tagId
         if (params?.status) query.status = params.status
@@ -117,6 +120,7 @@ export const useArticleStore = defineStore('article', {
           this.currentArticle = response.data
           return response.data
         }
+
         return null
       } catch (e) {
         this.error = e instanceof Error ? e.message : '获取文章详情失败'
@@ -226,7 +230,6 @@ export const useArticleStore = defineStore('article', {
           this.categories = response.data
         }
       } catch (e) {
-        // ignore
       }
     },
 
@@ -238,7 +241,6 @@ export const useArticleStore = defineStore('article', {
           this.tags = response.data
         }
       } catch (e) {
-        // ignore
       }
     },
 

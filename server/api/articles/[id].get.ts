@@ -1,10 +1,12 @@
-import { defineEventHandler, getHeader, getRouterParam, createError } from '#imports'
-import { eq } from 'drizzle-orm'
+import { defineCachedEventHandler } from '#imports'
+import { eq, inArray } from 'drizzle-orm'
 import { db } from '~/database'
 import { articles, users, categories, tags, articleTags } from '~/database/schema'
 import { renderMarkdown } from '~/server/utils/markdown'
+import { getSession } from '~/server/utils/session'
+import { incrementViewCount } from '~/server/utils/viewCount'
 
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')
 
   if (!id || isNaN(Number(id))) {
@@ -27,10 +29,18 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  await db
-    .update(articles)
-    .set({ viewCount: (article.viewCount || 0) + 1 })
-    .where(eq(articles.id, article.id))
+  const session = await getSession(event)
+  const isAdmin = session?.role === 'admin'
+
+  if (article.status !== 'published' && !isAdmin) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: 'Not Found',
+      message: '文章不存在',
+    })
+  }
+
+  await incrementViewCount(article.id, event)
 
   let author = null
   if (article.authorId) {
@@ -62,14 +72,14 @@ export default defineEventHandler(async (event) => {
     where: eq(articleTags.articleId, article.id),
   })
 
+  const tagIds = tagRelations.map(r => r.tagId)
   const tagList: typeof tags.$inferSelect[] = []
-  for (const relation of tagRelations) {
-    const tag = await db.query.tags.findFirst({
-      where: eq(tags.id, relation.tagId),
+
+  if (tagIds.length > 0) {
+    const tagsData = await db.query.tags.findMany({
+      where: inArray(tags.id, tagIds),
     })
-    if (tag) {
-      tagList.push(tag)
-    }
+    tagList.push(...tagsData)
   }
 
   const acceptHeader = getHeader(event, 'Accept') || ''
@@ -98,4 +108,19 @@ export default defineEventHandler(async (event) => {
     success: true,
     data: result,
   }
+}, {
+  maxAge: 60 * 5,
+  swr: true,
+  staleMaxAge: 60 * 10,
+  varies: ['Accept', 'Authorization'],
+  getKey: (event) => {
+    const id = getRouterParam(event, 'id')
+    const acceptHeader = getHeader(event, 'Accept') || ''
+    const shouldRenderHtml = acceptHeader.includes('text/html')
+    return `article:${id}:${shouldRenderHtml ? 'html' : 'md'}`
+  },
+  shouldBypassCache: async (event) => {
+    const session = await getSession(event)
+    return session?.role === 'admin'
+  },
 })

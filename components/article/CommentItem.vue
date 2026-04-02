@@ -2,12 +2,12 @@
   <div class="comment-item mb-4">
     <div class="d-flex align-start">
       <v-avatar size="40" class="mr-3">
-        <v-icon v-if="!comment.user.avatar">mdi-account</v-icon>
-        <v-img v-else :src="comment.user.avatar" />
+        <v-icon v-if="!displayAvatar">mdi-account</v-icon>
+        <v-img v-else :src="displayAvatar" />
       </v-avatar>
       <div class="flex-grow-1">
         <div class="d-flex align-center mb-1">
-          <span class="font-weight-medium">{{ comment.user.username }}</span>
+          <span class="font-weight-medium">{{ displayName }}</span>
           <span class="text-caption text-medium-emphasis ml-2">
             {{ formatDate(comment.createdAt) }}
           </span>
@@ -15,7 +15,6 @@
         <div class="text-body-2 mb-2">{{ comment.content }}</div>
         <div class="d-flex gap-2">
           <v-btn
-            v-if="userStore.isLoggedIn"
             size="x-small"
             variant="text"
             @click="$emit('reply', comment.id)"
@@ -54,11 +53,13 @@ interface Comment {
   content: string
   createdAt: number
   deletedAt: number | null
-  user: {
+  guestName?: string | null
+  guestEmail?: string | null
+  user?: {
     id: number
     username: string
     avatar: string | null
-  }
+  } | null
   replies?: Comment[]
 }
 
@@ -74,9 +75,25 @@ const emit = defineEmits<{
 
 const userStore = useUserStore()
 
+const displayName = computed(() => {
+  if (props.comment.user) {
+    return props.comment.user.username
+  }
+  return props.comment.guestName || '匿名用户'
+})
+
+const displayAvatar = computed(() => {
+  if (props.comment.user?.avatar) {
+    return props.comment.user.avatar
+  }
+  return null
+})
+
 const canDelete = computed(() => {
   if (!userStore.isLoggedIn) return false
-  return userStore.isAdmin || userStore.user?.id === props.comment.user.id
+  if (userStore.isAdmin) return true
+  if (props.comment.user && userStore.user?.id === props.comment.user.id) return true
+  return false
 })
 
 const formatDate = (timestamp: number) => {
@@ -102,7 +119,6 @@ const handleDelete = async () => {
       emit('deleted')
     }
   } catch (e) {
-    // ignore
   }
 }
 </script>

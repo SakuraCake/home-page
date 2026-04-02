@@ -18,21 +18,40 @@
 
     <v-row v-if="articleStore.loading">
       <v-col cols="12" md="6" v-for="i in 4" :key="i">
-        <v-skeleton-loader type="card" />
+        <v-card height="100%">
+          <v-skeleton-loader type="image" height="200" />
+          <v-card-title>
+            <v-skeleton-loader type="text" width="80%" />
+          </v-card-title>
+          <v-card-subtitle>
+            <v-skeleton-loader type="text" width="100%" />
+          </v-card-subtitle>
+          <v-card-text>
+            <v-skeleton-loader type="text@2" />
+          </v-card-text>
+          <v-card-actions>
+            <v-skeleton-loader type="chip@2" />
+          </v-card-actions>
+        </v-card>
       </v-col>
     </v-row>
 
     <v-row v-else-if="articleStore.articles.length === 0">
       <v-col cols="12">
-        <v-card>
-          <v-card-text class="text-center py-16">
-            <v-icon size="80" color="primary" class="mb-4">mdi-file-document-outline</v-icon>
-            <h2 class="text-h5 mb-2">暂无文章</h2>
-            <p class="text-body-1 text-medium-emphasis">
-              {{ userStore.isLoggedIn ? '点击"写文章"开始创作' : '登录后即可开始创作' }}
-            </p>
-          </v-card-text>
-        </v-card>
+        <v-empty-state
+          icon="mdi-file-document-outline"
+          title="暂无文章"
+          :text="userStore.isLoggedIn ? '点击「写文章」开始创作' : '登录后即可开始创作'"
+        >
+          <template #actions>
+            <v-btn v-if="userStore.isLoggedIn" color="primary" to="/article/create">
+              写文章
+            </v-btn>
+            <v-btn v-else color="primary" to="/login">
+              登录
+            </v-btn>
+          </template>
+        </v-empty-state>
       </v-col>
     </v-row>
 

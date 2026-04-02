@@ -1,12 +1,32 @@
 <template>
   <div>
-    <div v-if="!userStore.isLoggedIn" class="text-center py-4">
-      <v-btn variant="outlined" to="/login">
-        登录后参与评论
-      </v-btn>
-    </div>
+    <v-alert v-if="!allowComment" type="info" class="mb-4">
+      评论功能已关闭
+    </v-alert>
 
     <template v-else>
+      <template v-if="!userStore.isLoggedIn">
+        <v-row class="mb-4">
+          <v-col cols="12" sm="6">
+            <v-text-field
+              v-model="guestName"
+              label="昵称 *"
+              variant="outlined"
+              density="compact"
+              :rules="[v => !!v || '请输入昵称']"
+            />
+          </v-col>
+          <v-col cols="12" sm="6">
+            <v-text-field
+              v-model="guestEmail"
+              label="邮箱（可选）"
+              variant="outlined"
+              density="compact"
+            />
+          </v-col>
+        </v-row>
+      </template>
+
       <v-textarea
         v-model="newComment"
         label="发表评论"
@@ -15,36 +35,45 @@
         auto-grow
         class="mb-4"
       />
+
+      <div v-if="!userStore.isLoggedIn && isVerified" class="mb-4 d-flex align-center ga-2 text-success text-body-2">
+        <v-icon size="small">mdi-check-circle</v-icon>
+        验证通过
+      </div>
+
       <v-btn
         color="primary"
-        :loading="submitting"
-        :disabled="!newComment.trim()"
-        @click="submitComment"
+        :loading="submitting || isLoading"
+        :disabled="!canSubmitWithoutCaptcha"
+        @click="handleSubmit"
       >
         发表
       </v-btn>
-    </template>
 
-    <v-divider class="my-6" />
+      <v-divider class="my-6" />
 
-    <div v-if="loading" class="text-center py-4">
-      <v-progress-circular indeterminate />
-    </div>
+      <div v-if="loading" class="text-center py-4">
+        <v-progress-circular indeterminate />
+      </div>
 
-    <div v-else-if="comments.length === 0" class="text-center py-4 text-medium-emphasis">
-      暂无评论，快来发表第一条评论吧！
-    </div>
-
-    <div v-else>
-      <ArticleCommentItem
-        v-for="comment in comments"
-        :key="comment.id"
-        :comment="comment"
-        :article-id="articleId"
-        @reply="handleReply"
-        @deleted="loadComments"
+      <v-empty-state
+        v-else-if="comments.length === 0"
+        icon="mdi-comment-outline"
+        title="暂无评论"
+        text="快来发表第一条评论吧！"
       />
-    </div>
+
+      <div v-else>
+        <ArticleCommentItem
+          v-for="comment in comments"
+          :key="comment.id"
+          :comment="comment"
+          :article-id="articleId"
+          @reply="handleReply"
+          @deleted="loadComments"
+        />
+      </div>
+    </template>
   </div>
 </template>
 
@@ -54,11 +83,13 @@ interface Comment {
   content: string
   createdAt: number
   deletedAt: number | null
-  user: {
+  guestName?: string | null
+  guestEmail?: string | null
+  user?: {
     id: number
     username: string
     avatar: string | null
-  }
+  } | null
   replies?: Comment[]
 }
 
@@ -67,12 +98,28 @@ const props = defineProps<{
 }>()
 
 const userStore = useUserStore()
+const snackbar = useSnackbar()
+const { isReady, isVerified, validateResult, isLoading, init, verify, reset } = useGeetest()
+const { fetchConfig, allowComment, captchaCommentEnabled } = useSiteConfig()
 
 const comments = ref<Comment[]>([])
 const loading = ref(true)
 const submitting = ref(false)
 const newComment = ref('')
 const replyTo = ref<number | null>(null)
+const guestName = ref('')
+const guestEmail = ref('')
+const needCaptcha = ref(true)
+
+const canSubmitWithoutCaptcha = computed(() => {
+  if (!newComment.value.trim()) return false
+  
+  if (userStore.isLoggedIn) return true
+  
+  if (!guestName.value.trim()) return false
+  
+  return true
+})
 
 const loadComments = async () => {
   loading.value = true
@@ -82,7 +129,6 @@ const loadComments = async () => {
       comments.value = response.data
     }
   } catch (e) {
-    // ignore
   } finally {
     loading.value = false
   }
@@ -93,32 +139,90 @@ const submitComment = async () => {
 
   submitting.value = true
   try {
-    const response = await $fetch(`/api/articles/${props.articleId}/comments`, {
+    const body: Record<string, unknown> = {
+      content: newComment.value,
+      parentId: replyTo.value
+    }
+
+    if (!userStore.isLoggedIn) {
+      body.guestName = guestName.value
+      body.guestEmail = guestEmail.value || undefined
+      
+      if (needCaptcha.value && validateResult.value) {
+        body.geetest_challenge = validateResult.value.geetest_challenge
+        body.geetest_validate = validateResult.value.geetest_validate
+        body.geetest_seccode = validateResult.value.geetest_seccode
+      }
+    }
+
+    const options: Record<string, unknown> = {
       method: 'POST',
-      body: {
-        content: newComment.value,
-        parentId: replyTo.value
-      },
-      headers: userStore.getAuthHeaders()
-    })
+      body
+    }
+
+    if (userStore.isLoggedIn) {
+      options.headers = userStore.getAuthHeaders()
+    }
+
+    const response = await $fetch(`/api/articles/${props.articleId}/comments`, options)
 
     if (response.success) {
+      snackbar.success('评论发表成功')
       newComment.value = ''
       replyTo.value = null
+      if (!userStore.isLoggedIn) {
+        reset()
+      }
       await loadComments()
     }
   } catch (e) {
-    // ignore
+    snackbar.error('评论发表失败')
   } finally {
     submitting.value = false
   }
+}
+
+const handleSubmit = async () => {
+  if (userStore.isLoggedIn || isVerified.value || !needCaptcha.value) {
+    await submitComment()
+    return
+  }
+
+  if (!isReady.value) {
+    await init()
+  }
+  verify()
 }
 
 const handleReply = (commentId: number) => {
   replyTo.value = commentId
 }
 
-onMounted(() => {
-  loadComments()
+watch(isVerified, async (verified) => {
+  if (verified) {
+    await submitComment()
+  }
+})
+
+onMounted(async () => {
+  await loadComments()
+  
+  if (!userStore.isLoggedIn) {
+    await fetchConfig()
+    needCaptcha.value = captchaCommentEnabled.value
+    if (needCaptcha.value && allowComment.value) {
+      init()
+    }
+  }
+})
+
+watch(() => userStore.isLoggedIn, async (isLoggedIn) => {
+  if (!isLoggedIn) {
+    await fetchConfig()
+    needCaptcha.value = captchaCommentEnabled.value
+    if (needCaptcha.value && allowComment.value) {
+      init()
+    }
+  }
 })
 </script>

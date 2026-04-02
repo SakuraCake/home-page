@@ -1,0 +1,47 @@
+import type { H3Event } from 'h3'
+import { createError } from 'h3'
+import type { ZodSchema, ZodError } from 'zod'
+
+export async function validateBody<T>(
+  event: H3Event,
+  schema: ZodSchema<T>
+): Promise<T> {
+  const body = await readBody(event)
+
+  try {
+    return schema.parse(body)
+  } catch (error) {
+    const zodError = error as ZodError
+    const messages = zodError.issues.map((err: { path: any[]; message: any }) =>
+      `${err.path.join('.')}: ${err.message}`
+    ).join(', ')
+
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Validation Error',
+      message: messages || '输入数据验证失败',
+    })
+  }
+}
+
+export async function validateQuery<T>(
+  event: H3Event,
+  schema: ZodSchema<T>
+): Promise<T> {
+  const query = getQuery(event)
+
+  try {
+    return schema.parse(query)
+  } catch (error) {
+    const zodError = error as ZodError
+    const messages = zodError.issues.map((err: { path: any[]; message: any }) =>
+      `${err.path.join('.')}: ${err.message}`
+    ).join(', ')
+
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Validation Error',
+      message: messages || '查询参数验证失败',
+    })
+  }
+}

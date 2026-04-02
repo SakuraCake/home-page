@@ -17,6 +17,12 @@ interface UserState {
   error: string | null
 }
 
+interface CaptchaData {
+  geetest_challenge: string
+  geetest_validate: string
+  geetest_seccode: string
+}
+
 export const useUserStore = defineStore('user', {
   state: (): UserState => ({
     user: null,
@@ -52,14 +58,20 @@ export const useUserStore = defineStore('user', {
       cookie.value = null
     },
 
-    async login(username: string, password: string) {
+    async login(username: string, password: string, captcha: CaptchaData) {
       this.loading = true
       this.error = null
 
       try {
         const response = await $fetch('/api/auth/login', {
           method: 'POST',
-          body: { username, password },
+          body: { 
+            username, 
+            password,
+            geetest_challenge: captcha.geetest_challenge,
+            geetest_validate: captcha.geetest_validate,
+            geetest_seccode: captcha.geetest_seccode,
+          },
         })
 
         if (response.success && response.data) {
@@ -78,14 +90,21 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    async register(username: string, password: string, email?: string) {
+    async register(username: string, password: string, captcha: CaptchaData, email?: string) {
       this.loading = true
       this.error = null
 
       try {
         const response = await $fetch('/api/auth/register', {
           method: 'POST',
-          body: { username, password, email },
+          body: { 
+            username, 
+            password, 
+            email,
+            geetest_challenge: captcha.geetest_challenge,
+            geetest_validate: captcha.geetest_validate,
+            geetest_seccode: captcha.geetest_seccode,
+          },
         })
 
         if (response.success && response.data) {
@@ -111,7 +130,6 @@ export const useUserStore = defineStore('user', {
           headers: this.getAuthHeaders(),
         })
       } catch (e) {
-        // ignore
       }
 
       this.user = null

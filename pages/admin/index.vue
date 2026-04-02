@@ -79,6 +79,24 @@
               </template>
               <v-list-item-title>管理用户</v-list-item-title>
             </v-list-item>
+            <v-list-item to="/admin/captcha">
+              <template #prepend>
+                <v-icon>mdi-shield-check</v-icon>
+              </template>
+              <v-list-item-title>验证码配置</v-list-item-title>
+            </v-list-item>
+            <v-list-item to="/admin/settings">
+              <template #prepend>
+                <v-icon>mdi-cog-outline</v-icon>
+              </template>
+              <v-list-item-title>系统设置</v-list-item-title>
+            </v-list-item>
+            <v-list-item to="/admin/comments">
+              <template #prepend>
+                <v-icon>mdi-comment-multiple</v-icon>
+              </template>
+              <v-list-item-title>评论管理</v-list-item-title>
+            </v-list-item>
           </v-list>
         </v-card>
       </v-col>
@@ -99,9 +117,12 @@
               </v-list-item-subtitle>
             </v-list-item>
           </v-list>
-          <v-card-text v-else class="text-center py-4 text-medium-emphasis">
-            暂无文章
-          </v-card-text>
+          <v-empty-state
+            v-else
+            icon="mdi-file-document-outline"
+            title="暂无文章"
+            text="还没有任何文章"
+          />
         </v-card>
       </v-col>
     </v-row>

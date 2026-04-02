@@ -2,12 +2,16 @@ import { defineEventHandler, getQuery } from '#imports'
 import { eq, and, desc, like, sql, inArray, isNull } from 'drizzle-orm'
 import { db } from '~/database'
 import { articles, users, categories, tags, articleTags } from '~/database/schema'
+import { getSession } from '~/server/utils/session'
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
   const page = Number(query.page) || 1
   const pageSize = Number(query.pageSize) || 10
   const { categoryId, tagId, status, keyword } = query
+
+  const session = await getSession(event)
+  const isAdmin = session?.role === 'admin'
 
   const offset = (page - 1) * pageSize
 
@@ -17,8 +21,10 @@ export default defineEventHandler(async (event) => {
     conditions.push(eq(articles.categoryId, Number(categoryId)))
   }
 
-  if (status) {
+  if (isAdmin && status) {
     conditions.push(eq(articles.status, status as string))
+  } else if (!isAdmin) {
+    conditions.push(eq(articles.status, 'published'))
   }
 
   if (keyword) {

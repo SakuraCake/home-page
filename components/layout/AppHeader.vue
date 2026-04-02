@@ -58,8 +58,8 @@
       </template>
 
       <template v-else>
-        <v-btn variant="text" to="/login">
-          登录
+        <v-btn icon to="/login">
+          <v-icon>mdi-account</v-icon>
         </v-btn>
       </template>
     </ClientOnly>
@@ -91,7 +91,10 @@ const pageTitle = computed(() => {
     '/admin/users': '用户管理',
     '/admin/articles': '文章管理',
     '/admin/categories': '分类管理',
-    '/admin/tags': '标签管理'
+    '/admin/tags': '标签管理',
+    '/admin/captcha': '验证码配置',
+    '/admin/settings': '系统设置',
+    '/admin/comments': '评论管理',
   }
 
   if (route.path.match(/^\/article\/\d+(\/edit)?$/)) {

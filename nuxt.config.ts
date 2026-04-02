@@ -5,6 +5,17 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   modules: ['vuetify-nuxt-module', '@pinia/nuxt'],
+  runtimeConfig: {
+    jwtSecret: '',
+    geetestId: '',
+    geetestKey: '',
+    rateLimitMax: 100,
+    rateLimitWindowMs: 900000,
+    sessionMaxAge: 604800,
+    public: {
+      siteName: 'SakuraCake',
+    },
+  },
   vuetify: {
     vuetifyOptions: {
       blueprint: md3,
@@ -49,16 +60,27 @@ export default defineNuxtConfig({
   ssr: true,
   nitro: {
     prerender: {
-      crawlLinks: true,
-      routes: ['/', '/article']
+      crawlLinks: false,
+      routes: []
     }
   },
   routeRules: {
-    '/chase': { ssr: false }
+    '/chase': { ssr: false },
+    '/admin/**': { ssr: false },
+    '/article/create': { ssr: false },
+    '/article/*/edit': { ssr: false },
+    '/user/**': { ssr: false },
+    '/login': { ssr: false },
+    '/register': { ssr: false },
+    '/api/articles': { swr: 300 },
+    '/api/categories': { swr: 3600 },
+    '/api/tags': { swr: 3600 },
+    '/api/config': { swr: 3600 },
+    '/api/config/site': { swr: 3600 },
   },
   app: {
     head: {
-      titleTemplate: '%s - SakuraCake'
+      titleTemplate: '%s - SakuraCake',
     }
   }
 })

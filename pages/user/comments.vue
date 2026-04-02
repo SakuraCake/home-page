@@ -15,12 +15,11 @@
       </v-col>
 
       <v-col cols="12" v-else-if="comments.length === 0">
-        <v-card>
-          <v-card-text class="text-center py-16">
-            <v-icon size="80" color="primary" class="mb-4">mdi-comment-outline</v-icon>
-            <h2 class="text-h5 mb-2">暂无评论</h2>
-          </v-card-text>
-        </v-card>
+        <v-empty-state
+          icon="mdi-comment-outline"
+          title="暂无评论"
+          text="还没有发表任何评论"
+        />
       </v-col>
 
       <v-col cols="12" v-else>
@@ -54,6 +53,7 @@
 <script setup lang="ts">
 const userStore = useUserStore()
 const router = useRouter()
+const snackbar = useSnackbar()
 
 const breadcrumbs = [
   { title: '首页', to: '/' },
@@ -82,7 +82,6 @@ const fetchComments = async () => {
       comments.value = response.data
     }
   } catch (e) {
-    // ignore
   } finally {
     loading.value = false
   }
@@ -98,10 +97,11 @@ const handleDelete = async (id: number) => {
     })
 
     if (response.success) {
+      snackbar.success('评论已删除')
       comments.value = comments.value.filter(c => c.id !== id)
     }
   } catch (e) {
-    // ignore
+    snackbar.error('删除失败')
   }
 }
 

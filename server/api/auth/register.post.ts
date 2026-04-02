@@ -1,18 +1,54 @@
 import { defineEventHandler, readBody } from '#imports'
 import { eq } from 'drizzle-orm'
 import { db } from '~/database'
-import { users } from '~/database/schema'
+import { users, captchaConfig } from '~/database/schema'
 import { hashPassword } from '~/server/utils/auth'
 import { createSession } from '~/server/utils/session'
+import { validateCaptcha } from '~/server/utils/geetest'
+import { validateBody } from '~/server/utils/validation'
+import { registerSchema } from '~/server/schemas'
+import { authRateLimit } from '~/server/utils/rateLimit'
+
+async function isCaptchaEnabledForRegister(): Promise<boolean> {
+  const config = await db.query.captchaConfig.findFirst()
+  if (!config) return true
+  return (config.enabled ?? true) && (config.registerEnabled ?? true)
+}
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody(event)
-  const { username, password, email } = body
+  await authRateLimit(event)
+
+  const body = await validateBody(event, registerSchema)
+  const { username, password, email, geetest_challenge, geetest_validate, geetest_seccode } = body
 
   if (!username || !password) {
     return {
       success: false,
       message: '用户名和密码不能为空'
+    }
+  }
+
+  const captchaEnabled = await isCaptchaEnabledForRegister()
+
+  if (captchaEnabled) {
+    if (!geetest_challenge || !geetest_validate || !geetest_seccode) {
+      return {
+        success: false,
+        message: '请完成验证码验证'
+      }
+    }
+
+    const captchaResult = await validateCaptcha({
+      challenge: geetest_challenge,
+      validate: geetest_validate,
+      seccode: geetest_seccode,
+    })
+
+    if (!captchaResult.success) {
+      return {
+        success: false,
+        message: captchaResult.message || '验证码验证失败'
+      }
     }
   }
 
@@ -48,7 +84,7 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  const token = await createSession(user)
+  const token = await createSession(event, user)
 
   return {
     success: true,

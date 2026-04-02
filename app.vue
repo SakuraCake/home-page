@@ -7,6 +7,14 @@
     <v-main>
       <NuxtPage />
     </v-main>
+    <ClientOnly>
+      <v-snackbar-queue
+        :model-value="snackbar.messages.value"
+        @update:model-value="snackbar.clear"
+        location="bottom right"
+        :timeout="4000"
+      />
+    </ClientOnly>
   </v-app>
 </template>
 
@@ -15,6 +23,7 @@ const drawer = ref(true)
 const isExpanded = ref(false)
 
 const { mobile } = useDisplay()
+const snackbar = useSnackbar()
 
 const toggleExpand = () => {
   if (mobile.value) {

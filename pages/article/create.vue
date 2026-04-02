@@ -1,13 +1,14 @@
 <template>
-  <v-container max-width="900">
+  <v-container fluid class="pa-4">
     <v-row>
       <v-col cols="12">
         <v-breadcrumbs :items="breadcrumbs" class="pa-0 mb-4" />
       </v-col>
     </v-row>
+
     <v-row>
-      <v-col cols="12">
-        <v-card>
+      <v-col cols="12" lg="8">
+        <v-card height="100%">
           <v-card-title class="text-h4 py-4 px-6">
             写文章
           </v-card-title>
@@ -31,68 +32,16 @@
                 @keydown.enter.prevent
               />
 
-              <v-text-field
-                v-model="form.summary"
-                label="摘要"
-                variant="outlined"
-                class="mb-4"
-                @keydown.enter.prevent
-              />
-
-              <v-text-field
-                v-model="form.coverImage"
-                label="封面图片 URL"
-                variant="outlined"
-                class="mb-4"
-                @keydown.enter.prevent
-              />
-
-              <v-select
-                v-model="form.categoryId"
-                :items="categories"
-                item-title="name"
-                item-value="id"
-                label="分类"
-                variant="outlined"
-                clearable
-                class="mb-4"
-              />
-
-              <v-select
-                v-model="form.tagIds"
-                :items="tags"
-                item-title="name"
-                item-value="id"
-                label="标签"
-                variant="outlined"
-                multiple
-                chips
-                clearable
-                class="mb-4"
-              />
-
-              <v-select
-                v-model="form.status"
-                :items="statusOptions"
-                label="状态"
-                variant="outlined"
-                class="mb-4"
-              />
-
               <v-textarea
                 v-model="form.content"
                 label="内容 (Markdown)"
                 variant="outlined"
-                rows="20"
+                rows="25"
                 auto-grow
                 class="mb-4"
               />
 
-              <v-alert v-if="error" type="error" class="mb-4">
-                {{ error }}
-              </v-alert>
-
-              <div class="d-flex gap-2">
+              <div class="d-flex ga-2">
                 <v-btn
                   color="primary"
                   type="submit"
@@ -102,12 +51,6 @@
                 </v-btn>
                 <v-btn
                   variant="outlined"
-                  @click="handlePreview"
-                >
-                  预览
-                </v-btn>
-                <v-btn
-                  variant="text"
                   to="/article"
                 >
                   取消
@@ -118,29 +61,103 @@
         </v-card>
       </v-col>
 
-      <v-col cols="12" v-if="showPreview">
-        <v-card>
-          <v-card-title class="d-flex justify-space-between align-center">
-            <span>预览</span>
-            <v-btn icon @click="showPreview = false">
-              <v-icon>mdi-close</v-icon>
-            </v-btn>
-          </v-card-title>
-          <v-divider />
-          <v-card-text class="markdown-body" v-html="previewContent" />
-        </v-card>
+      <v-col cols="12" lg="4">
+        <v-expansion-panels v-model="expandedPanels" multiple>
+          <v-expansion-panel value="settings">
+            <v-expansion-panel-title>
+              <v-icon start>mdi-cog</v-icon>
+              文章设置
+            </v-expansion-panel-title>
+            <v-expansion-panel-text>
+              <v-row dense>
+                <v-col cols="4">
+                  <v-select
+                    v-model="form.status"
+                    :items="statusOptions"
+                    label="状态"
+                    variant="outlined"
+                    density="compact"
+                  />
+                </v-col>
+                <v-col cols="4">
+                  <v-select
+                    v-model="form.categoryId"
+                    :items="categories"
+                    item-title="name"
+                    item-value="id"
+                    label="分类"
+                    variant="outlined"
+                    clearable
+                    density="compact"
+                  />
+                </v-col>
+                <v-col cols="4">
+                  <v-select
+                    v-model="form.tagIds"
+                    :items="tags"
+                    item-title="name"
+                    item-value="id"
+                    label="标签"
+                    variant="outlined"
+                    multiple
+                    chips
+                    clearable
+                    density="compact"
+                  />
+                </v-col>
+              </v-row>
+            </v-expansion-panel-text>
+          </v-expansion-panel>
+
+          <v-expansion-panel value="meta">
+            <v-expansion-panel-title>
+              <v-icon start>mdi-information-outline</v-icon>
+              元信息
+            </v-expansion-panel-title>
+            <v-expansion-panel-text>
+              <v-row dense>
+                <v-col cols="12">
+                  <v-text-field
+                    v-model="form.summary"
+                    label="摘要"
+                    variant="outlined"
+                    density="compact"
+                    @keydown.enter.prevent
+                  />
+                </v-col>
+                <v-col cols="12">
+                  <v-text-field
+                    v-model="form.coverImage"
+                    label="封面图片 URL"
+                    variant="outlined"
+                    density="compact"
+                    @keydown.enter.prevent
+                  />
+                </v-col>
+              </v-row>
+            </v-expansion-panel-text>
+          </v-expansion-panel>
+
+          <v-expansion-panel value="preview">
+            <v-expansion-panel-title>
+              <v-icon start>mdi-eye</v-icon>
+              预览
+            </v-expansion-panel-title>
+            <v-expansion-panel-text>
+              <div class="markdown-body preview-content" v-html="previewContent" />
+            </v-expansion-panel-text>
+          </v-expansion-panel>
+        </v-expansion-panels>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { useArticleStore } from '~/stores/article'
-import { useUserStore } from '~/stores/user'
-
 const router = useRouter()
 const articleStore = useArticleStore()
 const userStore = useUserStore()
+const snackbar = useSnackbar()
 const { renderMarkdown } = useMarkdown()
 
 const breadcrumbs = [
@@ -161,8 +178,7 @@ const form = reactive({
 })
 
 const loading = ref(false)
-const error = ref('')
-const showPreview = ref(false)
+const expandedPanels = ref(['settings'])
 
 const categories = computed(() => articleStore.categories)
 const tags = computed(() => articleStore.tags)
@@ -176,12 +192,7 @@ const previewContent = computed(() => {
   return renderMarkdown(form.content)
 })
 
-const handlePreview = () => {
-  showPreview.value = !showPreview.value
-}
-
 const handleSubmit = async () => {
-  error.value = ''
   loading.value = true
 
   try {
@@ -197,12 +208,13 @@ const handleSubmit = async () => {
     })
 
     if (result) {
+      snackbar.success('文章创建成功')
       router.push(`/article/${result.id}`)
     } else {
-      error.value = articleStore.error || '创建失败'
+      snackbar.error(articleStore.error || '创建失败')
     }
   } catch (e) {
-    error.value = e instanceof Error ? e.message : '创建失败'
+    snackbar.error(e instanceof Error ? e.message : '创建失败')
   } finally {
     loading.value = false
   }
@@ -223,3 +235,10 @@ onMounted(async () => {
   ])
 })
 </script>
+
+<style scoped>
+.preview-content {
+  max-height: 400px;
+  overflow-y: auto;
+}
+</style>

@@ -8,7 +8,11 @@
           </v-card-title>
           <v-divider />
           <v-card-text class="pa-6">
-            <v-form ref="form" @submit.prevent="handleSubmit">
+            <v-alert v-if="!allowRegister" type="warning" class="mb-4">
+              系统已关闭注册功能
+            </v-alert>
+
+            <v-form v-else ref="form" @submit.prevent="handleSubmit">
               <v-text-field
                 v-model="username"
                 label="用户名"
@@ -52,15 +56,11 @@
                 class="mb-4"
               />
 
-              <v-alert v-if="error" type="error" class="mb-4">
-                {{ error }}
-              </v-alert>
-
               <v-btn
                 color="primary"
                 type="submit"
                 block
-                :loading="loading"
+                :loading="loading || isLoading"
               >
                 注册
               </v-btn>
@@ -84,45 +84,98 @@
 <script setup lang="ts">
 const router = useRouter()
 const userStore = useUserStore()
+const snackbar = useSnackbar()
+const { isReady, isVerified, validateResult, isLoading, init, verify, reset } = useGeetest()
+const { fetchConfig, captchaRegisterEnabled, allowRegister } = useSiteConfig()
 
 const username = ref('')
 const email = ref('')
 const password = ref('')
 const confirmPassword = ref('')
 const loading = ref(false)
-const error = ref('')
+const needCaptcha = ref(true)
 
-const handleSubmit = async () => {
-  if (password.value !== confirmPassword.value) {
-    error.value = '两次密码不一致'
+const submitForm = async () => {
+  if (needCaptcha.value && !validateResult.value) {
+    snackbar.error('请完成验证码验证')
     return
   }
 
-  error.value = ''
   loading.value = true
+
+  const captchaData = needCaptcha.value && validateResult.value ? {
+    geetest_challenge: validateResult.value.geetest_challenge,
+    geetest_validate: validateResult.value.geetest_validate,
+    geetest_seccode: validateResult.value.geetest_seccode,
+  } : {
+    geetest_challenge: '',
+    geetest_validate: '',
+    geetest_seccode: '',
+  }
 
   const success = await userStore.register(
     username.value,
     password.value,
+    captchaData,
     email.value || undefined
   )
 
   if (success) {
+    snackbar.success('注册成功')
     router.push('/article')
   } else {
-    error.value = userStore.error || '注册失败'
+    snackbar.error(userStore.error || '注册失败')
+    reset()
   }
 
   loading.value = false
 }
 
+const handleSubmit = async () => {
+  if (!allowRegister.value) {
+    snackbar.error('系统已关闭注册功能')
+    return
+  }
+
+  if (password.value !== confirmPassword.value) {
+    snackbar.error('两次密码不一致')
+    return
+  }
+
+  if (!username.value.trim() || !password.value.trim()) {
+    snackbar.error('请填写用户名和密码')
+    return
+  }
+
+  if (needCaptcha.value) {
+    if (!isReady.value) {
+      await init()
+    }
+    verify()
+  } else {
+    await submitForm()
+  }
+}
+
+watch(isVerified, async (verified) => {
+  if (verified) {
+    await submitForm()
+  }
+})
+
 useHead({
   title: '注册'
 })
 
-onMounted(() => {
+onMounted(async () => {
   if (userStore.isLoggedIn) {
     router.push('/article')
+  } else {
+    await fetchConfig()
+    needCaptcha.value = captchaRegisterEnabled.value
+    if (needCaptcha.value && allowRegister.value) {
+      init()
+    }
   }
 })
 </script>

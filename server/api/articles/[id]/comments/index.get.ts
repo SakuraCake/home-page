@@ -1,12 +1,15 @@
 import { defineEventHandler, getRouterParam, getQuery } from '#imports'
-import { eq, and, desc, isNull } from 'drizzle-orm'
+import { eq, and, desc, isNull, inArray } from 'drizzle-orm'
 import { db } from '~/database'
 import { comments, users } from '~/database/schema'
+import { getSession } from '~/server/utils/session'
 
 export default defineEventHandler(async (event) => {
+  const session = await getSession(event)
   const articleId = parseInt(getRouterParam(event, 'id') || '0')
   const query = getQuery(event)
   const includeDeleted = query.includeDeleted === 'true'
+  const isAdmin = session?.role === 'admin'
 
   if (!articleId) {
     return {
@@ -19,6 +22,10 @@ export default defineEventHandler(async (event) => {
 
   if (!includeDeleted) {
     whereConditions.push(isNull(comments.deletedAt))
+  }
+
+  if (!isAdmin) {
+    whereConditions.push(eq(comments.status, 'approved'))
   }
 
   const allComments = await db.query.comments.findMany({

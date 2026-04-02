@@ -4,6 +4,8 @@ import { db } from '~/database'
 import { articles, articleTags } from '~/database/schema'
 import { requireAuth } from '~/server/utils/session'
 import { defineAbilitiesFor, forbid } from '~/server/utils/abilities'
+import { validateBody } from '~/server/utils/validation'
+import { articleSchema } from '~/server/schemas'
 
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
@@ -13,7 +15,7 @@ export default defineEventHandler(async (event) => {
     forbid()
   }
 
-  const body = await readBody(event)
+  const body = await validateBody(event, articleSchema)
   const { title, slug, content, summary, coverImage, categoryId, tagIds, status } = body
 
   if (!title || !slug) {

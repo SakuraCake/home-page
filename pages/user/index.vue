@@ -69,10 +69,6 @@
                 class="mb-4"
               />
 
-              <v-alert v-if="message" :type="messageType" class="mb-4">
-                {{ message }}
-              </v-alert>
-
               <v-btn color="primary" type="submit" :loading="loading">
                 保存更改
               </v-btn>
@@ -107,10 +103,6 @@
                 class="mb-4"
               />
 
-              <v-alert v-if="passwordMessage" :type="passwordMessageType" class="mb-4">
-                {{ passwordMessage }}
-              </v-alert>
-
               <v-btn color="primary" type="submit" :loading="passwordLoading">
                 修改密码
               </v-btn>
@@ -125,6 +117,7 @@
 <script setup lang="ts">
 const userStore = useUserStore()
 const router = useRouter()
+const snackbar = useSnackbar()
 
 const breadcrumbs = [
   { title: '首页', to: '/' },
@@ -144,13 +137,7 @@ const passwordForm = ref({
 })
 
 const loading = ref(false)
-const message = ref('')
-const messageType = ref<'success' | 'error'>('success')
-
 const passwordLoading = ref(false)
-const passwordMessage = ref('')
-const passwordMessageType = ref<'success' | 'error'>('success')
-
 const articleCount = ref(0)
 
 const formatDate = (timestamp: number) => {
@@ -163,7 +150,6 @@ const formatDate = (timestamp: number) => {
 
 const handleUpdateProfile = async () => {
   loading.value = true
-  message.value = ''
 
   try {
     const response = await $fetch('/api/user/profile', {
@@ -176,16 +162,13 @@ const handleUpdateProfile = async () => {
     })
 
     if (response.success) {
-      message.value = '保存成功'
-      messageType.value = 'success'
+      snackbar.success('保存成功')
       await userStore.fetchUser()
     } else {
-      message.value = response.message || '保存失败'
-      messageType.value = 'error'
+      snackbar.error(response.message || '保存失败')
     }
   } catch (e) {
-    message.value = '保存失败'
-    messageType.value = 'error'
+    snackbar.error('保存失败')
   } finally {
     loading.value = false
   }
@@ -193,19 +176,16 @@ const handleUpdateProfile = async () => {
 
 const handleChangePassword = async () => {
   if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
-    passwordMessage.value = '两次密码不一致'
-    passwordMessageType.value = 'error'
+    snackbar.error('两次密码不一致')
     return
   }
 
   if (passwordForm.value.newPassword.length < 6) {
-    passwordMessage.value = '密码至少 6 个字符'
-    passwordMessageType.value = 'error'
+    snackbar.error('密码至少 6 个字符')
     return
   }
 
   passwordLoading.value = true
-  passwordMessage.value = ''
 
   try {
     const response = await $fetch('/api/user/password', {
@@ -218,20 +198,17 @@ const handleChangePassword = async () => {
     })
 
     if (response.success) {
-      passwordMessage.value = '密码修改成功'
-      passwordMessageType.value = 'success'
+      snackbar.success('密码修改成功')
       passwordForm.value = {
         oldPassword: '',
         newPassword: '',
         confirmPassword: ''
       }
     } else {
-      passwordMessage.value = response.message || '密码修改失败'
-      passwordMessageType.value = 'error'
+      snackbar.error(response.message || '密码修改失败')
     }
   } catch (e) {
-    passwordMessage.value = '密码修改失败'
-    passwordMessageType.value = 'error'
+    snackbar.error('密码修改失败')
   } finally {
     passwordLoading.value = false
   }
@@ -246,7 +223,6 @@ const fetchArticleCount = async () => {
       articleCount.value = response.data.count
     }
   } catch (e) {
-    // ignore
   }
 }
 

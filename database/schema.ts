@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, primaryKey } from 'drizzle-orm/sqlite-core'
+import { sqliteTable, text, integer, primaryKey, index } from 'drizzle-orm/sqlite-core'
 import { relations } from 'drizzle-orm'
 
 export const users = sqliteTable('users', {
@@ -41,7 +41,12 @@ export const articles = sqliteTable('articles', {
   createdAt: integer('created_at').notNull(),
   updatedAt: integer('updated_at').notNull(),
   deletedAt: integer('deleted_at'),
-})
+}, (table) => ({
+  statusIdx: index('articles_status_idx').on(table.status),
+  createdAtIdx: index('articles_created_at_idx').on(table.createdAt),
+  authorIdx: index('articles_author_idx').on(table.authorId),
+  categoryIdx: index('articles_category_idx').on(table.categoryId),
+}))
 
 export const articleTags = sqliteTable('article_tags', {
   articleId: integer('article_id').notNull().references(() => articles.id),
@@ -54,10 +59,48 @@ export const comments = sqliteTable('comments', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   content: text('content').notNull(),
   articleId: integer('article_id').notNull().references(() => articles.id),
-  userId: integer('user_id').notNull().references(() => users.id),
+  userId: integer('user_id').references(() => users.id),
+  guestName: text('guest_name'),
+  guestEmail: text('guest_email'),
   parentId: integer('parent_id').references((): any => comments.id),
+  status: text('status').default('approved'),
   createdAt: integer('created_at').notNull(),
   deletedAt: integer('deleted_at'),
+}, (table) => ({
+  articleIdx: index('comments_article_idx').on(table.articleId),
+  userIdx: index('comments_user_idx').on(table.userId),
+  statusIdx: index('comments_status_idx').on(table.status),
+  parentIdx: index('comments_parent_idx').on(table.parentId),
+}))
+
+export const captchaConfig = sqliteTable('captcha_config', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  enabled: integer('enabled', { mode: 'boolean' }).default(true),
+  provider: text('provider').default('geetest'),
+  siteKey: text('site_key'),
+  secretKey: text('secret_key'),
+  loginEnabled: integer('login_enabled', { mode: 'boolean' }).default(true),
+  registerEnabled: integer('register_enabled', { mode: 'boolean' }).default(true),
+  commentEnabled: integer('comment_enabled', { mode: 'boolean' }).default(true),
+  updatedAt: integer('updated_at').notNull(),
+})
+
+export const siteConfig = sqliteTable('site_config', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  siteName: text('site_name').default('My Blog'),
+  siteDescription: text('site_description'),
+  siteKeywords: text('site_keywords'),
+  siteUrl: text('site_url'),
+  logo: text('logo'),
+  favicon: text('favicon'),
+  footerText: text('footer_text'),
+  icp: text('icp'),
+  analyticsCode: text('analytics_code'),
+  postsPerPage: integer('posts_per_page').default(10),
+  allowRegister: integer('allow_register', { mode: 'boolean' }).default(true),
+  allowComment: integer('allow_comment', { mode: 'boolean' }).default(true),
+  commentNeedReview: integer('comment_need_review', { mode: 'boolean' }).default(false),
+  updatedAt: integer('updated_at').notNull(),
 })
 
 export const usersRelations = relations(users, ({ many }) => ({
