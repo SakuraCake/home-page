@@ -14,16 +14,27 @@
         location="bottom right"
         :timeout="4000"
       />
+      <Oobe v-if="!oobeCompleted" />
     </ClientOnly>
   </v-app>
 </template>
 
 <script setup lang="ts">
+import Oobe from './components/Oobe.vue'
+
 const drawer = ref(true)
 const isExpanded = ref(false)
 
 const { mobile } = useDisplay()
 const snackbar = useSnackbar()
+
+const oobeCompleted = ref(false)
+
+const checkOobeStatus = () => {
+  if (import.meta.client) {
+    oobeCompleted.value = localStorage.getItem('oobeCompleted') === 'true'
+  }
+}
 
 const toggleExpand = () => {
   if (mobile.value) {
@@ -35,6 +46,7 @@ const toggleExpand = () => {
 
 onMounted(() => {
   drawer.value = !mobile.value
+  checkOobeStatus()
 })
 
 provide('drawer', drawer)
