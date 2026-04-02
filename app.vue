@@ -19,6 +19,11 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, provide } from 'vue'
+import { navigateTo } from 'nuxt/app'
+import { useDisplay } from 'vuetify'
+import { useSnackbar } from '~/composables/useSnackbar'
+
 const drawer = ref(true)
 const isExpanded = ref(false)
 
