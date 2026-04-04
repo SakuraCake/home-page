@@ -1,17 +1,11 @@
 export const useAppTheme = () => {
-  const theme = useTheme()
-
-  const isDark = computed(() => {
-    if (import.meta.client) {
-      return theme.global.current.value.dark
-    }
-    return false
-  })
+  const isDark = ref(false)
 
   const toggleTheme = () => {
     if (import.meta.client) {
-      theme.global.name.value = isDark.value ? 'light' : 'dark'
-      localStorage.setItem('theme', theme.global.name.value)
+      isDark.value = !isDark.value
+      document.documentElement.classList.toggle('dark', isDark.value)
+      localStorage.setItem('theme', isDark.value ? 'dark' : 'light')
     }
   }
 
@@ -19,8 +13,11 @@ export const useAppTheme = () => {
     if (import.meta.client) {
       const savedTheme = localStorage.getItem('theme')
       if (savedTheme) {
-        theme.global.name.value = savedTheme
+        isDark.value = savedTheme === 'dark'
+      } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        isDark.value = true
       }
+      document.documentElement.classList.toggle('dark', isDark.value)
     }
   }
 
