@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@casl/ability": "^6.8.0",
+    "@nuxt/ui": "^2.22.3",
     "@pinia/nuxt": "^0.11.3",
     "@types/dompurify": "^3.0.5",
     "bcrypt": "^6.0.0",
@@ -30,13 +31,10 @@
     "vue": "^3.5.31",
     "vue-router": "^5.0.4",
     "vue3-simple-icons": "^16.10.0",
-    "vuetify": "^3.12.4",
-    "vuetify-nuxt-module": "^0.19.5",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
-    "drizzle-kit": "^0.31.0",
-    "sass-embedded": "^1.98.0"
+    "drizzle-kit": "^0.31.0"
   }
 }
