@@ -1,71 +1,51 @@
 <template>
-  <v-app>
+  <div id="app">
     <LayoutAppHeader />
     <ClientOnly>
       <LayoutAppDrawer />
     </ClientOnly>
-    <v-main>
-      <v-container class="fill-height">
-        <v-row justify="center" align="center">
-          <v-col cols="12" sm="8" md="6" class="text-center">
-            <v-icon size="120" color="error" class="mb-6">mdi-alert-circle-outline</v-icon>
+    <main class="main-content">
+      <div style="display: flex; justify-content: center; align-items: center; min-height: 60vh;">
+        <mdui-card style="max-width: 500px; width: 100%;">
+          <div style="padding: 32px; text-align: center;">
+            <mdui-icon name="error" style="font-size: 80px; color: #B3261E; margin-bottom: 24px;"></mdui-icon>
             
-            <h1 class="text-h3 font-weight-bold mb-4">
+            <h1 style="margin: 0 0 16px 0; font-size: 24px;">
               {{ errorTitle }}
             </h1>
             
-            <p class="text-body-1 text-medium-emphasis mb-8">
+            <p style="margin: 0 0 32px 0; color: #666;">
               {{ errorMessage }}
             </p>
             
-            <div class="d-flex justify-center ga-4">
-              <v-btn
-                color="primary"
-                variant="flat"
-                to="/"
-              >
-                <v-icon start>mdi-home</v-icon>
+            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+              <mdui-button href="/">
                 返回首页
-              </v-btn>
-              
-              <v-btn
-                variant="tonal"
-                @click="handleClearError"
-              >
-                <v-icon start>mdi-refresh</v-icon>
+              </mdui-button>
+              <mdui-button variant="outlined" @click="handleClearError">
                 重试
-              </v-btn>
+              </mdui-button>
             </div>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-main>
-  </v-app>
+          </div>
+        </mdui-card>
+      </div>
+    </main>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { useDisplay } from 'vuetify'
 import type { NuxtError } from '#app'
 
 const props = defineProps<{
   error: NuxtError
 }>()
 
-const { mobile } = useDisplay()
 const drawer = ref(true)
 const isExpanded = ref(false)
 
 const toggleExpand = () => {
-  if (mobile.value) {
-    drawer.value = !drawer.value
-  } else {
-    isExpanded.value = !isExpanded.value
-  }
+  drawer.value = !drawer.value
 }
-
-onMounted(() => {
-  drawer.value = !mobile.value
-})
 
 provide('drawer', drawer)
 provide('isExpanded', isExpanded)
@@ -99,3 +79,28 @@ useHead({
   title: errorTitle.value
 })
 </script>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #app {
+  height: 100%;
+  font-family: 'Roboto', sans-serif;
+}
+
+.main-content {
+  margin-left: 0;
+  padding: 16px;
+  min-height: calc(100vh - 64px);
+}
+
+@media (min-width: 1024px) {
+  .main-content {
+    margin-left: 80px;
+  }
+}
+</style>
