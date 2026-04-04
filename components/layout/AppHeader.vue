@@ -1,73 +1,81 @@
 <template>
-  <v-app-bar>
-    <v-app-bar-nav-icon @click="toggleExpand" />
-    <v-app-bar-title>{{ pageTitle }}</v-app-bar-title>
-    <v-spacer />
-    <v-btn icon @click="handleToggleTheme">
-      <v-icon>{{ isDark ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
-    </v-btn>
+  <mdui-top-app-bar>
+    <template #start>
+      <mdui-button-icon @click="toggleExpand">
+        <mdui-icon>menu</mdui-icon>
+      </mdui-button-icon>
+      <div class="mdui-top-app-bar__title">{{ pageTitle }}</div>
+    </template>
+    <template #end>
+      <mdui-button-icon @click="handleToggleTheme">
+        <mdui-icon>{{ isDark ? 'wb_sunny' : 'nights_stay' }}</mdui-icon>
+      </mdui-button-icon>
 
-    <ClientOnly>
-      <template v-if="userStore.isLoggedIn">
-        <v-menu>
-          <template #activator="{ props }">
-            <v-btn icon v-bind="props">
-              <v-avatar size="32">
-                <v-icon v-if="!userStore.user?.avatar">mdi-account</v-icon>
-                <v-img v-else :src="userStore.user.avatar" />
-              </v-avatar>
-            </v-btn>
-          </template>
-          <v-list>
-            <v-list-item>
-              <v-list-item-title>{{ userStore.user?.username }}</v-list-item-title>
-              <v-list-item-subtitle>
-                <v-chip size="x-small" :color="userStore.isAdmin ? 'primary' : 'default'">
-                  {{ userStore.isAdmin ? '管理员' : '用户' }}
-                </v-chip>
-              </v-list-item-subtitle>
-            </v-list-item>
-            <v-divider />
-            <v-list-item to="/user">
-              <template #prepend>
-                <v-icon>mdi-account-circle</v-icon>
-              </template>
-              <v-list-item-title>用户中心</v-list-item-title>
-            </v-list-item>
-            <v-list-item v-if="userStore.isAdmin" to="/admin">
-              <template #prepend>
-                <v-icon>mdi-cog</v-icon>
-              </template>
-              <v-list-item-title>管理中心</v-list-item-title>
-            </v-list-item>
-            <v-list-item to="/article/create">
-              <template #prepend>
-                <v-icon>mdi-plus</v-icon>
-              </template>
-              <v-list-item-title>写文章</v-list-item-title>
-            </v-list-item>
-            <v-divider />
-            <v-list-item @click="handleLogout">
-              <template #prepend>
-                <v-icon>mdi-logout</v-icon>
-              </template>
-              <v-list-item-title>退出登录</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </template>
+      <ClientOnly>
+        <template v-if="userStore.isLoggedIn">
+          <mdui-menu>
+            <template #activator>
+              <mdui-button-icon>
+                <mdui-avatar size="32">
+                  <mdui-icon v-if="!userStore.user?.avatar">person</mdui-icon>
+                  <img v-else :src="userStore.user.avatar" alt="Avatar" />
+                </mdui-avatar>
+              </mdui-button-icon>
+            </template>
+            <mdui-list>
+              <mdui-list-item>
+                <div class="mdui-list-item__title">{{ userStore.user?.username }}</div>
+                <div class="mdui-list-item__subtitle">
+                  <mdui-chip size="small" :variant="userStore.isAdmin ? 'filled' : 'outlined'">
+                    {{ userStore.isAdmin ? '管理员' : '用户' }}
+                  </mdui-chip>
+                </div>
+              </mdui-list-item>
+              <mdui-divider />
+              <mdui-list-item href="/user">
+                <template #start>
+                  <mdui-icon>person</mdui-icon>
+                </template>
+                <div class="mdui-list-item__title">用户中心</div>
+              </mdui-list-item>
+              <mdui-list-item v-if="userStore.isAdmin" href="/admin">
+                <template #start>
+                  <mdui-icon>settings</mdui-icon>
+                </template>
+                <div class="mdui-list-item__title">管理中心</div>
+              </mdui-list-item>
+              <mdui-list-item href="/article/create">
+                <template #start>
+                  <mdui-icon>add</mdui-icon>
+                </template>
+                <div class="mdui-list-item__title">写文章</div>
+              </mdui-list-item>
+              <mdui-divider />
+              <mdui-list-item @click="handleLogout">
+                <template #start>
+                  <mdui-icon>logout</mdui-icon>
+                </template>
+                <div class="mdui-list-item__title">退出登录</div>
+              </mdui-list-item>
+            </mdui-list>
+          </mdui-menu>
+        </template>
 
-      <template v-else>
-        <v-btn icon to="/login">
-          <v-icon>mdi-account</v-icon>
-        </v-btn>
-      </template>
-    </ClientOnly>
-  </v-app-bar>
+        <template v-else>
+          <mdui-button-icon href="/login">
+            <mdui-icon>person</mdui-icon>
+          </mdui-button-icon>
+        </template>
+      </ClientOnly>
+    </template>
+  </mdui-top-app-bar>
 </template>
 
 <script setup lang="ts">
+import { ref, computed, inject, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { useUserStore } from '~/stores/user'
+import { useAppTheme } from '~/composables/useTheme'
 
 const isExpanded = inject<Ref<boolean>>('isExpanded', ref(false))
 const toggleExpand = inject<() => void>('toggleExpand', () => {})
@@ -101,7 +109,7 @@ const pageTitle = computed(() => {
     return route.path.includes('/edit') ? '编辑文章' : '文章详情'
   }
 
-  return titles[route.path] || 'Sorange Home'
+  return titles[route.path] || 'SakuraCake'
 })
 
 const handleToggleTheme = () => {

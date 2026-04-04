@@ -1,58 +1,62 @@
 <template>
-  <v-container max-width="600">
-    <v-row>
-      <v-col cols="12">
-        <v-card>
-          <v-card-title class="text-h4 py-4 px-6">
+  <div class="mdui-container" style="max-width: 600px; margin-top: 48px;">
+    <mdui-card>
+      <mdui-card-header>
+        <div class="mdui-card-header__title">登录</div>
+      </mdui-card-header>
+      <mdui-divider />
+      <mdui-card-content>
+        <form @submit.prevent="handleSubmit">
+          <mdui-text-field
+            v-model="username"
+            label="用户名"
+            variant="outlined"
+            required
+            class="mb-4"
+          />
+
+          <mdui-text-field
+            v-model="password"
+            label="密码"
+            type="password"
+            variant="outlined"
+            required
+            class="mb-4"
+          />
+
+          <mdui-button
+            type="submit"
+            variant="filled"
+            color="primary"
+            full-width
+            :loading="loading || isLoading"
+          >
             登录
-          </v-card-title>
-          <v-divider />
-          <v-card-text class="pa-6">
-            <v-form ref="form" @submit.prevent="handleSubmit">
-              <v-text-field
-                v-model="username"
-                label="用户名"
-                variant="outlined"
-                :rules="[v => !!v || '请输入用户名']"
-                class="mb-4"
-              />
+          </mdui-button>
+        </form>
 
-              <v-text-field
-                v-model="password"
-                label="密码"
-                type="password"
-                variant="outlined"
-                :rules="[v => !!v || '请输入密码']"
-                class="mb-4"
-              />
+        <mdui-divider class="my-6" />
 
-              <v-btn
-                color="primary"
-                type="submit"
-                block
-                :loading="loading || isLoading"
-              >
-                登录
-              </v-btn>
-            </v-form>
-
-            <v-divider class="my-6" />
-
-            <div class="text-center">
-              <span class="text-medium-emphasis">还没有账号？</span>
-              <v-btn v-if="allowRegister" variant="text" to="/register">
-                立即注册
-              </v-btn>
-              <span v-else class="text-disabled">注册已关闭</span>
-            </div>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+        <div class="text-center">
+          <span class="mdui-text-color-text-secondary">还没有账号？</span>
+          <mdui-button v-if="allowRegister" variant="text" href="/register">
+            立即注册
+          </mdui-button>
+          <span v-else class="mdui-text-color-text-disabled">注册已关闭</span>
+        </div>
+      </mdui-card-content>
+    </mdui-card>
+  </div>
 </template>
 
 <script setup lang="ts">
+import { ref, watch, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useUserStore } from '~/stores/user'
+import { useSnackbar } from '~/composables/useSnackbar'
+import { useGeetest } from '~/composables/useGeetest'
+import { useSiteConfig } from '~/composables/useSiteConfig'
+
 const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()

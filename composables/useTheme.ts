@@ -1,17 +1,19 @@
-export const useAppTheme = () => {
-  const theme = useTheme()
+import { computed } from 'vue'
+import { getTheme, setTheme } from 'mdui'
 
+export const useAppTheme = () => {
   const isDark = computed(() => {
     if (import.meta.client) {
-      return theme.global.current.value.dark
+      return getTheme() === 'dark'
     }
     return false
   })
 
   const toggleTheme = () => {
     if (import.meta.client) {
-      theme.global.name.value = isDark.value ? 'light' : 'dark'
-      localStorage.setItem('theme', theme.global.name.value)
+      const newTheme = isDark.value ? 'light' : 'dark'
+      setTheme(newTheme)
+      localStorage.setItem('theme', newTheme)
     }
   }
 
@@ -19,7 +21,7 @@ export const useAppTheme = () => {
     if (import.meta.client) {
       const savedTheme = localStorage.getItem('theme')
       if (savedTheme) {
-        theme.global.name.value = savedTheme
+        setTheme(savedTheme)
       }
     }
   }

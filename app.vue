@@ -1,43 +1,48 @@
 <template>
-  <v-app>
+  <div class="mdui-container-fluid">
     <LayoutAppHeader />
     <ClientOnly>
       <LayoutAppDrawer />
     </ClientOnly>
-    <v-main>
+    <main class="mdui-main">
       <NuxtPage />
-    </v-main>
+    </main>
     <ClientOnly>
-      <v-snackbar-queue
-        :model-value="snackbar.messages.value"
-        @update:model-value="snackbar.clear"
-        location="bottom right"
+      <mdui-snackbar
+        v-for="(message, index) in snackbar.messages.value"
+        :key="index"
+        :open="true"
+        :message="message"
         :timeout="4000"
+        @closed="snackbar.clear(index)"
       />
     </ClientOnly>
-  </v-app>
+  </div>
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, provide } from 'vue'
 const drawer = ref(true)
 const isExpanded = ref(false)
 
-const { mobile } = useDisplay()
 const snackbar = useSnackbar()
 
 const toggleExpand = () => {
-  if (mobile.value) {
-    drawer.value = !drawer.value
-  } else {
-    isExpanded.value = !isExpanded.value
-  }
+  drawer.value = !drawer.value
 }
 
 onMounted(() => {
-  drawer.value = !mobile.value
+  // 初始化逻辑
 })
 
 provide('drawer', drawer)
 provide('isExpanded', isExpanded)
 provide('toggleExpand', toggleExpand)
 </script>
+
+<style>
+.mdui-main {
+  min-height: calc(100vh - 64px);
+  padding: 24px;
+}
+</style>

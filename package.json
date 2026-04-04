@@ -24,14 +24,13 @@
     "highlight.js": "^11.11.1",
     "jose": "^6.2.2",
     "marked": "^17.0.5",
+    "mdui": "^2.0.4",
     "nuxt": "^3.21.2",
     "pinia": "^3.0.4",
     "rate-limiter-flexible": "^10.0.1",
     "vue": "^3.5.31",
     "vue-router": "^5.0.4",
     "vue3-simple-icons": "^16.10.0",
-    "vuetify": "^3.12.4",
-    "vuetify-nuxt-module": "^0.19.5",
     "zod": "^4.3.6"
   },
   "devDependencies": {

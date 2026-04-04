@@ -1,70 +1,63 @@
 <template>
-  <v-app>
+  <div class="mdui-container-fluid">
     <LayoutAppHeader />
     <ClientOnly>
       <LayoutAppDrawer />
     </ClientOnly>
-    <v-main>
-      <v-container class="fill-height">
-        <v-row justify="center" align="center">
-          <v-col cols="12" sm="8" md="6" class="text-center">
-            <v-icon size="120" color="error" class="mb-6">mdi-alert-circle-outline</v-icon>
+    <main class="mdui-main">
+      <div class="mdui-container" style="min-height: 70vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <div class="text-center">
+          <mdui-icon size="120" color="error" class="mb-6">error_outline</mdui-icon>
+          
+          <h1 class="mdui-typo-headline-3 mb-4">
+            {{ errorTitle }}
+          </h1>
+          
+          <p class="mdui-typo-body-1 mdui-text-color-text-secondary mb-8">
+            {{ errorMessage }}
+          </p>
+          
+          <div class="mdui-flex mdui-justify-center gap-4">
+            <mdui-button
+              variant="flat"
+              color="primary"
+              href="/"
+            >
+              <mdui-icon start>home</mdui-icon>
+              返回首页
+            </mdui-button>
             
-            <h1 class="text-h3 font-weight-bold mb-4">
-              {{ errorTitle }}
-            </h1>
-            
-            <p class="text-body-1 text-medium-emphasis mb-8">
-              {{ errorMessage }}
-            </p>
-            
-            <div class="d-flex justify-center ga-4">
-              <v-btn
-                color="primary"
-                variant="flat"
-                to="/"
-              >
-                <v-icon start>mdi-home</v-icon>
-                返回首页
-              </v-btn>
-              
-              <v-btn
-                variant="tonal"
-                @click="handleClearError"
-              >
-                <v-icon start>mdi-refresh</v-icon>
-                重试
-              </v-btn>
-            </div>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-main>
-  </v-app>
+            <mdui-button
+              variant="outlined"
+              @click="handleClearError"
+            >
+              <mdui-icon start>refresh</mdui-icon>
+              重试
+            </mdui-button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { useDisplay } from 'vuetify'
+import { ref, computed, onMounted, provide } from 'vue'
 import type { NuxtError } from '#app'
 
 const props = defineProps<{
   error: NuxtError
 }>()
 
-const { mobile } = useDisplay()
 const drawer = ref(true)
 const isExpanded = ref(false)
 
 const toggleExpand = () => {
-  if (mobile.value) {
-    drawer.value = !drawer.value
-  } else {
-    isExpanded.value = !isExpanded.value
-  }
+  drawer.value = !drawer.value
 }
 
 onMounted(() => {
-  drawer.value = !mobile.value
+  // 初始化逻辑
 })
 
 provide('drawer', drawer)

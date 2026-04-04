@@ -17,27 +17,31 @@ export const useSnackbar = () => {
   }
 
   const success = (text: string, title?: string) => {
-    show({ text, title, color: 'success', icon: 'mdi-check-circle' })
+    show({ text, title, color: 'success', icon: 'check_circle' })
   }
 
   const error = (text: string, title?: string) => {
-    show({ text, title, color: 'error', icon: 'mdi-alert-circle' })
+    show({ text, title, color: 'error', icon: 'error' })
   }
 
   const warning = (text: string, title?: string) => {
-    show({ text, title, color: 'warning', icon: 'mdi-alert' })
+    show({ text, title, color: 'warning', icon: 'warning' })
   }
 
   const info = (text: string, title?: string) => {
-    show({ text, title, color: 'info', icon: 'mdi-information' })
+    show({ text, title, color: 'info', icon: 'info' })
   }
 
   const remove = (index: number) => {
     messages.value.splice(index, 1)
   }
 
-  const clear = () => {
-    messages.value = []
+  const clear = (index?: number) => {
+    if (index !== undefined) {
+      messages.value.splice(index, 1)
+    } else {
+      messages.value = []
+    }
   }
 
   return {

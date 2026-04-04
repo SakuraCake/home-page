@@ -1,32 +1,30 @@
 <template>
   <ClientOnly>
-    <v-navigation-drawer 
-      v-model="drawer" 
-      :rail="!isMobile && !isExpanded"
-      :temporary="isMobile"
-      disable-route-watcher
-    >
-      <v-list nav>
-        <v-list-item
+    <mdui-navigation-drawer v-model:open="drawer" type="modal">
+      <div class="mdui-navigation-drawer__header">
+        <div class="mdui-navigation-drawer__title">SakuraCake</div>
+      </div>
+      <mdui-list>
+        <mdui-list-item
           v-for="item in navItems"
           :key="item.title"
-          :to="item.to"
-          :prepend-icon="item.icon"
-          :title="item.title"
-          :value="item.title"
-        />
-      </v-list>
-    </v-navigation-drawer>
+          :href="item.to"
+          @click="drawer = false"
+        >
+          <template #start>
+            <mdui-icon>{{ item.icon }}</mdui-icon>
+          </template>
+          <div class="mdui-list-item__title">{{ item.title }}</div>
+        </mdui-list-item>
+      </mdui-list>
+    </mdui-navigation-drawer>
   </ClientOnly>
 </template>
 
 <script setup lang="ts">
-import { useDisplay } from 'vuetify'
+import { ref, computed, inject } from 'vue'
 
 const drawer = inject<Ref<boolean>>('drawer', ref(false))
-const isExpanded = inject<Ref<boolean>>('isExpanded', ref(false))
-const { mobile } = useDisplay()
-const isMobile = computed(() => mobile.value)
 
 interface NavItem {
   title: string
@@ -35,8 +33,8 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { title: '首页', to: '/', icon: 'mdi-home' },
-  { title: '追番', to: '/chase', icon: 'mdi-animation' },
-  { title: '文章', to: '/article', icon: 'mdi-file-document' },
+  { title: '首页', to: '/', icon: 'home' },
+  { title: '追番', to: '/chase', icon: 'animation' },
+  { title: '文章', to: '/article', icon: 'article' },
 ]
 </script>
