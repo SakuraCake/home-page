@@ -1,4 +1,4 @@
-import { defineEventHandler } from '#imports'
+import { defineEventHandler } from 'h3'
 import { eq, sql } from 'drizzle-orm'
 import { db } from '~/database'
 import { articles } from '~/database/schema'

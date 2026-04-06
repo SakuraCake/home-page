@@ -1,9 +1,9 @@
-import { defineEventHandler } from '#imports'
+import { defineEventHandler } from 'h3'
 import { db } from '~/database'
-import { tags, articleTags } from '~/database/schema'
-import { eq, sql } from 'drizzle-orm'
+import { sql, eq } from 'drizzle-orm'
+import { articleTags } from '~/database/schema'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (_event) => {
   const allTags = await db.query.tags.findMany({
     orderBy: (tags, { desc }) => [desc(tags.createdAt)],
   })

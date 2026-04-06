@@ -3,13 +3,13 @@
     <v-row>
       <v-col cols="12">
         <div class="d-flex justify-space-between align-center mb-4">
-          <h1 class="text-h4">文章列表</h1>
-          <v-btn
-            v-if="userStore.isLoggedIn"
-            color="primary"
-            to="/article/create"
-          >
-            <v-icon start>mdi-plus</v-icon>
+          <h1 class="text-h4">
+            文章列表
+          </h1>
+          <v-btn v-if="userStore.isLoggedIn" color="primary" to="/article/create">
+            <v-icon start>
+              mdi-plus
+            </v-icon>
             写文章
           </v-btn>
         </div>
@@ -17,7 +17,7 @@
     </v-row>
 
     <v-row v-if="articleStore.loading">
-      <v-col cols="12" md="6" v-for="i in 4" :key="i">
+      <v-col v-for="i in 4" :key="i" cols="12" md="6">
         <v-card height="100%">
           <v-skeleton-loader type="image" height="200" />
           <v-card-title>
@@ -38,11 +38,8 @@
 
     <v-row v-else-if="articleStore.articles.length === 0">
       <v-col cols="12">
-        <v-empty-state
-          icon="mdi-file-document-outline"
-          title="暂无文章"
-          :text="userStore.isLoggedIn ? '点击「写文章」开始创作' : '登录后即可开始创作'"
-        >
+        <v-empty-state icon="mdi-file-document-outline" title="暂无文章"
+          :text="userStore.isLoggedIn ? '点击「写文章」开始创作' : '登录后即可开始创作'">
           <template #actions>
             <v-btn v-if="userStore.isLoggedIn" color="primary" to="/article/create">
               写文章
@@ -56,28 +53,29 @@
     </v-row>
 
     <v-row v-else>
-      <v-col cols="12" md="6" v-for="article in articleStore.articles" :key="article.id">
+      <v-col v-for="article in articleStore.articles" :key="article.id" cols="12" md="6">
         <v-card :to="`/article/${article.id}`" height="100%">
-          <v-img
-            v-if="article.coverImage"
-            :src="article.coverImage"
-            height="200"
-            cover
-          />
+          <v-img v-if="article.coverImage" :src="article.coverImage" height="200" cover />
           <v-card-title class="text-h6">
             {{ article.title }}
           </v-card-title>
           <v-card-subtitle>
             <v-chip size="x-small" label class="mr-1">
-              <v-icon start>mdi-account</v-icon>
+              <v-icon start>
+                mdi-account
+              </v-icon>
               {{ article.author?.username || '未知' }}
             </v-chip>
             <v-chip size="x-small" label class="mr-1">
-              <v-icon start>mdi-calendar</v-icon>
+              <v-icon start>
+                mdi-calendar
+              </v-icon>
               {{ formatDate(article.createdAt) }}
             </v-chip>
             <v-chip size="x-small" label>
-              <v-icon start>mdi-eye</v-icon>
+              <v-icon start>
+                mdi-eye
+              </v-icon>
               {{ article.viewCount }}
             </v-chip>
           </v-card-subtitle>
@@ -85,24 +83,15 @@
             {{ article.summary || '暂无摘要' }}
           </v-card-text>
           <v-card-actions v-if="article.tags?.length">
-            <v-chip
-              v-for="tag in article.tags"
-              :key="tag.id"
-              size="x-small"
-              class="mr-1"
-            >
+            <v-chip v-for="tag in article.tags" :key="tag.id" size="x-small" class="mr-1">
               {{ tag.name }}
             </v-chip>
           </v-card-actions>
         </v-card>
       </v-col>
 
-      <v-col cols="12" class="text-center" v-if="articleStore.hasMore">
-        <v-btn
-          variant="tonal"
-          :loading="articleStore.loading"
-          @click="loadMore"
-        >
+      <v-col v-if="articleStore.hasMore" cols="12" class="text-center">
+        <v-btn variant="tonal" :loading="articleStore.loading" @click="loadMore">
           加载更多
         </v-btn>
       </v-col>

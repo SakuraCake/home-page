@@ -1,4 +1,5 @@
-import { H3Error } from 'h3'
+import { H3Error, createError } from 'h3'
+import type { ZodError } from 'zod'
 
 export class AppError extends H3Error {
   constructor(
@@ -9,6 +10,14 @@ export class AppError extends H3Error {
     super(message)
     this.statusCode = statusCode
     this.statusMessage = message
+    this.data = {
+      success: false,
+      error: {
+        code: code || 'ERROR',
+        message,
+        statusCode,
+      },
+    }
   }
 
   static badRequest(message: string, code?: string) {
@@ -44,6 +53,64 @@ export function isAppError(error: unknown): error is AppError {
   return error instanceof AppError
 }
 
+export function createApiError(
+  statusCode: number,
+  message: string,
+  code?: string
+): H3Error {
+  return createError({
+    statusCode,
+    statusMessage: message,
+    message,
+    data: {
+      success: false,
+      error: {
+        code: code || 'ERROR',
+        message,
+        statusCode,
+      },
+    },
+  })
+}
+
+export function handleApiError(error: unknown): H3Error {
+  if (isAppError(error)) {
+    return error
+  }
+
+  if (error instanceof H3Error) {
+    return error
+  }
+
+  if (isZodError(error)) {
+    const messages = error.issues
+      .map((err) => `${err.path.join('.')}: ${err.message}`)
+      .join(', ')
+    return createApiError(400, messages || '输入数据验证失败', 'VALIDATION_ERROR')
+  }
+
+  if (error instanceof Error) {
+    console.error('[API Error]', error)
+    return createApiError(
+      500,
+      process.env.NODE_ENV === 'production' ? '服务器内部错误' : error.message,
+      'INTERNAL_ERROR'
+    )
+  }
+
+  console.error('[Unknown Error]', error)
+  return createApiError(500, '未知错误', 'UNKNOWN_ERROR')
+}
+
+function isZodError(error: unknown): error is ZodError {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'issues' in error &&
+    Array.isArray((error as any).issues)
+  )
+}
+
 export function handleError(error: unknown) {
   if (isAppError(error)) {
     return {
@@ -61,8 +128,8 @@ export function handleError(error: unknown) {
       success: false,
       error: {
         code: 'INTERNAL_ERROR',
-        message: process.env.NODE_ENV === 'production' 
-          ? '服务器内部错误' 
+        message: process.env.NODE_ENV === 'production'
+          ? '服务器内部错误'
           : error.message,
         statusCode: 500,
       },

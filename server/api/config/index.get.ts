@@ -1,10 +1,9 @@
-import { defineCachedEventHandler } from '#imports'
 import { db } from '~/database'
 import { siteConfig, captchaConfig } from '~/database/schema'
 
 export default defineCachedEventHandler(async () => {
   let site = await db.query.siteConfig.findFirst()
-  
+
   if (!site) {
     const now = Date.now()
     const result = await db.insert(siteConfig).values({
@@ -20,7 +19,7 @@ export default defineCachedEventHandler(async () => {
   }
 
   let captcha = await db.query.captchaConfig.findFirst()
-  
+
   if (!captcha) {
     const now = Date.now()
     const result = await db.insert(captchaConfig).values({

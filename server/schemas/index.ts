@@ -8,6 +8,7 @@ export const loginSchema = z.object({
   password: z.string()
     .min(6, '密码至少6个字符')
     .max(100, '密码最多100个字符'),
+  rememberMe: z.boolean().optional(),
   geetest_challenge: z.string().optional(),
   geetest_validate: z.string().optional(),
   geetest_seccode: z.string().optional(),

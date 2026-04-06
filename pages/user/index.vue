@@ -10,10 +10,14 @@
         <v-card>
           <v-card-text class="text-center py-8">
             <v-avatar size="100" class="mb-4">
-              <v-icon v-if="!userStore.user?.avatar" size="60">mdi-account</v-icon>
+              <v-icon v-if="!userStore.user?.avatar" size="60">
+                mdi-account
+              </v-icon>
               <v-img v-else :src="userStore.user.avatar" />
             </v-avatar>
-            <h2 class="text-h5 mb-2">{{ userStore.user?.username }}</h2>
+            <h2 class="text-h5 mb-2">
+              {{ userStore.user?.username }}
+            </h2>
             <v-chip size="small" :color="userStore.isAdmin ? 'primary' : 'default'">
               {{ userStore.isAdmin ? '管理员' : '普通用户' }}
             </v-chip>
@@ -29,7 +33,9 @@
               </template>
               <v-list-item-title>我的文章</v-list-item-title>
               <template #append>
-                <v-chip size="small">{{ articleCount }}</v-chip>
+                <v-chip size="small">
+                  {{ articleCount }}
+                </v-chip>
               </template>
             </v-list-item>
             <v-list-item to="/user/comments">
@@ -48,26 +54,9 @@
           <v-divider />
           <v-card-text class="pa-6">
             <v-form @submit.prevent="handleUpdateProfile">
-              <v-text-field
-                v-model="form.username"
-                label="用户名"
-                variant="outlined"
-                disabled
-                class="mb-4"
-              />
-              <v-text-field
-                v-model="form.email"
-                label="邮箱"
-                type="email"
-                variant="outlined"
-                class="mb-4"
-              />
-              <v-text-field
-                v-model="form.avatar"
-                label="头像 URL"
-                variant="outlined"
-                class="mb-4"
-              />
+              <v-text-field v-model="form.username" label="用户名" variant="outlined" disabled class="mb-4" />
+              <v-text-field v-model="form.email" label="邮箱" type="email" variant="outlined" class="mb-4" />
+              <v-text-field v-model="form.avatar" label="头像 URL" variant="outlined" class="mb-4" />
 
               <v-btn color="primary" type="submit" :loading="loading">
                 保存更改
@@ -81,27 +70,12 @@
           <v-divider />
           <v-card-text class="pa-6">
             <v-form @submit.prevent="handleChangePassword">
-              <v-text-field
-                v-model="passwordForm.oldPassword"
-                label="当前密码"
-                type="password"
-                variant="outlined"
-                class="mb-4"
-              />
-              <v-text-field
-                v-model="passwordForm.newPassword"
-                label="新密码"
-                type="password"
-                variant="outlined"
-                class="mb-4"
-              />
-              <v-text-field
-                v-model="passwordForm.confirmPassword"
-                label="确认新密码"
-                type="password"
-                variant="outlined"
-                class="mb-4"
-              />
+              <v-text-field v-model="passwordForm.oldPassword" label="当前密码" type="password" variant="outlined"
+                class="mb-4" />
+              <v-text-field v-model="passwordForm.newPassword" label="新密码" type="password" variant="outlined"
+                class="mb-4" />
+              <v-text-field v-model="passwordForm.confirmPassword" label="确认新密码" type="password" variant="outlined"
+                class="mb-4" />
 
               <v-btn color="primary" type="submit" :loading="passwordLoading">
                 修改密码
@@ -115,6 +89,12 @@
 </template>
 
 <script setup lang="ts">
+import type { ApiResponse } from '~/types/api'
+
+interface ArticleCountResponse {
+  count: number
+}
+
 const userStore = useUserStore()
 const router = useRouter()
 const snackbar = useSnackbar()
@@ -152,7 +132,7 @@ const handleUpdateProfile = async () => {
   loading.value = true
 
   try {
-    const response = await $fetch('/api/user/profile', {
+    const response = await $fetch<ApiResponse>('/api/user/profile', {
       method: 'PUT',
       body: {
         email: form.value.email,
@@ -167,7 +147,7 @@ const handleUpdateProfile = async () => {
     } else {
       snackbar.error(response.message || '保存失败')
     }
-  } catch (e) {
+  } catch (_e) {
     snackbar.error('保存失败')
   } finally {
     loading.value = false
@@ -188,7 +168,7 @@ const handleChangePassword = async () => {
   passwordLoading.value = true
 
   try {
-    const response = await $fetch('/api/user/password', {
+    const response = await $fetch<ApiResponse>('/api/user/password', {
       method: 'PUT',
       body: {
         oldPassword: passwordForm.value.oldPassword,
@@ -207,7 +187,7 @@ const handleChangePassword = async () => {
     } else {
       snackbar.error(response.message || '密码修改失败')
     }
-  } catch (e) {
+  } catch (_e) {
     snackbar.error('密码修改失败')
   } finally {
     passwordLoading.value = false
@@ -216,13 +196,13 @@ const handleChangePassword = async () => {
 
 const fetchArticleCount = async () => {
   try {
-    const response = await $fetch('/api/user/articles/count', {
+    const response = await $fetch<ApiResponse<ArticleCountResponse>>('/api/user/articles/count', {
       headers: userStore.getAuthHeaders()
     })
-    if (response.success) {
+    if (response.success && response.data) {
       articleCount.value = response.data.count
     }
-  } catch (e) {
+  } catch (_e) {
   }
 }
 

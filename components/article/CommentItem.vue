@@ -2,7 +2,9 @@
   <div class="comment-item mb-4">
     <div class="d-flex align-start">
       <v-avatar size="40" class="mr-3">
-        <v-icon v-if="!displayAvatar">mdi-account</v-icon>
+        <v-icon v-if="!displayAvatar">
+          mdi-account
+        </v-icon>
         <v-img v-else :src="displayAvatar" />
       </v-avatar>
       <div class="flex-grow-1">
@@ -12,22 +14,14 @@
             {{ formatDate(comment.createdAt) }}
           </span>
         </div>
-        <div class="text-body-2 mb-2">{{ comment.content }}</div>
+        <div class="text-body-2 mb-2">
+          {{ comment.content }}
+        </div>
         <div class="d-flex gap-2">
-          <v-btn
-            size="x-small"
-            variant="text"
-            @click="$emit('reply', comment.id)"
-          >
+          <v-btn size="x-small" variant="text" @click="$emit('reply', comment.id)">
             回复
           </v-btn>
-          <v-btn
-            v-if="canDelete"
-            size="x-small"
-            variant="text"
-            color="error"
-            @click="handleDelete"
-          >
+          <v-btn v-if="canDelete" size="x-small" variant="text" color="error" @click="handleDelete">
             删除
           </v-btn>
         </div>
@@ -35,36 +29,17 @@
     </div>
 
     <div v-if="comment.replies?.length" class="ml-13 mt-3">
-      <ArticleCommentItem
-        v-for="reply in comment.replies"
-        :key="reply.id"
-        :comment="reply"
-        :article-id="articleId"
-        @reply="$emit('reply', $event)"
-        @deleted="$emit('deleted')"
-      />
+      <ArticleCommentItem v-for="reply in comment.replies" :key="reply.id" :comment="reply" :article-id="articleId"
+        @reply="$emit('reply', $event)" @deleted="$emit('deleted')" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-interface Comment {
-  id: number
-  content: string
-  createdAt: number
-  deletedAt: number | null
-  guestName?: string | null
-  guestEmail?: string | null
-  user?: {
-    id: number
-    username: string
-    avatar: string | null
-  } | null
-  replies?: Comment[]
-}
+import type { CommentWithReplies } from '~/types/api'
 
 const props = defineProps<{
-  comment: Comment
+  comment: CommentWithReplies
   articleId: number
 }>()
 
@@ -118,7 +93,7 @@ const handleDelete = async () => {
     if (response.success) {
       emit('deleted')
     }
-  } catch (e) {
+  } catch (_e) {
   }
 }
 </script>

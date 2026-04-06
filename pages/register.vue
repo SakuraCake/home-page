@@ -8,11 +8,19 @@
           </v-card-title>
           <v-divider />
           <v-card-text class="pa-6">
-            <v-alert v-if="!allowRegister" type="warning" class="mb-4">
+            <v-alert
+              v-if="!allowRegister"
+              type="warning"
+              class="mb-4"
+            >
               系统已关闭注册功能
             </v-alert>
 
-            <v-form v-else ref="form" @submit.prevent="handleSubmit">
+            <v-form
+              v-else
+              ref="form"
+              @submit.prevent="handleSubmit"
+            >
               <v-text-field
                 v-model="username"
                 label="用户名"
@@ -70,7 +78,10 @@
 
             <div class="text-center">
               <span class="text-medium-emphasis">已有账号？</span>
-              <v-btn variant="text" to="/login">
+              <v-btn
+                variant="text"
+                to="/login"
+              >
                 立即登录
               </v-btn>
             </div>

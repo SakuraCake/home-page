@@ -24,38 +24,24 @@
 
     <v-row v-else-if="animeStore.collections.length === 0">
       <v-col cols="12">
-        <v-empty-state
-          icon="mdi-animation-outline"
-          title="暂无番剧"
-          text="还没有收藏任何番剧"
-        />
+        <v-empty-state icon="mdi-animation-outline" title="暂无番剧" text="还没有收藏任何番剧" />
       </v-col>
     </v-row>
 
     <template v-else>
       <v-row>
-        <v-col
-          v-for="collection in animeStore.collections"
-          :key="collection.subject_id"
-          cols="6"
-          sm="4"
-          md="3"
-          lg="2"
-        >
+        <v-col v-for="collection in animeStore.collections" :key="collection.subject_id" cols="6" sm="4" md="3" lg="2">
           <ChaseAnimeCard :collection="collection" />
         </v-col>
       </v-row>
 
       <v-row v-if="animeStore.hasMore || animeStore.loading" class="mt-4">
         <v-col cols="12" class="text-center">
-          <v-btn
-            :loading="animeStore.loading"
-            :disabled="animeStore.loading"
-            color="primary"
-            variant="tonal"
-            @click="loadMore"
-          >
-            <v-icon start>mdi-chevron-down</v-icon>
+          <v-btn :loading="animeStore.loading" :disabled="animeStore.loading" color="primary" variant="tonal"
+            @click="loadMore">
+            <v-icon start>
+              mdi-chevron-down
+            </v-icon>
             加载更多
           </v-btn>
         </v-col>

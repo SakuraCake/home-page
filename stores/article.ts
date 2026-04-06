@@ -1,50 +1,11 @@
 import { defineStore } from 'pinia'
-
-interface User {
-  id: number
-  username: string
-  avatar: string | null
-}
-
-interface Category {
-  id: number
-  name: string
-  slug: string
-  description: string | null
-  articleCount: number
-}
-
-interface Tag {
-  id: number
-  name: string
-  slug: string
-  articleCount: number
-}
-
-export interface Article {
-  id: number
-  title: string
-  slug: string
-  content: string | null
-  summary: string | null
-  coverImage: string | null
-  authorId: number | null
-  categoryId: number | null
-  status: string | null
-  viewCount: number | null
-  createdAt: number
-  updatedAt: number
-  contentType?: string
-  author?: User
-  category?: Category
-  tags?: Tag[]
-}
+import type { ArticleListItem, ArticleDetail, CategoryWithCount, TagWithCount, ApiResponse, PaginatedResponse } from '~/types/api'
 
 interface ArticleState {
-  articles: Article[]
-  currentArticle: Article | null
-  categories: Category[]
-  tags: Tag[]
+  articles: ArticleListItem[]
+  currentArticle: ArticleDetail | null
+  categories: CategoryWithCount[]
+  tags: TagWithCount[]
   loading: boolean
   error: string | null
   total: number
@@ -83,7 +44,7 @@ export const useArticleStore = defineStore('article', {
 
       try {
         const { postsPerPage } = useSiteConfig()
-        
+
         const query: Record<string, any> = {
           page: params?.page || this.page,
           pageSize: params?.pageSize || postsPerPage.value || this.pageSize,
@@ -94,7 +55,7 @@ export const useArticleStore = defineStore('article', {
         if (params?.status) query.status = params.status
         if (params?.keyword) query.keyword = params.keyword
 
-        const response = await $fetch('/api/articles', { query })
+        const response = await $fetch<ApiResponse<PaginatedResponse<ArticleListItem>>>('/api/articles', { query })
 
         if (response.success && response.data) {
           this.articles = response.data.list
@@ -114,7 +75,7 @@ export const useArticleStore = defineStore('article', {
       this.error = null
 
       try {
-        const response = await $fetch(`/api/articles/${id}`)
+        const response = await $fetch<ApiResponse<ArticleDetail>>(`/api/articles/${id}`)
 
         if (response.success && response.data) {
           this.currentArticle = response.data
@@ -139,13 +100,16 @@ export const useArticleStore = defineStore('article', {
       categoryId?: number
       tagIds?: number[]
       status?: string
+      visibility?: string
+      password?: string
+      publishAt?: number
     }) {
       this.loading = true
       this.error = null
 
       try {
         const userStore = useUserStore()
-        const response = await $fetch('/api/articles', {
+        const response = await $fetch<ApiResponse<ArticleDetail>>('/api/articles', {
           method: 'POST',
           body: data,
           headers: userStore.getAuthHeaders(),
@@ -173,13 +137,16 @@ export const useArticleStore = defineStore('article', {
       categoryId: number
       tagIds: number[]
       status: string
+      visibility: string
+      password: string
+      publishAt: number
     }>) {
       this.loading = true
       this.error = null
 
       try {
         const userStore = useUserStore()
-        const response = await $fetch(`/api/articles/${id}`, {
+        const response = await $fetch<ApiResponse<ArticleDetail>>(`/api/articles/${id}`, {
           method: 'PUT',
           body: data,
           headers: userStore.getAuthHeaders(),
@@ -204,7 +171,7 @@ export const useArticleStore = defineStore('article', {
 
       try {
         const userStore = useUserStore()
-        const response = await $fetch(`/api/articles/${id}`, {
+        const response = await $fetch<ApiResponse>(`/api/articles/${id}`, {
           method: 'DELETE',
           headers: userStore.getAuthHeaders(),
         })
@@ -224,23 +191,23 @@ export const useArticleStore = defineStore('article', {
 
     async fetchCategories() {
       try {
-        const response = await $fetch('/api/categories')
+        const response = await $fetch<ApiResponse<CategoryWithCount[]>>('/api/categories')
 
         if (response.success && response.data) {
           this.categories = response.data
         }
-      } catch (e) {
+      } catch (_e) {
       }
     },
 
     async fetchTags() {
       try {
-        const response = await $fetch('/api/tags')
+        const response = await $fetch<ApiResponse<TagWithCount[]>>('/api/tags')
 
         if (response.success && response.data) {
           this.tags = response.data
         }
-      } catch (e) {
+      } catch (_e) {
       }
     },
 

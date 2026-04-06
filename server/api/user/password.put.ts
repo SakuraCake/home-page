@@ -1,4 +1,4 @@
-import { defineEventHandler, readBody, createError } from '#imports'
+import { defineEventHandler, readBody } from 'h3'
 import { eq } from 'drizzle-orm'
 import { db } from '~/database'
 import { users } from '~/database/schema'

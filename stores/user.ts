@@ -1,14 +1,5 @@
 import { defineStore } from 'pinia'
-
-interface User {
-  id: number
-  username: string
-  email: string | null
-  role: string
-  avatar: string | null
-  createdAt: number
-  updatedAt: number
-}
+import type { User, ApiResponse } from '~/types/api'
 
 interface UserState {
   user: User | null
@@ -23,6 +14,17 @@ interface CaptchaData {
   geetest_seccode: string
 }
 
+interface LoginResponse {
+  token: string
+  csrfToken?: string
+  user: User
+}
+
+interface RegisterResponse {
+  token: string
+  user: User
+}
+
 export const useUserStore = defineStore('user', {
   state: (): UserState => ({
     user: null,
@@ -32,18 +34,13 @@ export const useUserStore = defineStore('user', {
   }),
 
   getters: {
-    isLoggedIn: (state) => !!state.user && !!state.token,
+    isLoggedIn: (state) => !!state.user,
     isAdmin: (state) => state.user?.role === 'admin',
   },
 
   actions: {
     setToken(token: string) {
       this.token = token
-      const cookie = useCookie('auth_token', {
-        maxAge: 60 * 60 * 24 * 7,
-        path: '/',
-      })
-      cookie.value = token
     },
 
     getToken(): string | null {
@@ -58,16 +55,17 @@ export const useUserStore = defineStore('user', {
       cookie.value = null
     },
 
-    async login(username: string, password: string, captcha: CaptchaData) {
+    async login(username: string, password: string, captcha: CaptchaData, rememberMe: boolean = false) {
       this.loading = true
       this.error = null
 
       try {
-        const response = await $fetch('/api/auth/login', {
+        const response = await $fetch<ApiResponse<LoginResponse>>('/api/auth/login', {
           method: 'POST',
-          body: { 
-            username, 
+          body: {
+            username,
             password,
+            rememberMe,
             geetest_challenge: captcha.geetest_challenge,
             geetest_validate: captcha.geetest_validate,
             geetest_seccode: captcha.geetest_seccode,
@@ -76,7 +74,7 @@ export const useUserStore = defineStore('user', {
 
         if (response.success && response.data) {
           this.user = response.data.user
-          this.setToken(response.data.token)
+          this.token = response.data.token
           return true
         } else {
           this.error = response.message || '登录失败'
@@ -95,11 +93,11 @@ export const useUserStore = defineStore('user', {
       this.error = null
 
       try {
-        const response = await $fetch('/api/auth/register', {
+        const response = await $fetch<ApiResponse<RegisterResponse>>('/api/auth/register', {
           method: 'POST',
-          body: { 
-            username, 
-            password, 
+          body: {
+            username,
+            password,
             email,
             geetest_challenge: captcha.geetest_challenge,
             geetest_validate: captcha.geetest_validate,
@@ -125,11 +123,11 @@ export const useUserStore = defineStore('user', {
 
     async logout() {
       try {
-        await $fetch('/api/auth/logout', {
+        await $fetch<ApiResponse>('/api/auth/logout', {
           method: 'POST',
           headers: this.getAuthHeaders(),
         })
-      } catch (e) {
+      } catch (_e) {
       }
 
       this.user = null
@@ -144,7 +142,7 @@ export const useUserStore = defineStore('user', {
       this.error = null
 
       try {
-        const response = await $fetch('/api/user/me', {
+        const response = await $fetch<ApiResponse<User>>('/api/user/me', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -158,8 +156,10 @@ export const useUserStore = defineStore('user', {
           this.clearToken()
           return false
         }
-      } catch (e) {
-        this.clearToken()
+      } catch (e: any) {
+        if (e?.response?.status === 401) {
+          this.clearToken()
+        }
         return false
       } finally {
         this.loading = false

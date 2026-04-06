@@ -8,23 +8,18 @@
     <v-row>
       <v-col cols="12">
         <div class="d-flex justify-space-between align-center mb-4">
-          <h1 class="text-h4">用户管理</h1>
+          <h1 class="text-h4">
+            用户管理
+          </h1>
         </div>
       </v-col>
 
       <v-col cols="12">
         <v-card>
           <ClientOnly>
-            <v-data-table
-              :headers="headers"
-              :items="users"
-              :loading="loading"
-            >
+            <v-data-table :headers="headers" :items="users" :loading="loading">
               <template #item.role="{ item }">
-                <v-chip
-                  size="small"
-                  :color="item.role === 'admin' ? 'primary' : 'default'"
-                >
+                <v-chip size="small" :color="item.role === 'admin' ? 'primary' : 'default'">
                   {{ item.role === 'admin' ? '管理员' : '普通用户' }}
                 </v-chip>
               </template>
@@ -32,13 +27,8 @@
                 {{ formatDate(item.createdAt) }}
               </template>
               <template #item.actions="{ item }">
-                <v-btn
-                  v-if="item.id !== userStore.user?.id"
-                  size="small"
-                  variant="text"
-                  :color="item.role === 'admin' ? 'warning' : 'primary'"
-                  @click="toggleAdmin(item)"
-                >
+                <v-btn v-if="item.id !== userStore.user?.id" size="small" variant="text"
+                  :color="item.role === 'admin' ? 'warning' : 'primary'" @click="toggleAdmin(item)">
                   {{ item.role === 'admin' ? '取消管理员' : '设为管理员' }}
                 </v-btn>
                 <span v-else class="text-medium-emphasis text-caption">
@@ -54,6 +44,8 @@
 </template>
 
 <script setup lang="ts">
+import type { User, ApiResponse } from '~/types/api'
+
 const userStore = useUserStore()
 const router = useRouter()
 
@@ -63,7 +55,7 @@ const breadcrumbs = [
   { title: '用户管理', disabled: true }
 ]
 
-const users = ref<any[]>([])
+const users = ref<User[]>([])
 const loading = ref(true)
 
 const headers = [
@@ -82,22 +74,21 @@ const formatDate = (timestamp: number) => {
 const fetchUsers = async () => {
   loading.value = true
   try {
-    const response = await $fetch('/api/admin/users', {
+    const response = await $fetch<ApiResponse<User[]>>('/api/admin/users', {
       headers: userStore.getAuthHeaders()
     })
-    if (response.success) {
+    if (response.success && response.data) {
       users.value = response.data
     }
-  } catch (e) {
-    // ignore
+  } catch (_e) {
   } finally {
     loading.value = false
   }
 }
 
-const toggleAdmin = async (user: any) => {
+const toggleAdmin = async (user: User) => {
   try {
-    const response = await $fetch(`/api/admin/users/${user.id}/role`, {
+    const response = await $fetch<ApiResponse>(`/api/admin/users/${user.id}/role`, {
       method: 'PUT',
       body: {
         role: user.role === 'admin' ? 'user' : 'admin'
@@ -108,8 +99,7 @@ const toggleAdmin = async (user: any) => {
     if (response.success) {
       await fetchUsers()
     }
-  } catch (e) {
-    // ignore
+  } catch (_e) {
   }
 }
 

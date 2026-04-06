@@ -1,7 +1,7 @@
-import { defineEventHandler, readBody } from '#imports'
+import { defineEventHandler } from 'h3'
 import { eq } from 'drizzle-orm'
 import { db } from '~/database'
-import { users, captchaConfig } from '~/database/schema'
+import { users } from '~/database/schema'
 import { hashPassword } from '~/server/utils/auth'
 import { createSession } from '~/server/utils/session'
 import { validateCaptcha } from '~/server/utils/geetest'
@@ -38,7 +38,7 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    const captchaResult = await validateCaptcha({
+    const captchaResult = await validateCaptcha(event, {
       challenge: geetest_challenge,
       validate: geetest_validate,
       seccode: geetest_seccode,

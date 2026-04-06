@@ -1,30 +1,35 @@
-import { defineEventHandler, getQuery } from '#imports'
-import { eq, and, desc, like, sql, inArray, isNull } from 'drizzle-orm'
+import { eq, and, desc, like, sql, inArray, isNull, or, lte } from 'drizzle-orm'
 import { db } from '~/database'
 import { articles, users, categories, tags, articleTags } from '~/database/schema'
-import { getSession } from '~/server/utils/session'
+import { getUserSession } from '~/server/utils/session'
 
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
   const query = getQuery(event)
   const page = Number(query.page) || 1
   const pageSize = Number(query.pageSize) || 10
-  const { categoryId, tagId, status, keyword } = query
+  const { categoryId, tagId, keyword } = query
 
-  const session = await getSession(event)
-  const isAdmin = session?.role === 'admin'
+  const session = await getUserSession(event)
+  const isLoggedIn = !!session
 
   const offset = (page - 1) * pageSize
+  const now = Date.now()
 
-  const conditions = [isNull(articles.deletedAt)]
+  const conditions = [
+    isNull(articles.deletedAt),
+    eq(articles.status, 'published'),
+    or(
+      isNull(articles.publishAt),
+      lte(articles.publishAt, now)
+    )
+  ]
+
+  if (!isLoggedIn) {
+    conditions.push(eq(articles.visibility, 'public'))
+  }
 
   if (categoryId) {
     conditions.push(eq(articles.categoryId, Number(categoryId)))
-  }
-
-  if (isAdmin && status) {
-    conditions.push(eq(articles.status, status as string))
-  } else if (!isAdmin) {
-    conditions.push(eq(articles.status, 'published'))
   }
 
   if (keyword) {
@@ -37,9 +42,9 @@ export default defineEventHandler(async (event) => {
       .select({ articleId: articleTags.articleId })
       .from(articleTags)
       .where(eq(articleTags.tagId, Number(tagId)))
-    
+
     articleIdsByTag = tagRelations.map(r => r.articleId)
-    
+
     if (articleIdsByTag.length === 0) {
       return {
         success: true,
@@ -138,6 +143,8 @@ export default defineEventHandler(async (event) => {
     summary: article.summary,
     coverImage: article.coverImage,
     status: article.status,
+    visibility: article.visibility,
+    hasPassword: !!article.password,
     viewCount: article.viewCount,
     createdAt: article.createdAt,
     updatedAt: article.updatedAt,
@@ -155,4 +162,21 @@ export default defineEventHandler(async (event) => {
       pageSize,
     },
   }
+}, {
+  maxAge: 60,
+  swr: true,
+  staleMaxAge: 120,
+  getKey: async (event) => {
+    const query = getQuery(event)
+    const page = query.page || '1'
+    const pageSize = query.pageSize || '10'
+    const categoryId = query.categoryId || ''
+    const tagId = query.tagId || ''
+    const keyword = query.keyword || ''
+
+    const session = await getUserSession(event)
+    const userType = session ? 'user' : 'guest'
+
+    return `articles:${page}:${pageSize}:${categoryId}:${tagId}:${keyword}:${userType}`
+  },
 })

@@ -1,4 +1,4 @@
-import { defineEventHandler, getRouterParam } from '#imports'
+import { defineEventHandler, getRouterParam } from 'h3'
 import { eq, sql } from 'drizzle-orm'
 import { db } from '~/database'
 import { categories, articles } from '~/database/schema'

@@ -1,135 +1,104 @@
 <template>
-  <v-card
-    class="anime-card"
-    hover
-    @click="showDialog = true"
-  >
+  <v-card class="anime-card" hover @click="showDialog = true">
     <div class="anime-image-container">
-      <v-img
-        :src="collection.subject.images.large"
-        :alt="collection.subject.name"
-        cover
-        class="h-100"
-      >
+      <v-img :src="collection.subject.images.large" :alt="collection.subject.name" cover class="h-100">
         <template #placeholder>
           <v-skeleton-loader type="image" height="100%" />
         </template>
       </v-img>
     </div>
-    
+
     <v-card-title class="text-subtitle-1 text-truncate pa-2">
       {{ collection.subject.name_cn || collection.subject.name }}
     </v-card-title>
-    
+
     <v-card-text class="pa-2 pt-0">
       <div class="text-caption text-truncate text-medium-emphasis mb-2">
         {{ collection.subject.name }}
       </div>
-      
+
       <div class="d-flex align-center justify-space-between">
-        <v-chip
-          :color="getStatusColor(collection.type)"
-          size="x-small"
-          label
-        >
+        <v-chip :color="getStatusColor(collection.type)" size="x-small" label>
           {{ getStatusLabel(collection.type) }}
         </v-chip>
-        
+
         <span class="text-caption text-medium-emphasis">
           {{ progressText }}
         </span>
       </div>
-      
-      <v-progress-linear
-        :model-value="progress"
-        :color="totalEpisodes > 0 ? 'primary' : 'surface-variant'"
-        height="4"
-        class="mt-2"
-        rounded
-      />
+
+      <v-progress-linear :model-value="progress" :color="totalEpisodes > 0 ? 'primary' : 'surface-variant'" height="4"
+        class="mt-2" rounded />
     </v-card-text>
   </v-card>
 
   <ClientOnly>
     <v-dialog v-model="showDialog" max-width="500">
       <v-card>
-        <v-img
-          :src="collection.subject.images.large"
-          :alt="collection.subject.name"
-          max-height="300"
-          cover
-        />
-        
+        <v-img :src="collection.subject.images.large" :alt="collection.subject.name" max-height="300" cover />
+
         <v-card-title class="text-h5">
           {{ collection.subject.name_cn || collection.subject.name }}
         </v-card-title>
-        
+
         <v-card-subtitle v-if="collection.subject.name_cn">
           {{ collection.subject.name }}
         </v-card-subtitle>
-        
+
         <v-card-text>
           <div class="d-flex align-center mb-3">
-            <v-chip
-              :color="getStatusColor(collection.type)"
-              size="small"
-              label
-              class="mr-2"
-            >
+            <v-chip :color="getStatusColor(collection.type)" size="small" label class="mr-2">
               {{ getStatusLabel(collection.type) }}
             </v-chip>
-            
+
             <span v-if="collection.rate > 0" class="text-body-2">
               <v-icon size="small" color="amber">mdi-star</v-icon>
               {{ collection.rate }} 分
             </span>
           </div>
-          
+
           <div class="text-body-2 mb-2">
-            <v-icon size="small" class="mr-1">mdi-television</v-icon>
+            <v-icon size="small" class="mr-1">
+              mdi-television
+            </v-icon>
             进度: {{ progressText }}
           </div>
-          
+
           <div v-if="collection.subject.air_date" class="text-body-2 mb-2">
-            <v-icon size="small" class="mr-1">mdi-calendar</v-icon>
+            <v-icon size="small" class="mr-1">
+              mdi-calendar
+            </v-icon>
             放送日期: {{ collection.subject.air_date }}
           </div>
-          
+
           <div v-if="collection.subject.rating" class="text-body-2 mb-2">
-            <v-icon size="small" class="mr-1">mdi-star-outline</v-icon>
+            <v-icon size="small" class="mr-1">
+              mdi-star-outline
+            </v-icon>
             Bangumi评分: {{ collection.subject.rating.score }} ({{ collection.subject.rating.total }}人评分)
           </div>
-          
-          <v-progress-linear
-            :model-value="progress"
-            :color="totalEpisodes > 0 ? 'primary' : 'surface-variant'"
-            height="6"
-            class="mt-3"
-            rounded
-          />
-          
+
+          <v-progress-linear :model-value="progress" :color="totalEpisodes > 0 ? 'primary' : 'surface-variant'"
+            height="6" class="mt-3" rounded />
+
           <div v-if="collection.comment" class="mt-3">
-            <div class="text-subtitle-2 mb-1">我的评价</div>
+            <div class="text-subtitle-2 mb-1">
+              我的评价
+            </div>
             <div class="text-body-2 text-medium-emphasis">
               {{ collection.comment }}
             </div>
           </div>
         </v-card-text>
-        
+
         <v-card-actions>
           <v-spacer />
-          <v-btn
-            text="关闭"
-            variant="text"
-            @click="showDialog = false"
-          />
-          <v-btn
-            :href="`https://bgm.tv/subject/${collection.subject_id}`"
-            target="_blank"
-            color="primary"
-            variant="flat"
-          >
-            <v-icon start>mdi-open-in-new</v-icon>
+          <v-btn text="关闭" variant="text" @click="showDialog = false" />
+          <v-btn :href="`https://bgm.tv/subject/${collection.subject_id}`" target="_blank" color="primary"
+            variant="flat">
+            <v-icon start>
+              mdi-open-in-new
+            </v-icon>
             查看详情
           </v-btn>
         </v-card-actions>

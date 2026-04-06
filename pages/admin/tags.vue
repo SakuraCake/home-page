@@ -8,9 +8,13 @@
     <v-row>
       <v-col cols="12">
         <div class="d-flex justify-space-between align-center mb-4">
-          <h1 class="text-h4">标签管理</h1>
+          <h1 class="text-h4">
+            标签管理
+          </h1>
           <v-btn color="primary" @click="openDialog()">
-            <v-icon start>mdi-plus</v-icon>
+            <v-icon start>
+              mdi-plus
+            </v-icon>
             添加标签
           </v-btn>
         </div>
@@ -18,11 +22,7 @@
 
       <v-col cols="12">
         <v-card>
-          <v-data-table
-            :headers="headers"
-            :items="tags"
-            :loading="loading"
-          >
+          <v-data-table :headers="headers" :items="tags" :loading="loading">
             <template #item.articleCount="{ item }">
               {{ item.articleCount || 0 }}
             </template>
@@ -30,19 +30,10 @@
               {{ formatDate(item.createdAt) }}
             </template>
             <template #item.actions="{ item }">
-              <v-btn
-                size="small"
-                variant="text"
-                @click="openDialog(item)"
-              >
+              <v-btn size="small" variant="text" @click="openDialog(item)">
                 编辑
               </v-btn>
-              <v-btn
-                size="small"
-                variant="text"
-                color="error"
-                @click="handleDelete(item)"
-              >
+              <v-btn size="small" variant="text" color="error" @click="handleDelete(item)">
                 删除
               </v-btn>
             </template>
@@ -56,23 +47,18 @@
         <v-card-title>{{ editingTag ? '编辑标签' : '添加标签' }}</v-card-title>
         <v-card-text>
           <v-form @submit.prevent="handleSave">
-            <v-text-field
-              v-model="form.name"
-              label="名称"
-              variant="outlined"
-              class="mb-4"
-            />
-            <v-text-field
-              v-model="form.slug"
-              label="Slug"
-              variant="outlined"
-            />
+            <v-text-field v-model="form.name" label="名称" variant="outlined" class="mb-4" />
+            <v-text-field v-model="form.slug" label="Slug" variant="outlined" />
           </v-form>
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn variant="text" @click="dialog = false">取消</v-btn>
-          <v-btn color="primary" :loading="saving" @click="handleSave">保存</v-btn>
+          <v-btn variant="text" @click="dialog = false">
+            取消
+          </v-btn>
+          <v-btn color="primary" :loading="saving" @click="handleSave">
+            保存
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -120,7 +106,7 @@ const fetchTags = async () => {
     if (response.success) {
       tags.value = response.data
     }
-  } catch (e) {
+  } catch (_e) {
     // ignore
   } finally {
     loading.value = false
@@ -154,7 +140,7 @@ const handleSave = async () => {
     }
     dialog.value = false
     await fetchTags()
-  } catch (e) {
+  } catch (_e) {
     // ignore
   } finally {
     saving.value = false
@@ -170,7 +156,7 @@ const handleDelete = async (tag: any) => {
       headers: userStore.getAuthHeaders()
     })
     await fetchTags()
-  } catch (e) {
+  } catch (_e) {
     // ignore
   }
 }

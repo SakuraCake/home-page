@@ -1,13 +1,14 @@
-import { Ability, AbilityBuilder, AbilityClass, MongoQuery, ExtractSubjectType } from '@casl/ability'
+import { Ability, AbilityBuilder } from '@casl/ability'
+import type { AbilityClass, MongoQuery, ExtractSubjectType } from '@casl/ability'
 import { createError } from 'h3'
 import type { UserSession } from './session'
 import type { users, articles, categories, tags, comments } from '~/database/schema'
 
-type User = typeof users.$inferSelect
-type Article = typeof articles.$inferSelect
-type Category = typeof categories.$inferSelect
-type Tag = typeof tags.$inferSelect
-type Comment = typeof comments.$inferSelect
+export type User = typeof users.$inferSelect
+export type Article = typeof articles.$inferSelect
+export type Category = typeof categories.$inferSelect
+export type Tag = typeof tags.$inferSelect
+export type Comment = typeof comments.$inferSelect
 
 export type Subjects = 'User' | 'Article' | 'Category' | 'Tag' | 'Comment'
 export type Subject = User | Article | Category | Tag | Comment | Subjects
@@ -29,7 +30,7 @@ function detectSubjectType(subject: Subject): ExtractSubjectType<Subject> {
 }
 
 export function defineAbilitiesFor(user: UserSession | null): AppAbility {
-  const { can, cannot, build } = new AbilityBuilder(AppAbilityClass)
+  const { can, build } = new AbilityBuilder(AppAbilityClass)
 
   if (!user) {
     return build({ detectSubjectType })

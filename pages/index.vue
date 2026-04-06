@@ -1,7 +1,15 @@
 <template>
   <v-container class="fill-height">
-    <v-row justify="center" align="center">
-      <v-col cols="12" sm="8" md="6" class="text-center">
+    <v-row
+      justify="center"
+      align="center"
+    >
+      <v-col
+        cols="12"
+        sm="8"
+        md="6"
+        class="text-center"
+      >
         <v-avatar
           :image="avatarUrl"
           size="128"

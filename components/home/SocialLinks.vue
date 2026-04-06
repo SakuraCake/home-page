@@ -1,5 +1,8 @@
 <template>
-  <v-row justify="center" class="ga-2">
+  <v-row
+    justify="center"
+    class="ga-2"
+  >
     <v-col
       v-for="link in socialLinks"
       :key="link.name"
@@ -14,9 +17,18 @@
         class="text-none"
       >
         <template #prepend>
-          <BilibiliIcon v-if="link.name === 'Bilibili'" :size="24" />
-          <SteamIcon v-else-if="link.name === 'Steam'" :size="24" />
-          <v-icon v-else :icon="link.icon" />
+          <BilibiliIcon
+            v-if="link.name === 'Bilibili'"
+            :size="24"
+          />
+          <SteamIcon
+            v-else-if="link.name === 'Steam'"
+            :size="24"
+          />
+          <v-icon
+            v-else
+            :icon="link.icon"
+          />
         </template>
         {{ link.name }}
       </v-btn>

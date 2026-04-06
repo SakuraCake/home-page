@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
 import { defineEventHandler, getRequestURL, createError } from 'h3'
-import { getSession } from '~/server/utils/session'
+import { getUserSession } from '~/server/utils/session'
 
 declare module 'h3' {
   interface H3EventContext {
@@ -42,7 +42,7 @@ export default defineEventHandler(async (event: H3Event) => {
   }
 
   if (isPublicPath(pathname)) {
-    const session = await getSession(event)
+    const session = await getUserSession(event)
     if (session) {
       event.context.user = session
     }
@@ -50,8 +50,8 @@ export default defineEventHandler(async (event: H3Event) => {
   }
 
   if (isProtectedPath(pathname)) {
-    const session = await getSession(event)
-    
+    const session = await getUserSession(event)
+
     if (!session) {
       throw createError({
         statusCode: 401,

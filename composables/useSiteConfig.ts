@@ -28,17 +28,17 @@ interface AppConfig {
   captcha: CaptchaConfig
 }
 
-const config = ref<AppConfig | null>(null)
-const loading = ref(false)
-const loaded = ref(false)
-
 export const useSiteConfig = () => {
+  const config = useState<AppConfig | null>('site-config', () => null)
+  const loading = useState<boolean>('site-config-loading', () => false)
+  const loaded = useState<boolean>('site-config-loaded', () => false)
+
   const fetchConfig = async (force = false) => {
     if (loaded.value && !force) return config.value
-    
+
     loading.value = true
     try {
-      const response = await $fetch('/api/config') as { success: boolean; data: AppConfig }
+      const response = await $fetch<{ success: boolean; data: AppConfig }>('/api/config')
       if (response.success && response.data) {
         config.value = response.data
         loaded.value = true
@@ -57,7 +57,7 @@ export const useSiteConfig = () => {
   const allowRegister = computed(() => config.value?.site?.allowRegister ?? true)
   const allowComment = computed(() => config.value?.site?.allowComment ?? true)
   const commentNeedReview = computed(() => config.value?.site?.commentNeedReview ?? false)
-  
+
   const captchaEnabled = computed(() => config.value?.captcha?.enabled ?? true)
   const captchaSiteKey = computed(() => config.value?.captcha?.siteKey ?? '')
   const captchaLoginEnabled = computed(() => config.value?.captcha?.loginEnabled ?? true)

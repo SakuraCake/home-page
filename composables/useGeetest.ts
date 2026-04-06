@@ -36,14 +36,14 @@ let scriptLoading = false
 
 function loadGeetestScript(): Promise<boolean> {
   return new Promise((resolve) => {
-    if (scriptLoaded && window.initGeetest) {
+    if (scriptLoaded && typeof window.initGeetest === 'function') {
       resolve(true)
       return
     }
 
     if (scriptLoading) {
       const checkInterval = setInterval(() => {
-        if (window.initGeetest) {
+        if (typeof window.initGeetest === 'function') {
           clearInterval(checkInterval)
           resolve(true)
         }
@@ -55,18 +55,18 @@ function loadGeetestScript(): Promise<boolean> {
     const script = document.createElement('script')
     script.src = GEETEST_SCRIPT_URL
     script.async = true
-    
+
     script.onload = () => {
       scriptLoaded = true
       scriptLoading = false
       resolve(true)
     }
-    
+
     script.onerror = () => {
       scriptLoading = false
       resolve(false)
     }
-    
+
     document.head.appendChild(script)
   })
 }
@@ -95,12 +95,12 @@ export const useGeetest = () => {
     }
 
     try {
-      const response = await $fetch('/api/captcha/register') as {
+      const response = await $fetch<{
         success: number
         gt: string
         challenge: string
         new_captcha: boolean
-      }
+      }>('/api/captcha/register')
 
       return new Promise<boolean>((resolve) => {
         window.initGeetest({
@@ -130,13 +130,13 @@ export const useGeetest = () => {
             error.value = '验证出错'
           })
 
-          obj.onClose(() => {})
+          obj.onClose(() => { })
 
           isLoading.value = false
           resolve(true)
         })
       })
-    } catch (err) {
+    } catch (_err) {
       error.value = '极验初始化失败'
       isLoading.value = false
       return false

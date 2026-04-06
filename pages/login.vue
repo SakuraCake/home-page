@@ -8,7 +8,10 @@
           </v-card-title>
           <v-divider />
           <v-card-text class="pa-6">
-            <v-form ref="form" @submit.prevent="handleSubmit">
+            <v-form
+              ref="form"
+              @submit.prevent="handleSubmit"
+            >
               <v-text-field
                 v-model="username"
                 label="用户名"
@@ -40,10 +43,17 @@
 
             <div class="text-center">
               <span class="text-medium-emphasis">还没有账号？</span>
-              <v-btn v-if="allowRegister" variant="text" to="/register">
+              <v-btn
+                v-if="allowRegister"
+                variant="text"
+                to="/register"
+              >
                 立即注册
               </v-btn>
-              <span v-else class="text-disabled">注册已关闭</span>
+              <span
+                v-else
+                class="text-disabled"
+              >注册已关闭</span>
             </div>
           </v-card-text>
         </v-card>

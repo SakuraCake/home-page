@@ -8,31 +8,30 @@
       <v-container class="fill-height">
         <v-row justify="center" align="center">
           <v-col cols="12" sm="8" md="6" class="text-center">
-            <v-icon size="120" color="error" class="mb-6">mdi-alert-circle-outline</v-icon>
-            
+            <v-icon size="120" color="error" class="mb-6">
+              mdi-alert-circle-outline
+            </v-icon>
+
             <h1 class="text-h3 font-weight-bold mb-4">
               {{ errorTitle }}
             </h1>
-            
+
             <p class="text-body-1 text-medium-emphasis mb-8">
               {{ errorMessage }}
             </p>
-            
+
             <div class="d-flex justify-center ga-4">
-              <v-btn
-                color="primary"
-                variant="flat"
-                to="/"
-              >
-                <v-icon start>mdi-home</v-icon>
+              <v-btn color="primary" variant="flat" to="/">
+                <v-icon start>
+                  mdi-home
+                </v-icon>
                 返回首页
               </v-btn>
-              
-              <v-btn
-                variant="tonal"
-                @click="handleClearError"
-              >
-                <v-icon start>mdi-refresh</v-icon>
+
+              <v-btn variant="tonal" @click="handleClearError">
+                <v-icon start>
+                  mdi-refresh
+                </v-icon>
                 重试
               </v-btn>
             </div>

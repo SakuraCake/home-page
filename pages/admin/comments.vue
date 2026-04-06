@@ -12,10 +12,18 @@
           <v-card-title class="text-h5 py-4 px-6 d-flex justify-space-between align-center">
             <span>评论管理</span>
             <v-chip-group v-model="statusFilter" mandatory @update:model-value="loadComments">
-              <v-chip value="" variant="outlined">全部</v-chip>
-              <v-chip value="pending" variant="outlined" color="warning">待审核</v-chip>
-              <v-chip value="approved" variant="outlined" color="success">已通过</v-chip>
-              <v-chip value="rejected" variant="outlined" color="error">已拒绝</v-chip>
+              <v-chip value="" variant="outlined">
+                全部
+              </v-chip>
+              <v-chip value="pending" variant="outlined" color="warning">
+                待审核
+              </v-chip>
+              <v-chip value="approved" variant="outlined" color="success">
+                已通过
+              </v-chip>
+              <v-chip value="rejected" variant="outlined" color="error">
+                已拒绝
+              </v-chip>
             </v-chip-group>
           </v-card-title>
           <v-divider />
@@ -24,12 +32,8 @@
               <v-progress-circular indeterminate />
             </div>
 
-            <v-empty-state
-              v-else-if="comments.length === 0"
-              icon="mdi-comment-off-outline"
-              title="暂无评论"
-              text="还没有任何评论"
-            />
+            <v-empty-state v-else-if="comments.length === 0" icon="mdi-comment-off-outline" title="暂无评论"
+              text="还没有任何评论" />
 
             <div v-else>
               <v-list lines="three">
@@ -37,7 +41,9 @@
                   <template #prepend>
                     <v-avatar size="40">
                       <v-img v-if="comment.user?.avatar" :src="comment.user.avatar" />
-                      <v-icon v-else>mdi-account</v-icon>
+                      <v-icon v-else>
+                        mdi-account
+                      </v-icon>
                     </v-avatar>
                   </template>
 
@@ -50,7 +56,7 @@
 
                   <v-list-item-subtitle class="mt-1">
                     <span class="text-medium-emphasis">
-                      {{ formatDate(comment.createdAt) }} · 
+                      {{ formatDate(comment.createdAt) }} ·
                       <NuxtLink :to="`/article/${comment.article?.id}`" class="text-primary">
                         {{ comment.article?.title || '文章已删除' }}
                       </NuxtLink>
@@ -63,22 +69,12 @@
 
                   <template #append>
                     <div class="d-flex flex-column ga-2">
-                      <v-btn
-                        v-if="comment.status !== 'approved'"
-                        size="small"
-                        color="success"
-                        variant="outlined"
-                        @click="updateStatus(comment.id, 'approved')"
-                      >
+                      <v-btn v-if="comment.status !== 'approved'" size="small" color="success" variant="outlined"
+                        @click="updateStatus(comment.id, 'approved')">
                         通过
                       </v-btn>
-                      <v-btn
-                        v-if="comment.status !== 'rejected'"
-                        size="small"
-                        color="error"
-                        variant="outlined"
-                        @click="updateStatus(comment.id, 'rejected')"
-                      >
+                      <v-btn v-if="comment.status !== 'rejected'" size="small" color="error" variant="outlined"
+                        @click="updateStatus(comment.id, 'rejected')">
                         拒绝
                       </v-btn>
                     </div>
@@ -86,13 +82,8 @@
                 </v-list-item>
               </v-list>
 
-              <v-pagination
-                v-if="totalPages > 1"
-                v-model="currentPage"
-                :length="totalPages"
-                class="mt-4"
-                @update:model-value="loadComments"
-              />
+              <v-pagination v-if="totalPages > 1" v-model="currentPage" :length="totalPages" class="mt-4"
+                @update:model-value="loadComments" />
             </div>
           </v-card-text>
         </v-card>
@@ -102,6 +93,8 @@
 </template>
 
 <script setup lang="ts">
+import type { CommentWithArticle, ApiResponse, PaginatedResponse } from '~/types/api'
+
 const userStore = useUserStore()
 const router = useRouter()
 const snackbar = useSnackbar()
@@ -112,25 +105,8 @@ const breadcrumbs = [
   { title: '评论管理', disabled: true }
 ]
 
-interface Comment {
-  id: number
-  content: string
-  status: string
-  createdAt: number
-  guestName: string | null
-  user: {
-    id: number
-    username: string
-    avatar: string | null
-  } | null
-  article: {
-    id: number
-    title: string
-  } | null
-}
-
 const loading = ref(false)
-const comments = ref<Comment[]>([])
+const comments = ref<CommentWithArticle[]>([])
 const statusFilter = ref('')
 const currentPage = ref(1)
 const pageSize = 20
@@ -177,7 +153,7 @@ const loadComments = async () => {
       params.status = statusFilter.value
     }
 
-    const response = await $fetch('/api/admin/comments', {
+    const response = await $fetch<ApiResponse<PaginatedResponse<CommentWithArticle>>>('/api/admin/comments', {
       query: params,
       headers: userStore.getAuthHeaders(),
     })
@@ -186,7 +162,7 @@ const loadComments = async () => {
       comments.value = response.data.list
       total.value = response.data.total
     }
-  } catch (e) {
+  } catch (_e) {
   } finally {
     loading.value = false
   }
@@ -194,7 +170,7 @@ const loadComments = async () => {
 
 const updateStatus = async (commentId: number, status: string) => {
   try {
-    const response = await $fetch(`/api/admin/comments/${commentId}/status`, {
+    const response = await $fetch<ApiResponse>(`/api/admin/comments/${commentId}/status`, {
       method: 'PUT',
       body: { status },
       headers: userStore.getAuthHeaders(),
@@ -204,7 +180,7 @@ const updateStatus = async (commentId: number, status: string) => {
       snackbar.success('状态更新成功')
       await loadComments()
     }
-  } catch (e) {
+  } catch (_e) {
     snackbar.error('状态更新失败')
   }
 }

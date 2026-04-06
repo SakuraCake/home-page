@@ -1,4 +1,4 @@
-import { defineEventHandler } from '#imports'
+import { defineEventHandler } from 'h3'
 import { db } from '~/database'
 import { captchaConfig } from '~/database/schema'
 

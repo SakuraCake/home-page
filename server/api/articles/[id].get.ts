@@ -1,86 +1,90 @@
-import { defineCachedEventHandler } from '#imports'
-import { eq, inArray } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import { db } from '~/database'
-import { articles, users, categories, tags, articleTags } from '~/database/schema'
+import { articles } from '~/database/schema'
 import { renderMarkdown } from '~/server/utils/markdown'
-import { getSession } from '~/server/utils/session'
+import { getUserSession } from '~/server/utils/session'
 import { incrementViewCount } from '~/server/utils/viewCount'
+import { createApiError } from '~/server/utils/errors'
 
 export default defineCachedEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')
 
   if (!id || isNaN(Number(id))) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Bad Request',
-      message: '无效的文章 ID',
-    })
+    throw createApiError(400, '无效的文章 ID', 'INVALID_ID')
   }
 
   const article = await db.query.articles.findFirst({
     where: eq(articles.id, Number(id)),
+    with: {
+      author: {
+        columns: {
+          id: true,
+          username: true,
+          email: true,
+          avatar: true,
+          role: true,
+        },
+      },
+      category: true,
+      articleTags: {
+        with: {
+          tag: true,
+        },
+      },
+    },
   })
 
   if (!article || article.deletedAt) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: 'Not Found',
-      message: '文章不存在',
-    })
+    throw createApiError(404, '文章不存在', 'ARTICLE_NOT_FOUND')
   }
 
-  const session = await getSession(event)
+  const session = await getUserSession(event)
   const isAdmin = session?.role === 'admin'
+  const isLoggedIn = !!session
+  const now = Date.now()
 
   if (article.status !== 'published' && !isAdmin) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: 'Not Found',
-      message: '文章不存在',
-    })
+    throw createApiError(404, '文章不存在', 'ARTICLE_NOT_FOUND')
+  }
+
+  if (article.publishAt && article.publishAt > now && !isAdmin) {
+    throw createApiError(404, '文章不存在', 'ARTICLE_NOT_FOUND')
+  }
+
+  if (article.visibility === 'private' && !isLoggedIn) {
+    throw createApiError(403, '需要登录后查看', 'LOGIN_REQUIRED')
+  }
+
+  const isPasswordProtected = article.visibility === 'password' && article.password
+  const passwordVerified = getCookie(event, `article_${article.id}_access`) === 'true'
+
+  const tags = article.articleTags.map((at) => at.tag)
+
+  if (isPasswordProtected && !passwordVerified && !isAdmin) {
+    return {
+      success: true,
+      data: {
+        id: article.id,
+        title: article.title,
+        slug: article.slug,
+        summary: article.summary,
+        coverImage: article.coverImage,
+        status: article.status,
+        visibility: article.visibility,
+        hasPassword: true,
+        viewCount: article.viewCount,
+        createdAt: article.createdAt,
+        updatedAt: article.updatedAt,
+        author: article.author,
+        category: article.category,
+        tags,
+        content: null,
+        needsPassword: true,
+      },
+    }
   }
 
   await incrementViewCount(article.id, event)
-
-  let author = null
-  if (article.authorId) {
-    const authorData = await db.query.users.findFirst({
-      where: eq(users.id, article.authorId),
-    })
-    if (authorData) {
-      author = {
-        id: authorData.id,
-        username: authorData.username,
-        email: authorData.email,
-        avatar: authorData.avatar,
-        role: authorData.role,
-      }
-    }
-  }
-
-  let category = null
-  if (article.categoryId) {
-    const categoryData = await db.query.categories.findFirst({
-      where: eq(categories.id, article.categoryId),
-    })
-    if (categoryData) {
-      category = categoryData
-    }
-  }
-
-  const tagRelations = await db.query.articleTags.findMany({
-    where: eq(articleTags.articleId, article.id),
-  })
-
-  const tagIds = tagRelations.map(r => r.tagId)
-  const tagList: typeof tags.$inferSelect[] = []
-
-  if (tagIds.length > 0) {
-    const tagsData = await db.query.tags.findMany({
-      where: inArray(tags.id, tagIds),
-    })
-    tagList.push(...tagsData)
-  }
 
   const acceptHeader = getHeader(event, 'Accept') || ''
   const shouldRenderHtml = acceptHeader.includes('text/html')
@@ -96,12 +100,16 @@ export default defineCachedEventHandler(async (event) => {
     authorId: article.authorId,
     categoryId: article.categoryId,
     status: article.status,
+    visibility: article.visibility,
+    hasPassword: !!article.password,
     viewCount: (article.viewCount || 0) + 1,
     createdAt: article.createdAt,
     updatedAt: article.updatedAt,
-    author,
-    category,
-    tags: tagList,
+    publishAt: article.publishAt,
+    author: article.author,
+    category: article.category,
+    tags,
+    needsPassword: false,
   }
 
   return {
@@ -112,15 +120,17 @@ export default defineCachedEventHandler(async (event) => {
   maxAge: 60 * 5,
   swr: true,
   staleMaxAge: 60 * 10,
-  varies: ['Accept', 'Authorization'],
-  getKey: (event) => {
+  varies: ['Accept', 'Authorization', 'Cookie'],
+  getKey: async (event) => {
     const id = getRouterParam(event, 'id')
     const acceptHeader = getHeader(event, 'Accept') || ''
     const shouldRenderHtml = acceptHeader.includes('text/html')
-    return `article:${id}:${shouldRenderHtml ? 'html' : 'md'}`
-  },
-  shouldBypassCache: async (event) => {
-    const session = await getSession(event)
-    return session?.role === 'admin'
+    const accessCookie = getCookie(event, `article_${id}_access`)
+    const hasAccess = accessCookie === 'true'
+
+    const session = await getUserSession(event)
+    const userType = session ? 'user' : 'guest'
+
+    return `article:${id}:${shouldRenderHtml ? 'html' : 'md'}:${hasAccess}:${userType}`
   },
 })

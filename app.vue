@@ -10,9 +10,9 @@
     <ClientOnly>
       <v-snackbar-queue
         :model-value="snackbar.messages.value"
-        @update:model-value="snackbar.clear"
         location="bottom right"
         :timeout="4000"
+        @update:model-value="snackbar.clear"
       />
     </ClientOnly>
   </v-app>

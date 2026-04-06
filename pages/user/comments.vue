@@ -7,25 +7,25 @@
     </v-row>
     <v-row>
       <v-col cols="12">
-        <h1 class="text-h4 mb-4">我的评论</h1>
+        <h1 class="text-h4 mb-4">
+          我的评论
+        </h1>
       </v-col>
 
-      <v-col cols="12" v-if="loading">
+      <v-col v-if="loading" cols="12">
         <v-skeleton-loader type="card" />
       </v-col>
 
-      <v-col cols="12" v-else-if="comments.length === 0">
-        <v-empty-state
-          icon="mdi-comment-outline"
-          title="暂无评论"
-          text="还没有发表任何评论"
-        />
+      <v-col v-else-if="comments.length === 0" cols="12">
+        <v-empty-state icon="mdi-comment-outline" title="暂无评论" text="还没有发表任何评论" />
       </v-col>
 
-      <v-col cols="12" v-else>
+      <v-col v-else cols="12">
         <v-card v-for="comment in comments" :key="comment.id" class="mb-4">
           <v-card-text>
-            <div class="text-body-1 mb-2">{{ comment.content }}</div>
+            <div class="text-body-1 mb-2">
+              {{ comment.content }}
+            </div>
             <div class="d-flex justify-space-between align-center">
               <div class="text-caption text-medium-emphasis">
                 评论于
@@ -34,12 +34,7 @@
                 </NuxtLink>
                 · {{ formatDate(comment.createdAt) }}
               </div>
-              <v-btn
-                size="small"
-                variant="text"
-                color="error"
-                @click="handleDelete(comment.id)"
-              >
+              <v-btn size="small" variant="text" color="error" @click="handleDelete(comment.id)">
                 删除
               </v-btn>
             </div>
@@ -81,7 +76,7 @@ const fetchComments = async () => {
     if (response.success) {
       comments.value = response.data
     }
-  } catch (e) {
+  } catch (_e) {
   } finally {
     loading.value = false
   }
@@ -100,7 +95,7 @@ const handleDelete = async (id: number) => {
       snackbar.success('评论已删除')
       comments.value = comments.value.filter(c => c.id !== id)
     }
-  } catch (e) {
+  } catch (_e) {
     snackbar.error('删除失败')
   }
 }

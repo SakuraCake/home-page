@@ -1,9 +1,9 @@
-import { defineEventHandler } from '#imports'
+import { defineEventHandler } from 'h3'
 import { registerCaptcha } from '~/server/utils/geetest'
 
-export default defineEventHandler(async () => {
-  const result = await registerCaptcha()
-  
+export default defineEventHandler(async (event) => {
+  const result = await registerCaptcha(event)
+
   return {
     success: result.success,
     gt: result.gt,

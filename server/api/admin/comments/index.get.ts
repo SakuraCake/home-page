@@ -1,12 +1,12 @@
-import { defineEventHandler, getQuery } from '#imports'
+import { defineEventHandler, getQuery } from 'h3'
 import { eq, and, desc, isNull } from 'drizzle-orm'
 import { db } from '~/database'
-import { comments, articles, users } from '~/database/schema'
+import { comments } from '~/database/schema'
 import { requireAuth } from '~/server/utils/session'
 
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
-  
+
   if (session.role !== 'admin') {
     return {
       success: false,

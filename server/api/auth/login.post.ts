@@ -1,13 +1,14 @@
-import { defineEventHandler, readBody, getHeader } from '#imports'
+import { defineEventHandler } from 'h3'
 import { eq } from 'drizzle-orm'
 import { db } from '~/database'
-import { users, captchaConfig } from '~/database/schema'
+import { users } from '~/database/schema'
 import { verifyPassword } from '~/server/utils/auth'
 import { createSession } from '~/server/utils/session'
 import { validateCaptcha } from '~/server/utils/geetest'
 import { validateBody } from '~/server/utils/validation'
 import { loginSchema } from '~/server/schemas'
 import { authRateLimit } from '~/server/utils/rateLimit'
+import { getCsrfToken } from '~/server/utils/csrf'
 
 async function isCaptchaEnabledForLogin(): Promise<boolean> {
   const config = await db.query.captchaConfig.findFirst()
@@ -20,6 +21,7 @@ export default defineEventHandler(async (event) => {
 
   const body = await validateBody(event, loginSchema)
   const { username, password, geetest_challenge, geetest_validate, geetest_seccode } = body
+  const rememberMe = body.rememberMe === true
 
   const captchaEnabled = await isCaptchaEnabledForLogin()
 
@@ -31,7 +33,7 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    const captchaResult = await validateCaptcha({
+    const captchaResult = await validateCaptcha(event, {
       challenge: geetest_challenge,
       validate: geetest_validate,
       seccode: geetest_seccode,
@@ -65,12 +67,14 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  const token = await createSession(event, user)
+  const token = await createSession(event, user, rememberMe)
+  const csrfToken = getCsrfToken(event)
 
   return {
     success: true,
     data: {
       token,
+      csrfToken,
       user: {
         id: user.id,
         username: user.username,

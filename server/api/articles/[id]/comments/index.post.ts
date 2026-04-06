@@ -1,8 +1,8 @@
-import { defineEventHandler, readBody, getRouterParam } from '#imports'
+import { defineEventHandler, readBody, getRouterParam } from 'h3'
 import { eq } from 'drizzle-orm'
 import { db } from '~/database'
-import { comments, articles, siteConfig, captchaConfig } from '~/database/schema'
-import { getSession } from '~/server/utils/session'
+import { comments, articles } from '~/database/schema'
+import { getUserSession } from '~/server/utils/session'
 import { validateCaptcha } from '~/server/utils/geetest'
 
 async function isCaptchaEnabledForComment(): Promise<boolean> {
@@ -22,7 +22,7 @@ async function isCommentEnabled(): Promise<boolean> {
 }
 
 export default defineEventHandler(async (event) => {
-  const session = await getSession(event)
+  const session = await getUserSession(event)
   const articleId = parseInt(getRouterParam(event, 'id') || '0')
 
   if (!articleId) {
@@ -92,7 +92,7 @@ export default defineEventHandler(async (event) => {
         }
       }
 
-      const captchaResult = await validateCaptcha({
+      const captchaResult = await validateCaptcha(event, {
         challenge: geetest_challenge,
         validate: geetest_validate,
         seccode: geetest_seccode,

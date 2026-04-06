@@ -1,4 +1,4 @@
-import { defineEventHandler, readBody } from '#imports'
+import { defineEventHandler, readBody } from 'h3'
 import { db } from '~/database'
 import { captchaConfig } from '~/database/schema'
 import { eq } from 'drizzle-orm'

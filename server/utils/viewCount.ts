@@ -6,7 +6,7 @@ const SYNC_INTERVAL = 60000
 let syncInterval: NodeJS.Timeout | null = null
 let isSyncing = false
 
-async function syncViewCounts(event: H3Event) {
+async function syncViewCounts() {
   if (isSyncing) return
 
   isSyncing = true
@@ -18,7 +18,7 @@ async function syncViewCounts(event: H3Event) {
 
     const { db } = await import('~/database')
     const { articles } = await import('~/database/schema')
-    const { eq, inArray, sql } = await import('drizzle-orm')
+    const { eq, sql } = await import('drizzle-orm')
 
     const articleIds = Object.keys(counts).map(Number)
 
@@ -36,15 +36,15 @@ async function syncViewCounts(event: H3Event) {
 
     await storage.removeItem(VIEW_COUNT_KEY)
 
-    console.log(`Synced view counts for ${articleIds.length} articles`)
+    console.log(`[ViewCount] Synced view counts for ${articleIds.length} articles`)
   } catch (error) {
-    console.error('Failed to sync view counts:', error)
+    console.error('[ViewCount] Failed to sync view counts:', error)
   } finally {
     isSyncing = false
   }
 }
 
-export async function incrementViewCount(articleId: number, event: H3Event): Promise<void> {
+export async function incrementViewCount(articleId: number, _event: H3Event): Promise<void> {
   const storage = useStorage('cache')
   const counts = await storage.getItem<Record<number, number>>(VIEW_COUNT_KEY) || {}
 
@@ -53,11 +53,15 @@ export async function incrementViewCount(articleId: number, event: H3Event): Pro
   await storage.setItem(VIEW_COUNT_KEY, counts)
 }
 
-export function startViewCountSync(event: H3Event) {
-  if (syncInterval) return
+export function startViewCountSync() {
+  if (syncInterval) {
+    console.log('[ViewCount] Sync already running')
+    return
+  }
 
+  console.log('[ViewCount] Starting view count sync service')
   syncInterval = setInterval(() => {
-    syncViewCounts(event)
+    syncViewCounts()
   }, SYNC_INTERVAL)
 }
 
@@ -65,5 +69,6 @@ export function stopViewCountSync() {
   if (syncInterval) {
     clearInterval(syncInterval)
     syncInterval = null
+    console.log('[ViewCount] Stopped view count sync service')
   }
 }

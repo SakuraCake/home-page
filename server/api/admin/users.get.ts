@@ -1,4 +1,4 @@
-import { defineEventHandler } from '#imports'
+import { defineEventHandler } from 'h3'
 import { db } from '~/database'
 import { users } from '~/database/schema'
 import { requireAuth } from '~/server/utils/session'

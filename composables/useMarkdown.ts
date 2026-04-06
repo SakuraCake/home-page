@@ -1,6 +1,6 @@
 import { marked } from 'marked'
 import hljs from 'highlight.js'
-import DOMPurify from 'dompurify'
+import DOMPurify from 'isomorphic-dompurify'
 
 const renderer = new marked.Renderer()
 

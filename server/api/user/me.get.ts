@@ -1,38 +1,30 @@
-import { defineEventHandler, getHeader } from '#imports'
+import { defineEventHandler, createError } from 'h3'
 import { eq } from 'drizzle-orm'
 import { db } from '~/database'
 import { users } from '~/database/schema'
-import { verifyToken } from '~/server/utils/auth'
+import { getUserSession } from '~/server/utils/session'
 
 export default defineEventHandler(async (event) => {
-  const authorization = getHeader(event, 'Authorization')
+  const session = await getUserSession(event)
 
-  if (!authorization || !authorization.startsWith('Bearer ')) {
-    return {
-      success: false,
-      message: '未授权'
-    }
-  }
-
-  const token = authorization.replace('Bearer ', '')
-  const payload = await verifyToken(token)
-
-  if (!payload) {
-    return {
-      success: false,
-      message: '无效的 token'
-    }
+  if (!session) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: 'Unauthorized',
+      message: '请先登录'
+    })
   }
 
   const user = await db.query.users.findFirst({
-    where: eq(users.id, payload.userId)
+    where: eq(users.id, session.userId)
   })
 
   if (!user) {
-    return {
-      success: false,
+    throw createError({
+      statusCode: 404,
+      statusMessage: 'Not Found',
       message: '用户不存在'
-    }
+    })
   }
 
   return {

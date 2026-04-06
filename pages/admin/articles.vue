@@ -8,23 +8,18 @@
     <v-row>
       <v-col cols="12">
         <div class="d-flex justify-space-between align-center mb-4">
-          <h1 class="text-h4">文章管理</h1>
+          <h1 class="text-h4">
+            文章管理
+          </h1>
         </div>
       </v-col>
 
       <v-col cols="12">
         <v-card>
           <ClientOnly>
-            <v-data-table
-              :headers="headers"
-              :items="articles"
-              :loading="loading"
-            >
+            <v-data-table :headers="headers" :items="articles" :loading="loading">
               <template #item.status="{ item }">
-                <v-chip
-                  size="small"
-                  :color="item.status === 'published' ? 'success' : 'warning'"
-                >
+                <v-chip size="small" :color="item.status === 'published' ? 'success' : 'warning'">
                   {{ item.status === 'published' ? '已发布' : '草稿' }}
                 </v-chip>
               </template>
@@ -32,26 +27,13 @@
                 {{ formatDate(item.createdAt) }}
               </template>
               <template #item.actions="{ item }">
-                <v-btn
-                  size="small"
-                  variant="text"
-                  :to="`/article/${item.id}`"
-                >
+                <v-btn size="small" variant="text" :to="`/article/${item.id}`">
                   查看
                 </v-btn>
-                <v-btn
-                  size="small"
-                  variant="text"
-                  :to="`/article/${item.id}/edit`"
-                >
+                <v-btn size="small" variant="text" :to="`/article/${item.id}/edit`">
                   编辑
                 </v-btn>
-                <v-btn
-                  size="small"
-                  variant="text"
-                  color="error"
-                  @click="handleDelete(item.id)"
-                >
+                <v-btn size="small" variant="text" color="error" @click="handleDelete(item.id)">
                   删除
                 </v-btn>
               </template>
@@ -64,6 +46,8 @@
 </template>
 
 <script setup lang="ts">
+import type { ArticleListItem, ApiResponse } from '~/types/api'
+
 const userStore = useUserStore()
 const router = useRouter()
 
@@ -73,7 +57,7 @@ const breadcrumbs = [
   { title: '文章管理', disabled: true }
 ]
 
-const articles = ref<any[]>([])
+const articles = ref<ArticleListItem[]>([])
 const loading = ref(true)
 
 const headers = [
@@ -93,14 +77,13 @@ const formatDate = (timestamp: number) => {
 const fetchArticles = async () => {
   loading.value = true
   try {
-    const response = await $fetch('/api/admin/articles', {
+    const response = await $fetch<ApiResponse<ArticleListItem[]>>('/api/admin/articles', {
       headers: userStore.getAuthHeaders()
     })
-    if (response.success) {
+    if (response.success && response.data) {
       articles.value = response.data
     }
-  } catch (e) {
-    // ignore
+  } catch (_e) {
   } finally {
     loading.value = false
   }
@@ -110,7 +93,7 @@ const handleDelete = async (id: number) => {
   if (!confirm('确定要删除这篇文章吗？')) return
 
   try {
-    const response = await $fetch(`/api/articles/${id}`, {
+    const response = await $fetch<ApiResponse>(`/api/articles/${id}`, {
       method: 'DELETE',
       headers: userStore.getAuthHeaders()
     })
@@ -118,8 +101,7 @@ const handleDelete = async (id: number) => {
     if (response.success) {
       articles.value = articles.value.filter(a => a.id !== id)
     }
-  } catch (e) {
-    // ignore
+  } catch (_e) {
   }
 }
 

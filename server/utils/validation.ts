@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
-import { createError } from 'h3'
 import type { ZodSchema, ZodError } from 'zod'
+import { createApiError } from './errors'
 
 export async function validateBody<T>(
   event: H3Event,
@@ -16,11 +16,7 @@ export async function validateBody<T>(
       `${err.path.join('.')}: ${err.message}`
     ).join(', ')
 
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Validation Error',
-      message: messages || '输入数据验证失败',
-    })
+    throw createApiError(400, messages || '输入数据验证失败', 'VALIDATION_ERROR')
   }
 }
 
@@ -38,10 +34,6 @@ export async function validateQuery<T>(
       `${err.path.join('.')}: ${err.message}`
     ).join(', ')
 
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Validation Error',
-      message: messages || '查询参数验证失败',
-    })
+    throw createApiError(400, messages || '查询参数验证失败', 'VALIDATION_ERROR')
   }
 }

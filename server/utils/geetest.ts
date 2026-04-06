@@ -1,6 +1,6 @@
 import crypto from 'crypto'
+import type { H3Event } from 'h3'
 import { db } from '~/database'
-import { captchaConfig } from '~/database/schema'
 
 const API_URL = 'http://api.geetest.com'
 const REGISTER_URL = `${API_URL}/register.php`
@@ -19,19 +19,20 @@ export interface CaptchaSettings {
   secretKey: string
 }
 
-export async function getCaptchaSettings(): Promise<CaptchaSettings> {
-  const config = await db.query.captchaConfig.findFirst()
-  
-  if (!config) {
+export async function getCaptchaSettings(event: H3Event): Promise<CaptchaSettings> {
+  const config = useRuntimeConfig(event)
+  const dbConfig = await db.query.captchaConfig.findFirst()
+
+  if (!dbConfig) {
     return {
-      siteKey: process.env.GEETEST_ID || '6ee08588ab316e0d6b6363fe997c6dc8',
-      secretKey: process.env.GEETEST_KEY || '76ebe69604c10b14336b8b79d390b461',
+      siteKey: config.geetestId || '',
+      secretKey: config.geetestKey || '',
     }
   }
-  
+
   return {
-    siteKey: config.siteKey || process.env.GEETEST_ID || '',
-    secretKey: config.secretKey || process.env.GEETEST_KEY || '',
+    siteKey: dbConfig.siteKey || config.geetestId || '',
+    secretKey: dbConfig.secretKey || config.geetestKey || '',
   }
 }
 
@@ -53,10 +54,10 @@ export interface GeetestValidateResponse {
   message?: string
 }
 
-export async function registerCaptcha(): Promise<GeetestRegisterResponse> {
-  const settings = await getCaptchaSettings()
+export async function registerCaptcha(event: H3Event): Promise<GeetestRegisterResponse> {
+  const settings = await getCaptchaSettings(event)
   const challenge = md5(settings.secretKey + Date.now() + randomInt(0, 10000))
-  
+
   const params = new URLSearchParams({
     gt: settings.siteKey,
     challenge,
@@ -69,7 +70,7 @@ export async function registerCaptcha(): Promise<GeetestRegisterResponse> {
   try {
     const response = await fetch(`${REGISTER_URL}?${params.toString()}`)
     const data = await response.json() as { challenge?: string }
-    
+
     if (data.challenge) {
       return {
         success: 1,
@@ -78,14 +79,14 @@ export async function registerCaptcha(): Promise<GeetestRegisterResponse> {
         new_captcha: true,
       }
     }
-    
+
     return {
       success: 0,
       gt: settings.siteKey,
       challenge: '',
       new_captcha: true,
     }
-  } catch (error) {
+  } catch (_error) {
     return {
       success: 0,
       gt: settings.siteKey,
@@ -95,26 +96,26 @@ export async function registerCaptcha(): Promise<GeetestRegisterResponse> {
   }
 }
 
-export async function validateCaptcha(params: GeetestValidateParams): Promise<GeetestValidateResponse> {
+export async function validateCaptcha(event: H3Event, params: GeetestValidateParams): Promise<GeetestValidateResponse> {
   const { challenge, validate, seccode } = params
-  const settings = await getCaptchaSettings()
-  
+  const settings = await getCaptchaSettings(event)
+
   if (!challenge || !validate || !seccode) {
     return {
       success: false,
       message: '验证参数不完整',
     }
   }
-  
+
   const encodeChallenge = md5(settings.secretKey + 'geetest' + challenge)
-  
+
   if (validate !== encodeChallenge) {
     return {
       success: false,
       message: '验证失败',
     }
   }
-  
+
   const requestParams = new URLSearchParams({
     gt: settings.siteKey,
     challenge,
@@ -122,7 +123,7 @@ export async function validateCaptcha(params: GeetestValidateParams): Promise<Ge
     seccode,
     json_format: '1',
   })
-  
+
   try {
     const response = await fetch(VALIDATE_URL, {
       method: 'POST',
@@ -131,20 +132,20 @@ export async function validateCaptcha(params: GeetestValidateParams): Promise<Ge
       },
       body: requestParams.toString(),
     })
-    
+
     const data = await response.json() as { seccode?: string }
-    
+
     if (data.seccode === md5(seccode)) {
       return {
         success: true,
       }
     }
-    
+
     return {
       success: false,
       message: '二次验证失败',
     }
-  } catch (error) {
+  } catch (_error) {
     return {
       success: false,
       message: '验证请求失败',

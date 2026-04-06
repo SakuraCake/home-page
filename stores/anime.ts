@@ -35,7 +35,7 @@ export const useAnimeStore = defineStore('anime', {
   actions: {
     async fetchCollections(username: string, append = false) {
       const { getBangumiCollections } = useBangumi()
-      
+
       this.loading = true
       this.error = null
 
@@ -52,7 +52,7 @@ export const useAnimeStore = defineStore('anime', {
         } else {
           this.collections = response.data
         }
-        
+
         this.total = response.total
         this.offset = append ? this.offset + response.data.length : response.data.length
       } catch (e) {

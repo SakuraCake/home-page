@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import { getHeader, getCookie, createError } from 'h3'
+import { getHeader, getCookie, setCookie, createError } from 'h3'
 import { jwtVerify, SignJWT } from 'jose'
 import type { users } from '~/database/schema'
 
@@ -11,13 +11,13 @@ export interface UserSession {
 }
 
 type User = typeof users.$inferSelect
-  
+
 const JWT_ALGORITHM = 'HS256'
 
 function getJwtSecret(event: H3Event): Uint8Array {
   const config = useRuntimeConfig(event)
   const secret = config.jwtSecret
-  
+
   if (!secret) {
     throw createError({
       statusCode: 500,
@@ -25,7 +25,7 @@ function getJwtSecret(event: H3Event): Uint8Array {
       message: 'JWT secret is not configured',
     })
   }
-  
+
   if (secret.length < 32) {
     throw createError({
       statusCode: 500,
@@ -33,18 +33,24 @@ function getJwtSecret(event: H3Event): Uint8Array {
       message: 'JWT secret must be at least 32 characters long',
     })
   }
-  
+
   return new TextEncoder().encode(secret)
 }
 
-function getJwtExpiresIn(event: H3Event): string {
+function getJwtExpiresIn(event: H3Event): number {
   const config = useRuntimeConfig(event)
-  const maxAge = config.sessionMaxAge || 604800
-  const days = Math.floor(maxAge / 86400)
-  return `${days}d`
+  return config.sessionMaxAge || 604800
 }
 
-export async function createSession(event: H3Event, user: User): Promise<string> {
+function isSecureConnection(event: H3Event): boolean {
+  const protocol = getHeader(event, 'x-forwarded-proto') || ''
+  if (protocol === 'https') return true
+
+  const socket = event.node.req.socket as any
+  return socket?.encrypted === true
+}
+
+export async function createSession(event: H3Event, user: User, rememberMe: boolean = false): Promise<string> {
   const payload: UserSession = {
     userId: user.id,
     username: user.username,
@@ -52,7 +58,9 @@ export async function createSession(event: H3Event, user: User): Promise<string>
   }
 
   const secret = getJwtSecret(event)
-  const expiresIn = getJwtExpiresIn(event)
+  const maxAge = getJwtExpiresIn(event)
+  const cookieMaxAge = rememberMe ? maxAge * 4 : maxAge
+  const expiresIn = `${Math.floor(cookieMaxAge / 86400)}d`
 
   const token = await new SignJWT(payload)
     .setProtectedHeader({ alg: JWT_ALGORITHM })
@@ -60,10 +68,31 @@ export async function createSession(event: H3Event, user: User): Promise<string>
     .setExpirationTime(expiresIn)
     .sign(secret)
 
+  const secure = isSecureConnection(event)
+
+  setCookie(event, 'auth_token', token, {
+    httpOnly: true,
+    secure: secure,
+    sameSite: 'lax',
+    maxAge: cookieMaxAge,
+    path: '/',
+  })
+
+  const csrfToken = crypto.randomUUID()
+  setCookie(event, 'csrf_token', csrfToken, {
+    httpOnly: true,
+    secure: secure,
+    sameSite: 'lax',
+    maxAge: cookieMaxAge,
+    path: '/',
+  })
+
+  event.context.csrfToken = csrfToken
+
   return token
 }
 
-export async function getSession(event: H3Event): Promise<UserSession | null> {
+export async function getUserSession(event: H3Event): Promise<UserSession | null> {
   let token = getHeader(event, 'Authorization')
 
   if (token && token.startsWith('Bearer ')) {
@@ -86,7 +115,7 @@ export async function getSession(event: H3Event): Promise<UserSession | null> {
 }
 
 export async function requireAuth(event: H3Event): Promise<UserSession> {
-  const session = await getSession(event)
+  const session = await getUserSession(event)
 
   if (!session) {
     throw createError({
