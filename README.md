@@ -65,10 +65,6 @@ pnpm install
 # JWT 密钥 (必需)
 NUXT_JWT_SECRET=your-secret-key-at-least-32-characters
 
-# Geetest 验证码 (可选)
-NUXT_GEETEST_ID=
-NUXT_GEETEST_KEY=
-
 # 数据库路径
 NUXT_DATABASE_URL=./data.db
 
@@ -79,6 +75,8 @@ NUXT_RATE_LIMIT_WINDOW_MS=900000
 # Session 有效期 (秒)
 NUXT_SESSION_MAX_AGE=604800
 ```
+
+> Geetest 验证码配置在管理后台设置，无需环境变量。
 
 ## 开发
 
@@ -127,14 +125,12 @@ pnpm build
 pnpm preview
 ```
 
-## 默认配置
+## 工具脚本
 
-首次安装时，系统会创建以下默认配置：
-
-- 社交链接: Bilibili, Steam
-- Bangumi 用户名: `sakuracake`
-
-可在管理后台修改这些配置。
+```bash
+# 设置用户为管理员
+pnpm tsx scripts/set-admin.ts <用户名>
+```
 
 ## License
 

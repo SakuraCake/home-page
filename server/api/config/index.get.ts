@@ -7,12 +7,14 @@ export default defineCachedEventHandler(async () => {
   if (!site) {
     const now = Date.now()
     const result = await db.insert(siteConfig).values({
-      siteName: 'SakuraCake',
-      siteDescription: '一个简洁的博客系统',
+      siteName: 'My Blog',
+      siteDescription: '',
       postsPerPage: 10,
       allowRegister: true,
       allowComment: true,
       commentNeedReview: false,
+      socialLinks: '[]',
+      bangumiUsername: '',
       updatedAt: now,
     }).returning()
     site = result[0]

@@ -7,13 +7,11 @@ export default defineNuxtConfig({
   modules: ['vuetify-nuxt-module', '@pinia/nuxt'],
   runtimeConfig: {
     jwtSecret: '',
-    geetestId: '',
-    geetestKey: '',
     rateLimitMax: 100,
     rateLimitWindowMs: 900000,
     sessionMaxAge: 604800,
     public: {
-      siteName: 'SakuraCake',
+      siteName: 'My Blog',
     },
   },
   vuetify: {

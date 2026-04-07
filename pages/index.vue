@@ -2,7 +2,12 @@
   <v-container class="fill-height">
     <v-row justify="center" align="center">
       <v-col cols="12" sm="8" md="6" class="text-center">
-        <v-avatar :image="displayAvatar" size="128" class="mb-6" />
+        <v-avatar v-if="displayAvatar" :image="displayAvatar" size="128" class="mb-6" />
+        <v-avatar v-else size="128" class="mb-6" color="primary">
+          <v-icon size="64">
+            mdi-account
+          </v-icon>
+        </v-avatar>
 
         <h1 class="text-h4 text-md-h3 font-weight-bold mb-4">
           {{ displayTitle }}
@@ -56,8 +61,6 @@
 <script setup lang="ts">
 import type { SiteConfig, Article, ApiResponse } from '~/types/api'
 
-const defaultAvatar = 'https://cdn.sorange.top/image/logo.png'
-
 const { data: config } = await useAsyncData<SiteConfig | null>(
   'home-config',
   async () => {
@@ -90,7 +93,7 @@ const hasMoreArticles = computed(() => (articlesData.value?.total ?? 0) > 6)
 const displayTitle = computed(() => config.value?.homeTitle || '欢迎来到我的主页')
 const displaySubtitle = computed(() => config.value?.homeSubtitle || '')
 const displayDescription = computed(() => config.value?.homeDescription || '')
-const displayAvatar = computed(() => config.value?.homeAvatar || defaultAvatar)
+const displayAvatar = computed(() => config.value?.homeAvatar || '')
 const socialLinks = computed(() => config.value?.socialLinks ?? [])
 
 const formatDate = (timestamp: number) => {

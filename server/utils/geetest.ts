@@ -20,19 +20,11 @@ export interface CaptchaSettings {
 }
 
 export async function getCaptchaSettings(event: H3Event): Promise<CaptchaSettings> {
-  const config = useRuntimeConfig(event)
   const dbConfig = await db.query.captchaConfig.findFirst()
 
-  if (!dbConfig) {
-    return {
-      siteKey: config.geetestId || '',
-      secretKey: config.geetestKey || '',
-    }
-  }
-
   return {
-    siteKey: dbConfig.siteKey || config.geetestId || '',
-    secretKey: dbConfig.secretKey || config.geetestKey || '',
+    siteKey: dbConfig?.siteKey || '',
+    secretKey: dbConfig?.secretKey || '',
   }
 }
 

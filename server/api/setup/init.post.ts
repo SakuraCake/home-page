@@ -96,10 +96,6 @@ export default defineEventHandler(async (event) => {
 
     const existingSiteConfig = await db.query.siteConfig.findFirst()
     if (!existingSiteConfig) {
-      const defaultSocialLinks = JSON.stringify([
-        { name: 'Bilibili', url: 'https://space.bilibili.com/1750469453', icon: 'mdi-bilibili' },
-        { name: 'Steam', url: 'https://steamcommunity.com/id/SakuraCake/', icon: 'mdi-steam' }
-      ])
       await db.insert(schema.siteConfig).values({
         siteName: body.siteName,
         siteDescription: '',
@@ -114,8 +110,8 @@ export default defineEventHandler(async (event) => {
         allowRegister: true,
         allowComment: true,
         commentNeedReview: false,
-        socialLinks: defaultSocialLinks,
-        bangumiUsername: 'sakuracake',
+        socialLinks: '[]',
+        bangumiUsername: '',
         updatedAt: now,
       })
     } else {

@@ -8,20 +8,16 @@ export default defineEventHandler(async () => {
   
   if (!config) {
     const now = Date.now()
-    const defaultSocialLinks = JSON.stringify([
-      { name: 'Bilibili', url: 'https://space.bilibili.com/1750469453', icon: 'mdi-bilibili' },
-      { name: 'Steam', url: 'https://steamcommunity.com/id/SakuraCake/', icon: 'mdi-steam' }
-    ])
     const result = await db.insert(siteConfig).values({
-      siteName: 'SakuraCake',
-      siteDescription: '一个简洁的博客系统',
+      siteName: 'My Blog',
+      siteDescription: '',
       postsPerPage: 10,
       allowRegister: true,
       allowComment: true,
       commentNeedReview: false,
       homeShowArticles: true,
-      socialLinks: defaultSocialLinks,
-      bangumiUsername: 'sakuracake',
+      socialLinks: '[]',
+      bangumiUsername: '',
       updatedAt: now,
     }).returning()
     config = result[0]
