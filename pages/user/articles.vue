@@ -2,7 +2,10 @@
   <v-container max-width="900">
     <v-row>
       <v-col cols="12">
-        <v-breadcrumbs :items="breadcrumbs" class="pa-0 mb-4" />
+        <v-breadcrumbs
+          :items="breadcrumbs"
+          class="pa-0 mb-4"
+        />
       </v-col>
     </v-row>
     <v-row>
@@ -11,7 +14,10 @@
           <h1 class="text-h4">
             我的文章
           </h1>
-          <v-btn color="primary" to="/article/create">
+          <v-btn
+            color="primary"
+            to="/article/create"
+          >
             <v-icon start>
               mdi-plus
             </v-icon>
@@ -20,17 +26,57 @@
         </div>
       </v-col>
 
+      <v-col cols="12">
+        <v-tabs
+          v-model="currentTab"
+          color="primary"
+        >
+          <v-tab value="published">
+            已发布
+            <v-badge
+              v-if="publishedArticles.length > 0"
+              :content="publishedArticles.length"
+              inline
+            />
+          </v-tab>
+          <v-tab value="draft">
+            草稿
+            <v-badge
+              v-if="draftArticles.length > 0"
+              :content="draftArticles.length"
+              color="warning"
+              inline
+            />
+          </v-tab>
+        </v-tabs>
+      </v-col>
+
       <template v-if="loading">
-        <v-col v-for="i in 3" :key="i" cols="12">
+        <v-col
+          v-for="i in 3"
+          :key="i"
+          cols="12"
+        >
           <v-card>
             <div class="d-flex">
-              <v-skeleton-loader type="image" width="200" height="150" class="flex-shrink-0" />
+              <v-skeleton-loader
+                type="image"
+                width="200"
+                height="150"
+                class="flex-shrink-0"
+              />
               <div class="flex-grow-1">
                 <v-card-title>
-                  <v-skeleton-loader type="text" width="60%" />
+                  <v-skeleton-loader
+                    type="text"
+                    width="60%"
+                  />
                 </v-card-title>
                 <v-card-subtitle>
-                  <v-skeleton-loader type="text" width="40%" />
+                  <v-skeleton-loader
+                    type="text"
+                    width="40%"
+                  />
                 </v-card-subtitle>
                 <v-card-text>
                   <v-skeleton-loader type="text@2" />
@@ -44,10 +90,20 @@
         </v-col>
       </template>
 
-      <v-col v-else-if="articles.length === 0" cols="12">
-        <v-empty-state icon="mdi-file-document-outline" title="暂无文章" text="还没有创作任何文章">
+      <v-col
+        v-else-if="filteredArticles.length === 0"
+        cols="12"
+      >
+        <v-empty-state
+          :icon="currentTab === 'published' ? 'mdi-file-document-outline' : 'mdi-file-edit-outline'"
+          :title="currentTab === 'published' ? '暂无已发布文章' : '暂无草稿'"
+          :text="currentTab === 'published' ? '还没有发布任何文章' : '还没有保存任何草稿'"
+        >
           <template #actions>
-            <v-btn color="primary" to="/article/create">
+            <v-btn
+              color="primary"
+              to="/article/create"
+            >
               开始创作
             </v-btn>
           </template>
@@ -55,15 +111,31 @@
       </v-col>
 
       <template v-else>
-        <v-col v-for="article in articles" :key="article.id" cols="12">
+        <v-col
+          v-for="article in filteredArticles"
+          :key="article.id"
+          cols="12"
+        >
           <v-card>
-            <div class="d-flex">
-              <v-img v-if="article.coverImage" :src="article.coverImage" width="200" height="150" cover
-                class="flex-shrink-0" />
+            <div class="d-flex flex-column flex-sm-row">
+              <v-img
+                v-if="article.coverImage"
+                :src="article.coverImage"
+                width="100%"
+                min-width="200"
+                max-width="200"
+                height="150"
+                cover
+                class="flex-shrink-0"
+              />
               <div class="flex-grow-1">
                 <v-card-title class="text-h6">
                   {{ article.title }}
-                  <v-chip size="x-small" :color="article.status === 'published' ? 'success' : 'warning'" class="ml-2">
+                  <v-chip
+                    size="x-small"
+                    :color="article.status === 'published' ? 'success' : 'warning'"
+                    class="ml-2"
+                  >
                     {{ article.status === 'published' ? '已发布' : '草稿' }}
                   </v-chip>
                 </v-card-title>
@@ -74,13 +146,23 @@
                   {{ article.summary || '暂无摘要' }}
                 </v-card-text>
                 <v-card-actions>
-                  <v-btn variant="text" :to="`/article/${article.id}`">
+                  <v-btn
+                    variant="text"
+                    :to="`/article/${article.id}`"
+                  >
                     查看
                   </v-btn>
-                  <v-btn variant="text" :to="`/article/${article.id}/edit`">
+                  <v-btn
+                    variant="text"
+                    :to="`/article/${article.id}/edit`"
+                  >
                     编辑
                   </v-btn>
-                  <v-btn variant="text" color="error" @click="handleDelete(article.id)">
+                  <v-btn
+                    variant="text"
+                    color="error"
+                    @click="handleDelete(article.id)"
+                  >
                     删除
                   </v-btn>
                 </v-card-actions>
@@ -106,6 +188,19 @@ const breadcrumbs = [
 
 const articles = ref<any[]>([])
 const loading = ref(true)
+const currentTab = ref('published')
+
+const publishedArticles = computed(() => 
+  articles.value.filter(a => a.status === 'published')
+)
+
+const draftArticles = computed(() => 
+  articles.value.filter(a => a.status === 'draft')
+)
+
+const filteredArticles = computed(() => 
+  currentTab.value === 'published' ? publishedArticles.value : draftArticles.value
+)
 
 const formatDate = (timestamp: number) => {
   return new Date(timestamp).toLocaleDateString('zh-CN')

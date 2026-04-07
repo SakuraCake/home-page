@@ -1,6 +1,6 @@
 import { defineEventHandler, readBody } from 'h3'
-import { db } from '~/database'
-import { siteConfig } from '~/database/schema'
+import { db } from '~/server/database'
+import { siteConfig } from '~/server/database/schema'
 import { eq } from 'drizzle-orm'
 import { requireAuth } from '~/server/utils/session'
 
@@ -35,6 +35,11 @@ export default defineEventHandler(async (event) => {
         allowRegister: body.allowRegister ?? config.allowRegister,
         allowComment: body.allowComment ?? config.allowComment,
         commentNeedReview: body.commentNeedReview ?? config.commentNeedReview,
+        homeTitle: body.homeTitle ?? config.homeTitle,
+        homeSubtitle: body.homeSubtitle ?? config.homeSubtitle,
+        homeAvatar: body.homeAvatar ?? config.homeAvatar,
+        homeDescription: body.homeDescription ?? config.homeDescription,
+        homeShowArticles: body.homeShowArticles ?? config.homeShowArticles,
         updatedAt: now,
       })
       .where(eq(siteConfig.id, config.id))
@@ -53,6 +58,11 @@ export default defineEventHandler(async (event) => {
       allowRegister: body.allowRegister ?? true,
       allowComment: body.allowComment ?? true,
       commentNeedReview: body.commentNeedReview ?? false,
+      homeTitle: body.homeTitle ?? '',
+      homeSubtitle: body.homeSubtitle ?? '',
+      homeAvatar: body.homeAvatar ?? '',
+      homeDescription: body.homeDescription ?? '',
+      homeShowArticles: body.homeShowArticles ?? true,
       updatedAt: now,
     })
   }

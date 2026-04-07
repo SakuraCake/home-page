@@ -1,6 +1,6 @@
 import { eq, and, desc, like, sql, inArray, isNull, or, lte } from 'drizzle-orm'
-import { db } from '~/database'
-import { articles, users, categories, tags, articleTags } from '~/database/schema'
+import { db } from '~/server/database'
+import { articles, users, categories, tags, articleTags } from '~/server/database/schema'
 import { getUserSession } from '~/server/utils/session'
 
 export default defineCachedEventHandler(async (event) => {

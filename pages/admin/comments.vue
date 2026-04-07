@@ -2,7 +2,10 @@
   <v-container max-width="1200">
     <v-row>
       <v-col cols="12">
-        <v-breadcrumbs :items="breadcrumbs" class="pa-0 mb-4" />
+        <v-breadcrumbs
+          :items="breadcrumbs"
+          class="pa-0 mb-4"
+        />
       </v-col>
     </v-row>
 
@@ -11,36 +14,69 @@
         <v-card>
           <v-card-title class="text-h5 py-4 px-6 d-flex justify-space-between align-center">
             <span>评论管理</span>
-            <v-chip-group v-model="statusFilter" mandatory @update:model-value="loadComments">
-              <v-chip value="" variant="outlined">
+            <v-chip-group
+              v-model="statusFilter"
+              mandatory
+              @update:model-value="loadComments"
+            >
+              <v-chip
+                value=""
+                variant="outlined"
+              >
                 全部
               </v-chip>
-              <v-chip value="pending" variant="outlined" color="warning">
+              <v-chip
+                value="pending"
+                variant="outlined"
+                color="warning"
+              >
                 待审核
               </v-chip>
-              <v-chip value="approved" variant="outlined" color="success">
+              <v-chip
+                value="approved"
+                variant="outlined"
+                color="success"
+              >
                 已通过
               </v-chip>
-              <v-chip value="rejected" variant="outlined" color="error">
+              <v-chip
+                value="rejected"
+                variant="outlined"
+                color="error"
+              >
                 已拒绝
               </v-chip>
             </v-chip-group>
           </v-card-title>
           <v-divider />
           <v-card-text class="pa-6">
-            <div v-if="loading" class="text-center py-4">
+            <div
+              v-if="loading"
+              class="text-center py-4"
+            >
               <v-progress-circular indeterminate />
             </div>
 
-            <v-empty-state v-else-if="comments.length === 0" icon="mdi-comment-off-outline" title="暂无评论"
-              text="还没有任何评论" />
+            <v-empty-state
+              v-else-if="comments.length === 0"
+              icon="mdi-comment-off-outline"
+              title="暂无评论"
+              text="还没有任何评论"
+            />
 
             <div v-else>
               <v-list lines="three">
-                <v-list-item v-for="comment in comments" :key="comment.id" class="px-0">
+                <v-list-item
+                  v-for="comment in comments"
+                  :key="comment.id"
+                  class="px-0"
+                >
                   <template #prepend>
                     <v-avatar size="40">
-                      <v-img v-if="comment.user?.avatar" :src="comment.user.avatar" />
+                      <v-img
+                        v-if="comment.user?.avatar"
+                        :src="comment.user.avatar"
+                      />
                       <v-icon v-else>
                         mdi-account
                       </v-icon>
@@ -49,7 +85,10 @@
 
                   <v-list-item-title class="d-flex align-center ga-2">
                     <span>{{ comment.user?.username || comment.guestName || '匿名用户' }}</span>
-                    <v-chip size="x-small" :color="getStatusColor(comment.status)">
+                    <v-chip
+                      size="x-small"
+                      :color="getStatusColor(comment.status)"
+                    >
                       {{ getStatusText(comment.status) }}
                     </v-chip>
                   </v-list-item-title>
@@ -57,7 +96,10 @@
                   <v-list-item-subtitle class="mt-1">
                     <span class="text-medium-emphasis">
                       {{ formatDate(comment.createdAt) }} ·
-                      <NuxtLink :to="`/article/${comment.article?.id}`" class="text-primary">
+                      <NuxtLink
+                        :to="`/article/${comment.article?.id}`"
+                        class="text-primary"
+                      >
                         {{ comment.article?.title || '文章已删除' }}
                       </NuxtLink>
                     </span>
@@ -69,12 +111,22 @@
 
                   <template #append>
                     <div class="d-flex flex-column ga-2">
-                      <v-btn v-if="comment.status !== 'approved'" size="small" color="success" variant="outlined"
-                        @click="updateStatus(comment.id, 'approved')">
+                      <v-btn
+                        v-if="comment.status !== 'approved'"
+                        size="small"
+                        color="success"
+                        variant="outlined"
+                        @click="updateStatus(comment.id, 'approved')"
+                      >
                         通过
                       </v-btn>
-                      <v-btn v-if="comment.status !== 'rejected'" size="small" color="error" variant="outlined"
-                        @click="updateStatus(comment.id, 'rejected')">
+                      <v-btn
+                        v-if="comment.status !== 'rejected'"
+                        size="small"
+                        color="error"
+                        variant="outlined"
+                        @click="updateStatus(comment.id, 'rejected')"
+                      >
                         拒绝
                       </v-btn>
                     </div>
@@ -82,8 +134,13 @@
                 </v-list-item>
               </v-list>
 
-              <v-pagination v-if="totalPages > 1" v-model="currentPage" :length="totalPages" class="mt-4"
-                @update:model-value="loadComments" />
+              <v-pagination
+                v-if="totalPages > 1"
+                v-model="currentPage"
+                :length="totalPages"
+                class="mt-4"
+                @update:model-value="loadComments"
+              />
             </div>
           </v-card-text>
         </v-card>

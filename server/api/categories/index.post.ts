@@ -1,7 +1,7 @@
 import { defineEventHandler, readBody } from 'h3'
 import { eq } from 'drizzle-orm'
-import { db } from '~/database'
-import { categories } from '~/database/schema'
+import { db } from '~/server/database'
+import { categories } from '~/server/database/schema'
 import { requireAuth } from '~/server/utils/session'
 import { defineAbilitiesFor, forbid } from '~/server/utils/abilities'
 

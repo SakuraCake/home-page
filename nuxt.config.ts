@@ -65,6 +65,7 @@ export default defineNuxtConfig({
     }
   },
   routeRules: {
+    '/': { swr: 300 },
     '/chase': { ssr: false },
     '/admin/**': { ssr: false },
     '/article/create': { ssr: false },
@@ -72,6 +73,7 @@ export default defineNuxtConfig({
     '/user/**': { ssr: false },
     '/login': { ssr: false },
     '/register': { ssr: false },
+    '/setup': { ssr: false },
     '/api/articles': { swr: 300 },
     '/api/categories': { swr: 3600 },
     '/api/tags': { swr: 3600 },

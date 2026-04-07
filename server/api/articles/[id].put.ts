@@ -1,7 +1,7 @@
 import { defineEventHandler, readBody, getRouterParam, createError } from 'h3'
 import { eq } from 'drizzle-orm'
-import { db } from '~/database'
-import { articles, articleTags } from '~/database/schema'
+import { db } from '~/server/database'
+import { articles, articleTags } from '~/server/database/schema'
 import { requireAuth } from '~/server/utils/session'
 import { defineAbilitiesFor, forbid } from '~/server/utils/abilities'
 

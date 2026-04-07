@@ -2,7 +2,10 @@
   <v-container max-width="1200">
     <v-row>
       <v-col cols="12">
-        <v-breadcrumbs :items="breadcrumbs" class="pa-0 mb-4" />
+        <v-breadcrumbs
+          :items="breadcrumbs"
+          class="pa-0 mb-4"
+        />
       </v-col>
     </v-row>
     <v-row>
@@ -12,10 +15,17 @@
         </h1>
       </v-col>
 
-      <v-col cols="12" md="3">
+      <v-col
+        cols="12"
+        md="3"
+      >
         <v-card to="/admin/users">
           <v-card-text class="text-center py-6">
-            <v-icon size="48" color="primary" class="mb-2">
+            <v-icon
+              size="48"
+              color="primary"
+              class="mb-2"
+            >
               mdi-account-group
             </v-icon>
             <div class="text-h4">
@@ -28,10 +38,17 @@
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="3">
+      <v-col
+        cols="12"
+        md="3"
+      >
         <v-card to="/admin/articles">
           <v-card-text class="text-center py-6">
-            <v-icon size="48" color="success" class="mb-2">
+            <v-icon
+              size="48"
+              color="success"
+              class="mb-2"
+            >
               mdi-file-document-multiple
             </v-icon>
             <div class="text-h4">
@@ -44,10 +61,17 @@
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="3">
+      <v-col
+        cols="12"
+        md="3"
+      >
         <v-card to="/admin/categories">
           <v-card-text class="text-center py-6">
-            <v-icon size="48" color="warning" class="mb-2">
+            <v-icon
+              size="48"
+              color="warning"
+              class="mb-2"
+            >
               mdi-folder-multiple
             </v-icon>
             <div class="text-h4">
@@ -60,10 +84,17 @@
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="3">
+      <v-col
+        cols="12"
+        md="3"
+      >
         <v-card to="/admin/tags">
           <v-card-text class="text-center py-6">
-            <v-icon size="48" color="info" class="mb-2">
+            <v-icon
+              size="48"
+              color="info"
+              class="mb-2"
+            >
               mdi-tag-multiple
             </v-icon>
             <div class="text-h4">
@@ -76,7 +107,10 @@
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="6">
+      <v-col
+        cols="12"
+        md="6"
+      >
         <v-card>
           <v-card-title>快捷操作</v-card-title>
           <v-divider />
@@ -127,19 +161,31 @@
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="6">
+      <v-col
+        cols="12"
+        md="6"
+      >
         <v-card>
           <v-card-title>最新文章</v-card-title>
           <v-divider />
           <v-list v-if="recentArticles.length">
-            <v-list-item v-for="article in recentArticles" :key="article.id" :to="`/article/${article.id}`">
+            <v-list-item
+              v-for="article in recentArticles"
+              :key="article.id"
+              :to="`/article/${article.id}`"
+            >
               <v-list-item-title>{{ article.title }}</v-list-item-title>
               <v-list-item-subtitle>
                 {{ article.author?.username }} · {{ formatDate(article.createdAt) }}
               </v-list-item-subtitle>
             </v-list-item>
           </v-list>
-          <v-empty-state v-else icon="mdi-file-document-outline" title="暂无文章" text="还没有任何文章" />
+          <v-empty-state
+            v-else
+            icon="mdi-file-document-outline"
+            title="暂无文章"
+            text="还没有任何文章"
+          />
         </v-card>
       </v-col>
     </v-row>

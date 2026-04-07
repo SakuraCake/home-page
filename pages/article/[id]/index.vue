@@ -3,12 +3,22 @@
     <v-row v-if="loading">
       <v-col cols="12">
         <v-card>
-          <v-skeleton-loader type="image" height="300" />
+          <v-skeleton-loader
+            type="image"
+            height="300"
+          />
           <v-card-title class="py-4 px-6">
-            <v-skeleton-loader type="text" width="60%" height="36" />
+            <v-skeleton-loader
+              type="text"
+              width="60%"
+              height="36"
+            />
           </v-card-title>
           <v-card-subtitle class="px-6">
-            <v-skeleton-loader type="text" width="80%" />
+            <v-skeleton-loader
+              type="text"
+              width="80%"
+            />
           </v-card-subtitle>
           <v-divider class="my-4" />
           <v-card-text class="px-6 py-8">
@@ -23,10 +33,16 @@
         </v-card>
       </v-col>
 
-      <v-col cols="12" class="mt-4">
+      <v-col
+        cols="12"
+        class="mt-4"
+      >
         <v-card>
           <v-card-title>
-            <v-skeleton-loader type="text" width="80" />
+            <v-skeleton-loader
+              type="text"
+              width="80"
+            />
           </v-card-title>
           <v-card-text>
             <v-skeleton-loader type="paragraph@3" />
@@ -37,9 +53,16 @@
 
     <v-row v-else-if="error">
       <v-col cols="12">
-        <v-empty-state icon="mdi-alert-circle-outline" :text="error" title="加载失败">
+        <v-empty-state
+          icon="mdi-alert-circle-outline"
+          :text="error"
+          title="加载失败"
+        >
           <template #actions>
-            <v-btn color="primary" to="/article">
+            <v-btn
+              color="primary"
+              to="/article"
+            >
               返回列表
             </v-btn>
           </template>
@@ -55,7 +78,11 @@
               {{ article.title }}
             </v-card-title>
             <v-card-subtitle class="px-6">
-              <v-chip size="small" label color="warning">
+              <v-chip
+                size="small"
+                label
+                color="warning"
+              >
                 <v-icon start>
                   mdi-lock
                 </v-icon>
@@ -64,13 +91,26 @@
             </v-card-subtitle>
             <v-divider class="my-4" />
             <v-card-text class="px-6 py-8">
-              <v-alert type="info" class="mb-4">
+              <v-alert
+                type="info"
+                class="mb-4"
+              >
                 这篇文章需要密码才能查看
               </v-alert>
               <v-form @submit.prevent="verifyPassword">
-                <v-text-field v-model="passwordInput" label="请输入访问密码" type="password" variant="outlined"
-                  :error-messages="passwordError" :loading="verifying" />
-                <v-btn color="primary" type="submit" :loading="verifying">
+                <v-text-field
+                  v-model="passwordInput"
+                  label="请输入访问密码"
+                  type="password"
+                  variant="outlined"
+                  :error-messages="passwordError"
+                  :loading="verifying"
+                />
+                <v-btn
+                  color="primary"
+                  type="submit"
+                  :loading="verifying"
+                >
                   验证密码
                 </v-btn>
               </v-form>
@@ -82,40 +122,68 @@
       <v-row v-else>
         <v-col cols="12">
           <v-card>
-            <v-img v-if="article.coverImage" :src="article.coverImage" height="300" cover />
+            <v-img
+              v-if="article.coverImage"
+              :src="article.coverImage"
+              height="300"
+              cover
+            />
             <v-card-title class="text-h4 py-4 px-6">
               {{ article.title }}
             </v-card-title>
             <v-card-subtitle class="px-6">
-              <v-chip size="small" label class="mr-2">
+              <v-chip
+                size="small"
+                label
+                class="mr-2"
+              >
                 <v-icon start>
                   mdi-account
                 </v-icon>
                 {{ article.author?.username || '未知' }}
               </v-chip>
-              <v-chip size="small" label class="mr-2">
+              <v-chip
+                size="small"
+                label
+                class="mr-2"
+              >
                 <v-icon start>
                   mdi-calendar
                 </v-icon>
                 {{ formatDate(article.createdAt) }}
               </v-chip>
-              <v-chip size="small" label class="mr-2">
+              <v-chip
+                size="small"
+                label
+                class="mr-2"
+              >
                 <v-icon start>
                   mdi-eye
                 </v-icon>
                 {{ article.viewCount }} 次阅读
               </v-chip>
-              <v-chip v-if="article.category" size="small" label color="primary">
+              <v-chip
+                v-if="article.category"
+                size="small"
+                label
+                color="primary"
+              >
                 {{ article.category.name }}
               </v-chip>
             </v-card-subtitle>
             <v-divider class="my-4" />
             <v-card-text class="px-6 py-8">
-              <div class="markdown-body" v-html="renderedContent" />
+              <div
+                class="markdown-body"
+                v-html="renderedContent"
+              />
             </v-card-text>
             <v-divider />
             <v-card-actions class="pa-6">
-              <v-btn variant="text" to="/article">
+              <v-btn
+                variant="text"
+                to="/article"
+              >
                 <v-icon start>
                   mdi-arrow-left
                 </v-icon>
@@ -123,13 +191,20 @@
               </v-btn>
               <v-spacer />
               <template v-if="canEdit">
-                <v-btn variant="text" :to="`/article/${article.id}/edit`">
+                <v-btn
+                  variant="text"
+                  :to="`/article/${article.id}/edit`"
+                >
                   <v-icon start>
                     mdi-pencil
                   </v-icon>
                   编辑
                 </v-btn>
-                <v-btn variant="text" color="error" @click="handleDelete">
+                <v-btn
+                  variant="text"
+                  color="error"
+                  @click="handleDelete"
+                >
                   <v-icon start>
                     mdi-delete
                   </v-icon>
@@ -140,7 +215,10 @@
           </v-card>
         </v-col>
 
-        <v-col cols="12" class="mt-4">
+        <v-col
+          cols="12"
+          class="mt-4"
+        >
           <v-card>
             <v-card-title>评论</v-card-title>
             <v-card-text>

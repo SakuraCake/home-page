@@ -1,30 +1,57 @@
 <template>
-  <v-container fluid class="pa-4">
+  <v-container
+    fluid
+    class="pa-4"
+  >
     <v-row>
       <v-col cols="12">
-        <v-breadcrumbs :items="breadcrumbs" class="pa-0 mb-4" />
+        <v-breadcrumbs
+          :items="breadcrumbs"
+          class="pa-0 mb-4"
+        />
       </v-col>
     </v-row>
 
     <v-row v-if="loading">
-      <v-col cols="12" lg="8">
+      <v-col
+        cols="12"
+        lg="8"
+      >
         <v-card height="100%">
           <v-card-title class="text-h4 py-4 px-6">
-            <v-skeleton-loader type="text" width="120" />
+            <v-skeleton-loader
+              type="text"
+              width="120"
+            />
           </v-card-title>
           <v-divider />
           <v-card-text class="pa-6">
-            <v-skeleton-loader type="text" class="mb-4" />
-            <v-skeleton-loader type="text" class="mb-4" />
-            <v-skeleton-loader type="textarea" height="400" />
+            <v-skeleton-loader
+              type="text"
+              class="mb-4"
+            />
+            <v-skeleton-loader
+              type="text"
+              class="mb-4"
+            />
+            <v-skeleton-loader
+              type="textarea"
+              height="400"
+            />
           </v-card-text>
         </v-card>
       </v-col>
 
-      <v-col cols="12" lg="4">
+      <v-col
+        cols="12"
+        lg="4"
+      >
         <v-card class="mb-4">
           <v-card-title>
-            <v-skeleton-loader type="text" width="100" />
+            <v-skeleton-loader
+              type="text"
+              width="100"
+            />
           </v-card-title>
           <v-card-text>
             <v-skeleton-loader type="text@3" />
@@ -32,7 +59,10 @@
         </v-card>
         <v-card>
           <v-card-title>
-            <v-skeleton-loader type="text" width="80" />
+            <v-skeleton-loader
+              type="text"
+              width="80"
+            />
           </v-card-title>
           <v-card-text>
             <v-skeleton-loader type="text@2" />
@@ -43,9 +73,16 @@
 
     <v-row v-else-if="error">
       <v-col cols="12">
-        <v-empty-state icon="mdi-alert-circle-outline" :text="error" title="加载失败">
+        <v-empty-state
+          icon="mdi-alert-circle-outline"
+          :text="error"
+          title="加载失败"
+        >
           <template #actions>
-            <v-btn color="primary" to="/article">
+            <v-btn
+              color="primary"
+              to="/article"
+            >
               返回列表
             </v-btn>
           </template>
@@ -54,7 +91,10 @@
     </v-row>
 
     <v-row v-else-if="article">
-      <v-col cols="12" lg="8">
+      <v-col
+        cols="12"
+        lg="8"
+      >
         <v-card height="100%">
           <v-card-title class="text-h4 py-4 px-6">
             编辑文章
@@ -62,19 +102,44 @@
           <v-divider />
           <v-card-text class="pa-6">
             <v-form @submit.prevent="handleSubmit">
-              <v-text-field v-model="form.title" label="标题" variant="outlined" class="mb-4" @keydown.enter.prevent />
+              <v-text-field
+                v-model="form.title"
+                label="标题"
+                variant="outlined"
+                class="mb-4"
+                @keydown.enter.prevent
+              />
 
-              <v-text-field v-model="form.slug" label="Slug (URL 友好标识)" variant="outlined"
-                hint="用于生成文章 URL，如: my-first-article" class="mb-4" @keydown.enter.prevent />
+              <v-text-field
+                v-model="form.slug"
+                label="Slug (URL 友好标识)"
+                variant="outlined"
+                hint="用于生成文章 URL，如: my-first-article"
+                class="mb-4"
+                @keydown.enter.prevent
+              />
 
-              <v-textarea v-model="form.content" label="内容 (Markdown)" variant="outlined" rows="25" auto-grow
-                class="mb-4" />
+              <v-textarea
+                v-model="form.content"
+                label="内容 (Markdown)"
+                variant="outlined"
+                rows="25"
+                auto-grow
+                class="mb-4"
+              />
 
               <div class="d-flex ga-2">
-                <v-btn color="primary" type="submit" :loading="submitting">
+                <v-btn
+                  color="primary"
+                  type="submit"
+                  :loading="submitting"
+                >
                   保存更改
                 </v-btn>
-                <v-btn variant="outlined" :to="`/article/${id}`">
+                <v-btn
+                  variant="outlined"
+                  :to="`/article/${id}`"
+                >
                   取消
                 </v-btn>
               </div>
@@ -83,8 +148,14 @@
         </v-card>
       </v-col>
 
-      <v-col cols="12" lg="4">
-        <v-expansion-panels v-model="expandedPanels" multiple>
+      <v-col
+        cols="12"
+        lg="4"
+      >
+        <v-expansion-panels
+          v-model="expandedPanels"
+          multiple
+        >
           <v-expansion-panel value="settings">
             <v-expansion-panel-title>
               <v-icon start>
@@ -94,17 +165,42 @@
             </v-expansion-panel-title>
             <v-expansion-panel-text>
               <v-row dense>
-                <v-col cols="4">
-                  <v-select v-model="form.status" :items="statusOptions" label="状态" variant="outlined"
-                    density="compact" />
+                <v-col cols="12">
+                  <v-select
+                    v-model="form.status"
+                    :items="statusOptions"
+                    label="状态"
+                    variant="outlined"
+                    density="compact"
+                  />
                 </v-col>
-                <v-col cols="4">
-                  <v-select v-model="form.categoryId" :items="categories" item-title="name" item-value="id" label="分类"
-                    variant="outlined" clearable density="compact" />
+              </v-row>
+              <v-row dense>
+                <v-col cols="6">
+                  <v-select
+                    v-model="form.categoryId"
+                    :items="categories"
+                    item-title="name"
+                    item-value="id"
+                    label="分类"
+                    variant="outlined"
+                    clearable
+                    density="compact"
+                  />
                 </v-col>
-                <v-col cols="4">
-                  <v-select v-model="form.tagIds" :items="tags" item-title="name" item-value="id" label="标签"
-                    variant="outlined" multiple chips clearable density="compact" />
+                <v-col cols="6">
+                  <v-select
+                    v-model="form.tagIds"
+                    :items="tags"
+                    item-title="name"
+                    item-value="id"
+                    label="标签"
+                    variant="outlined"
+                    multiple
+                    chips
+                    clearable
+                    density="compact"
+                  />
                 </v-col>
               </v-row>
             </v-expansion-panel-text>
@@ -120,12 +216,22 @@
             <v-expansion-panel-text>
               <v-row dense>
                 <v-col cols="12">
-                  <v-text-field v-model="form.summary" label="摘要" variant="outlined" density="compact"
-                    @keydown.enter.prevent />
+                  <v-text-field
+                    v-model="form.summary"
+                    label="摘要"
+                    variant="outlined"
+                    density="compact"
+                    @keydown.enter.prevent
+                  />
                 </v-col>
                 <v-col cols="12">
-                  <v-text-field v-model="form.coverImage" label="封面图片 URL" variant="outlined" density="compact"
-                    @keydown.enter.prevent />
+                  <v-text-field
+                    v-model="form.coverImage"
+                    label="封面图片 URL"
+                    variant="outlined"
+                    density="compact"
+                    @keydown.enter.prevent
+                  />
                 </v-col>
               </v-row>
             </v-expansion-panel-text>
@@ -139,7 +245,10 @@
               预览
             </v-expansion-panel-title>
             <v-expansion-panel-text>
-              <div class="markdown-body preview-content" v-html="previewContent" />
+              <div
+                class="markdown-body preview-content"
+                v-html="previewContent"
+              />
             </v-expansion-panel-text>
           </v-expansion-panel>
         </v-expansion-panels>

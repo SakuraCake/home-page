@@ -168,7 +168,18 @@ export const useUserStore = defineStore('user', {
 
     getAuthHeaders(): Record<string, string> {
       const token = this.getToken()
-      return token ? { Authorization: `Bearer ${token}` } : {}
+      const headers: Record<string, string> = {}
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`
+      }
+
+      const csrfCookie = useCookie('csrf_token')
+      if (csrfCookie.value) {
+        headers['X-CSRF-Token'] = csrfCookie.value
+      }
+
+      return headers
     },
   },
 })

@@ -1,6 +1,6 @@
 import crypto from 'crypto'
 import type { H3Event } from 'h3'
-import { db } from '~/database'
+import { db } from '~/server/database'
 
 const API_URL = 'http://api.geetest.com'
 const REGISTER_URL = `${API_URL}/register.php`

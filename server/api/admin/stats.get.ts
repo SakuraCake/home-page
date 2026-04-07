@@ -1,6 +1,6 @@
 import { defineEventHandler } from 'h3'
-import { db } from '~/database'
-import { users, articles, categories, tags } from '~/database/schema'
+import { db } from '~/server/database'
+import { users, articles, categories, tags } from '~/server/database/schema'
 import { requireAuth } from '~/server/utils/session'
 import { sql } from 'drizzle-orm'
 

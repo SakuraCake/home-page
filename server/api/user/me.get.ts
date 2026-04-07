@@ -1,7 +1,7 @@
 import { defineEventHandler, createError } from 'h3'
 import { eq } from 'drizzle-orm'
-import { db } from '~/database'
-import { users } from '~/database/schema'
+import { db } from '~/server/database'
+import { users } from '~/server/database/schema'
 import { getUserSession } from '~/server/utils/session'
 
 export default defineEventHandler(async (event) => {
@@ -35,6 +35,11 @@ export default defineEventHandler(async (event) => {
       email: user.email,
       role: user.role,
       avatar: user.avatar,
+      bio: user.bio,
+      website: user.website,
+      github: user.github,
+      twitter: user.twitter,
+      weibo: user.weibo,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt
     }

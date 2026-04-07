@@ -2,28 +2,121 @@
   <v-container max-width="900">
     <v-row>
       <v-col cols="12">
-        <v-breadcrumbs :items="breadcrumbs" class="pa-0 mb-4" />
+        <v-breadcrumbs
+          :items="breadcrumbs"
+          class="pa-0 mb-4"
+        />
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="12" md="4">
+      <v-col
+        cols="12"
+        md="4"
+      >
         <v-card>
           <v-card-text class="text-center py-8">
-            <v-avatar size="100" class="mb-4">
-              <v-icon v-if="!userStore.user?.avatar" size="60">
+            <v-avatar
+              size="100"
+              class="mb-4"
+            >
+              <v-icon
+                v-if="!userStore.user?.avatar"
+                size="60"
+              >
                 mdi-account
               </v-icon>
-              <v-img v-else :src="userStore.user.avatar" />
+              <v-img
+                v-else
+                :src="userStore.user.avatar"
+              />
             </v-avatar>
             <h2 class="text-h5 mb-2">
               {{ userStore.user?.username }}
             </h2>
-            <v-chip size="small" :color="userStore.isAdmin ? 'primary' : 'default'">
+            <v-chip
+              size="small"
+              :color="userStore.isAdmin ? 'primary' : 'default'"
+            >
               {{ userStore.isAdmin ? '管理员' : '普通用户' }}
             </v-chip>
+            <p
+              v-if="userStore.user?.bio"
+              class="text-body-2 text-medium-emphasis mt-3 px-4"
+            >
+              {{ userStore.user.bio }}
+            </p>
             <p class="text-caption text-medium-emphasis mt-2">
               注册于 {{ formatDate(userStore.user?.createdAt || 0) }}
             </p>
+            <div
+              v-if="hasSocialLinks"
+              class="d-flex justify-center ga-2 mt-3"
+            >
+              <v-btn
+                v-if="userStore.user?.website"
+                :href="userStore.user.website"
+                target="_blank"
+                icon
+                size="small"
+                variant="text"
+              >
+                <v-icon>mdi-web</v-icon>
+                <v-tooltip
+                  activator="parent"
+                  location="top"
+                >
+                  个人网站
+                </v-tooltip>
+              </v-btn>
+              <v-btn
+                v-if="userStore.user?.github"
+                :href="`https://github.com/${userStore.user.github}`"
+                target="_blank"
+                icon
+                size="small"
+                variant="text"
+              >
+                <v-icon>mdi-github</v-icon>
+                <v-tooltip
+                  activator="parent"
+                  location="top"
+                >
+                  GitHub
+                </v-tooltip>
+              </v-btn>
+              <v-btn
+                v-if="userStore.user?.twitter"
+                :href="`https://twitter.com/${userStore.user.twitter}`"
+                target="_blank"
+                icon
+                size="small"
+                variant="text"
+              >
+                <v-icon>mdi-twitter</v-icon>
+                <v-tooltip
+                  activator="parent"
+                  location="top"
+                >
+                  Twitter
+                </v-tooltip>
+              </v-btn>
+              <v-btn
+                v-if="userStore.user?.weibo"
+                :href="`https://weibo.com/${userStore.user.weibo}`"
+                target="_blank"
+                icon
+                size="small"
+                variant="text"
+              >
+                <v-icon>mdi-sina-weibo</v-icon>
+                <v-tooltip
+                  activator="parent"
+                  location="top"
+                >
+                  微博
+                </v-tooltip>
+              </v-btn>
+            </div>
           </v-card-text>
           <v-divider />
           <v-list>
@@ -48,17 +141,87 @@
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="8">
+      <v-col
+        cols="12"
+        md="8"
+      >
         <v-card>
           <v-card-title>个人信息</v-card-title>
           <v-divider />
           <v-card-text class="pa-6">
             <v-form @submit.prevent="handleUpdateProfile">
-              <v-text-field v-model="form.username" label="用户名" variant="outlined" disabled class="mb-4" />
-              <v-text-field v-model="form.email" label="邮箱" type="email" variant="outlined" class="mb-4" />
-              <v-text-field v-model="form.avatar" label="头像 URL" variant="outlined" class="mb-4" />
+              <v-text-field
+                v-model="form.username"
+                label="用户名"
+                variant="outlined"
+                disabled
+                class="mb-4"
+              />
+              <v-text-field
+                v-model="form.email"
+                label="邮箱"
+                type="email"
+                variant="outlined"
+                class="mb-4"
+              />
+              <v-text-field
+                v-model="form.avatar"
+                label="头像 URL"
+                variant="outlined"
+                class="mb-4"
+              />
+              <v-textarea
+                v-model="form.bio"
+                label="个人简介"
+                variant="outlined"
+                rows="3"
+                counter="200"
+                class="mb-4"
+              />
 
-              <v-btn color="primary" type="submit" :loading="loading">
+              <v-divider class="mb-4" />
+
+              <h3 class="text-subtitle-1 mb-3">
+                社交链接
+              </h3>
+              <v-text-field
+                v-model="form.website"
+                label="个人网站"
+                variant="outlined"
+                prepend-inner-icon="mdi-web"
+                placeholder="https://example.com"
+                class="mb-4"
+              />
+              <v-text-field
+                v-model="form.github"
+                label="GitHub"
+                variant="outlined"
+                prepend-inner-icon="mdi-github"
+                placeholder="用户名"
+                class="mb-4"
+              />
+              <v-text-field
+                v-model="form.twitter"
+                label="Twitter"
+                variant="outlined"
+                prepend-inner-icon="mdi-twitter"
+                placeholder="用户名"
+                class="mb-4"
+              />
+              <v-text-field
+                v-model="form.weibo"
+                label="微博"
+                variant="outlined"
+                prepend-inner-icon="mdi-sina-weibo"
+                placeholder="用户名或UID"
+                class="mb-4"
+              />
+
+              <v-btn
+                color="primary"
+                type="submit"
+                :loading="loading"
+              >
                 保存更改
               </v-btn>
             </v-form>
@@ -70,14 +233,33 @@
           <v-divider />
           <v-card-text class="pa-6">
             <v-form @submit.prevent="handleChangePassword">
-              <v-text-field v-model="passwordForm.oldPassword" label="当前密码" type="password" variant="outlined"
-                class="mb-4" />
-              <v-text-field v-model="passwordForm.newPassword" label="新密码" type="password" variant="outlined"
-                class="mb-4" />
-              <v-text-field v-model="passwordForm.confirmPassword" label="确认新密码" type="password" variant="outlined"
-                class="mb-4" />
+              <v-text-field
+                v-model="passwordForm.oldPassword"
+                label="当前密码"
+                type="password"
+                variant="outlined"
+                class="mb-4"
+              />
+              <v-text-field
+                v-model="passwordForm.newPassword"
+                label="新密码"
+                type="password"
+                variant="outlined"
+                class="mb-4"
+              />
+              <v-text-field
+                v-model="passwordForm.confirmPassword"
+                label="确认新密码"
+                type="password"
+                variant="outlined"
+                class="mb-4"
+              />
 
-              <v-btn color="primary" type="submit" :loading="passwordLoading">
+              <v-btn
+                color="primary"
+                type="submit"
+                :loading="passwordLoading"
+              >
                 修改密码
               </v-btn>
             </v-form>
@@ -107,7 +289,12 @@ const breadcrumbs = [
 const form = ref({
   username: '',
   email: '',
-  avatar: ''
+  avatar: '',
+  bio: '',
+  website: '',
+  github: '',
+  twitter: '',
+  weibo: ''
 })
 
 const passwordForm = ref({
@@ -119,6 +306,10 @@ const passwordForm = ref({
 const loading = ref(false)
 const passwordLoading = ref(false)
 const articleCount = ref(0)
+
+const hasSocialLinks = computed(() => {
+  return userStore.user?.website || userStore.user?.github || userStore.user?.twitter || userStore.user?.weibo
+})
 
 const formatDate = (timestamp: number) => {
   return new Date(timestamp).toLocaleDateString('zh-CN', {
@@ -136,7 +327,12 @@ const handleUpdateProfile = async () => {
       method: 'PUT',
       body: {
         email: form.value.email,
-        avatar: form.value.avatar
+        avatar: form.value.avatar,
+        bio: form.value.bio,
+        website: form.value.website,
+        github: form.value.github,
+        twitter: form.value.twitter,
+        weibo: form.value.weibo
       },
       headers: userStore.getAuthHeaders()
     })
@@ -219,7 +415,12 @@ onMounted(() => {
   form.value = {
     username: userStore.user?.username || '',
     email: userStore.user?.email || '',
-    avatar: userStore.user?.avatar || ''
+    avatar: userStore.user?.avatar || '',
+    bio: (userStore.user as any)?.bio || '',
+    website: (userStore.user as any)?.website || '',
+    github: (userStore.user as any)?.github || '',
+    twitter: (userStore.user as any)?.twitter || '',
+    weibo: (userStore.user as any)?.weibo || ''
   }
 
   fetchArticleCount()

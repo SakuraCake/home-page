@@ -1,11 +1,17 @@
 <template>
   <div class="comment-item mb-4">
     <div class="d-flex align-start">
-      <v-avatar size="40" class="mr-3">
+      <v-avatar
+        size="40"
+        class="mr-3"
+      >
         <v-icon v-if="!displayAvatar">
           mdi-account
         </v-icon>
-        <v-img v-else :src="displayAvatar" />
+        <v-img
+          v-else
+          :src="displayAvatar"
+        />
       </v-avatar>
       <div class="flex-grow-1">
         <div class="d-flex align-center mb-1">
@@ -18,19 +24,38 @@
           {{ comment.content }}
         </div>
         <div class="d-flex gap-2">
-          <v-btn size="x-small" variant="text" @click="$emit('reply', comment.id)">
+          <v-btn
+            size="x-small"
+            variant="text"
+            @click="$emit('reply', comment.id)"
+          >
             回复
           </v-btn>
-          <v-btn v-if="canDelete" size="x-small" variant="text" color="error" @click="handleDelete">
+          <v-btn
+            v-if="canDelete"
+            size="x-small"
+            variant="text"
+            color="error"
+            @click="handleDelete"
+          >
             删除
           </v-btn>
         </div>
       </div>
     </div>
 
-    <div v-if="comment.replies?.length" class="ml-13 mt-3">
-      <ArticleCommentItem v-for="reply in comment.replies" :key="reply.id" :comment="reply" :article-id="articleId"
-        @reply="$emit('reply', $event)" @deleted="$emit('deleted')" />
+    <div
+      v-if="comment.replies?.length"
+      class="ml-13 mt-3"
+    >
+      <ArticleCommentItem
+        v-for="reply in comment.replies"
+        :key="reply.id"
+        :comment="reply"
+        :article-id="articleId"
+        @reply="$emit('reply', $event)"
+        @deleted="$emit('deleted')"
+      />
     </div>
   </div>
 </template>

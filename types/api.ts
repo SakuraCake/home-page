@@ -17,6 +17,11 @@ export interface User {
   email: string | null
   role: string | null
   avatar: string | null
+  bio: string | null
+  website: string | null
+  github: string | null
+  twitter: string | null
+  weibo: string | null
   createdAt: number
   updatedAt: number
 }
@@ -119,6 +124,12 @@ export interface CommentWithArticle extends Comment {
   } | null
 }
 
+export interface SocialLink {
+  name: string
+  url: string
+  icon: string
+}
+
 export interface SiteConfig {
   siteName: string | null
   siteDescription: string | null
@@ -133,6 +144,13 @@ export interface SiteConfig {
   allowRegister: boolean | null
   allowComment: boolean | null
   commentNeedReview: boolean | null
+  homeTitle: string | null
+  homeSubtitle: string | null
+  homeAvatar: string | null
+  homeDescription: string | null
+  homeShowArticles: boolean | null
+  socialLinks: SocialLink[] | null
+  bangumiUsername: string | null
 }
 
 export interface CaptchaConfig {

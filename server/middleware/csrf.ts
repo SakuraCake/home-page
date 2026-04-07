@@ -9,6 +9,7 @@ const publicRoutes = [
   '/api/categories',
   '/api/tags',
   '/api/config',
+  '/api/setup/',
 ]
 
 function isPublicRoute(path: string): boolean {

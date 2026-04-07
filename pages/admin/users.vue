@@ -2,7 +2,10 @@
   <v-container max-width="1200">
     <v-row>
       <v-col cols="12">
-        <v-breadcrumbs :items="breadcrumbs" class="pa-0 mb-4" />
+        <v-breadcrumbs
+          :items="breadcrumbs"
+          class="pa-0 mb-4"
+        />
       </v-col>
     </v-row>
     <v-row>
@@ -17,9 +20,16 @@
       <v-col cols="12">
         <v-card>
           <ClientOnly>
-            <v-data-table :headers="headers" :items="users" :loading="loading">
+            <v-data-table
+              :headers="headers"
+              :items="users"
+              :loading="loading"
+            >
               <template #item.role="{ item }">
-                <v-chip size="small" :color="item.role === 'admin' ? 'primary' : 'default'">
+                <v-chip
+                  size="small"
+                  :color="item.role === 'admin' ? 'primary' : 'default'"
+                >
                   {{ item.role === 'admin' ? '管理员' : '普通用户' }}
                 </v-chip>
               </template>
@@ -27,11 +37,19 @@
                 {{ formatDate(item.createdAt) }}
               </template>
               <template #item.actions="{ item }">
-                <v-btn v-if="item.id !== userStore.user?.id" size="small" variant="text"
-                  :color="item.role === 'admin' ? 'warning' : 'primary'" @click="toggleAdmin(item)">
+                <v-btn
+                  v-if="item.id !== userStore.user?.id"
+                  size="small"
+                  variant="text"
+                  :color="item.role === 'admin' ? 'warning' : 'primary'"
+                  @click="toggleAdmin(item)"
+                >
                   {{ item.role === 'admin' ? '取消管理员' : '设为管理员' }}
                 </v-btn>
-                <span v-else class="text-medium-emphasis text-caption">
+                <span
+                  v-else
+                  class="text-medium-emphasis text-caption"
+                >
                   当前用户
                 </span>
               </template>

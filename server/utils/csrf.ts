@@ -21,9 +21,13 @@ export async function verifyCsrfToken(event: H3Event): Promise<void> {
   const csrfTokenFromBody = event.context.body?.csrfToken
   const csrfTokenFromCookie = getCookie(event, 'csrf_token')
 
+  console.log('[CSRF Debug] Header token:', csrfTokenFromHeader)
+  console.log('[CSRF Debug] Cookie token:', csrfTokenFromCookie)
+
   const csrfToken = csrfTokenFromHeader || csrfTokenFromBody
 
   if (!csrfToken || !csrfTokenFromCookie) {
+    console.log('[CSRF Debug] Missing token - header:', !!csrfToken, 'cookie:', !!csrfTokenFromCookie)
     throw createError({
       statusCode: 403,
       statusMessage: 'CSRF Token Missing',
@@ -32,6 +36,7 @@ export async function verifyCsrfToken(event: H3Event): Promise<void> {
   }
 
   if (csrfToken !== csrfTokenFromCookie) {
+    console.log('[CSRF Debug] Token mismatch')
     throw createError({
       statusCode: 403,
       statusMessage: 'CSRF Token Invalid',

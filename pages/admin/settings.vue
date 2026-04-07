@@ -19,9 +19,12 @@
             </div>
 
             <v-form v-else ref="form" @submit.prevent="saveConfig">
-              <v-tabs v-model="activeTab" class="mb-6">
+              <v-tabs v-model="activeTab" class="mb-6 mx-n6 px-6">
                 <v-tab value="basic">
                   基本设置
+                </v-tab>
+                <v-tab value="home">
+                  首页设置
                 </v-tab>
                 <v-tab value="display">
                   显示设置
@@ -31,7 +34,7 @@
                 </v-tab>
               </v-tabs>
 
-              <v-window v-model="activeTab">
+              <v-window v-model="activeTab" class="pa-4">
                 <v-window-item value="basic">
                   <v-text-field v-model="config.siteName" label="网站名称" variant="outlined" class="mb-4" />
 
@@ -42,6 +45,22 @@
 
                   <v-text-field v-model="config.siteUrl" label="网站地址" variant="outlined" hint="例如：https://example.com"
                     class="mb-4" />
+                </v-window-item>
+
+                <v-window-item value="home">
+                  <v-text-field v-model="config.homeTitle" label="首页标题" variant="outlined" hint="留空则显示默认欢迎语"
+                    class="mb-4" />
+
+                  <v-text-field v-model="config.homeSubtitle" label="首页副标题" variant="outlined" hint="显示在标题下方"
+                    class="mb-4" />
+
+                  <v-text-field v-model="config.homeAvatar" label="首页头像 URL" variant="outlined" hint="留空则使用默认头像"
+                    class="mb-4" />
+
+                  <v-textarea v-model="config.homeDescription" label="首页简介" variant="outlined" rows="3" hint="显示在副标题下方"
+                    class="mb-4" />
+
+                  <v-switch v-model="config.homeShowArticles" label="首页显示最新文章" color="tertiary" class="mb-4" inset />
                 </v-window-item>
 
                 <v-window-item value="display">
@@ -111,6 +130,13 @@ const config = ref<SiteConfig>({
   allowRegister: true,
   allowComment: true,
   commentNeedReview: false,
+  homeTitle: '',
+  homeSubtitle: '',
+  homeAvatar: '',
+  homeDescription: '',
+  homeShowArticles: true,
+  socialLinks: null,
+  bangumiUsername: '',
 })
 
 const loadConfig = async () => {

@@ -51,28 +51,45 @@
 </template>
 
 <script setup lang="ts">
-import { appConfig } from '~/config/app.config'
 import type { CollectionType } from '~/composables/useBangumi'
+import type { SiteConfig, ApiResponse } from '~/types/api'
 
 definePageMeta({
   ssr: false
 })
 
 const animeStore = useAnimeStore()
-const username = appConfig.bangumi.username
+
+const { data: config } = await useAsyncData<SiteConfig | null>(
+  'chase-config',
+  async () => {
+    try {
+      const response = await $fetch<ApiResponse<SiteConfig>>('/api/config/site')
+      return response.success ? response.data ?? null : null
+    } catch {
+      return null
+    }
+  }
+)
+
+const username = computed(() => config.value?.bangumiUsername ?? '')
 
 const handleFilterChange = async (type: CollectionType) => {
   animeStore.setFilterType(type)
-  await animeStore.fetchCollections(username)
+  if (username.value) {
+    await animeStore.fetchCollections(username.value)
+  }
 }
 
 const loadMore = async () => {
-  await animeStore.loadMore(username)
+  if (username.value) {
+    await animeStore.loadMore(username.value)
+  }
 }
 
 onMounted(async () => {
-  if (animeStore.collections.length === 0) {
-    await animeStore.fetchCollections(username)
+  if (animeStore.collections.length === 0 && username.value) {
+    await animeStore.fetchCollections(username.value)
   }
 })
 

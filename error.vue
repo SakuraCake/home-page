@@ -6,9 +6,21 @@
     </ClientOnly>
     <v-main>
       <v-container class="fill-height">
-        <v-row justify="center" align="center">
-          <v-col cols="12" sm="8" md="6" class="text-center">
-            <v-icon size="120" color="error" class="mb-6">
+        <v-row
+          justify="center"
+          align="center"
+        >
+          <v-col
+            cols="12"
+            sm="8"
+            md="6"
+            class="text-center"
+          >
+            <v-icon
+              size="120"
+              color="error"
+              class="mb-6"
+            >
               mdi-alert-circle-outline
             </v-icon>
 
@@ -21,14 +33,21 @@
             </p>
 
             <div class="d-flex justify-center ga-4">
-              <v-btn color="primary" variant="flat" to="/">
+              <v-btn
+                color="primary"
+                variant="flat"
+                to="/"
+              >
                 <v-icon start>
                   mdi-home
                 </v-icon>
                 返回首页
               </v-btn>
 
-              <v-btn variant="tonal" @click="handleClearError">
+              <v-btn
+                variant="tonal"
+                @click="handleClearError"
+              >
                 <v-icon start>
                   mdi-refresh
                 </v-icon>

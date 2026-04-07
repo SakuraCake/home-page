@@ -9,7 +9,10 @@
       @mouseenter="handleDrawerMouseEnter"
       @mouseleave="handleDrawerMouseLeave"
     >
-      <v-list v-model:opened="openedGroups" nav>
+      <v-list
+        v-model:opened="openedGroups"
+        nav
+      >
         <v-list-item
           v-for="item in navItems"
           :key="item.title"
@@ -19,7 +22,10 @@
           :value="item.title"
         />
 
-        <v-list-group value="user">
+        <v-list-group
+          v-if="userStore.isLoggedIn"
+          value="user"
+        >
           <template #activator="{ props }">
             <v-list-item
               v-bind="props"
@@ -40,7 +46,10 @@
           />
         </v-list-group>
 
-        <v-list-group v-if="userStore.isAdmin" value="admin">
+        <v-list-group
+          v-if="userStore.isAdmin"
+          value="admin"
+        >
           <template #activator="{ props }">
             <v-list-item
               v-bind="props"
@@ -64,8 +73,14 @@
 
       <template #append>
         <v-divider />
-        <v-list nav class="pa-2">
-          <v-menu v-if="userStore.isLoggedIn" offset="8">
+        <v-list
+          nav
+          class="pa-2"
+        >
+          <v-menu
+            v-if="userStore.isLoggedIn"
+            offset="8"
+          >
             <template #activator="{ props: menuProps }">
               <v-list-item
                 v-bind="menuProps"
@@ -76,16 +91,40 @@
               />
             </template>
 
-            <v-list density="compact" nav>
-              <v-list-item to="/user" prepend-icon="mdi-account-circle" title="个人资料" />
-              <v-list-item to="/user/articles" prepend-icon="mdi-file-document-outline" title="我的文章" />
-              <v-list-item to="/user/comments" prepend-icon="mdi-comment-outline" title="我的评论" />
+            <v-list
+              density="compact"
+              nav
+            >
+              <v-list-item
+                to="/user"
+                prepend-icon="mdi-account-circle"
+                title="个人资料"
+              />
+              <v-list-item
+                to="/user/articles"
+                prepend-icon="mdi-file-document-outline"
+                title="我的文章"
+              />
+              <v-list-item
+                to="/user/comments"
+                prepend-icon="mdi-comment-outline"
+                title="我的评论"
+              />
               <v-divider />
-              <v-list-item prepend-icon="mdi-logout" title="退出登录" @click="handleLogout" />
+              <v-list-item
+                prepend-icon="mdi-logout"
+                title="退出登录"
+                @click="handleLogout"
+              />
             </v-list>
           </v-menu>
 
-          <v-list-item v-else to="/login" prepend-icon="mdi-account" title="点击登录" />
+          <v-list-item
+            v-else
+            to="/login"
+            prepend-icon="mdi-account"
+            title="点击登录"
+          />
         </v-list>
       </template>
     </v-navigation-drawer>

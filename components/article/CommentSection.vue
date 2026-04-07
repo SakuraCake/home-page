@@ -1,47 +1,95 @@
 <template>
   <div>
-    <v-alert v-if="!allowComment" type="info" class="mb-4">
+    <v-alert
+      v-if="!allowComment"
+      type="info"
+      class="mb-4"
+    >
       评论功能已关闭
     </v-alert>
 
     <template v-else>
       <template v-if="!userStore.isLoggedIn">
         <v-row class="mb-4">
-          <v-col cols="12" sm="6">
-            <v-text-field v-model="guestName" label="昵称 *" variant="outlined" density="compact"
-              :rules="[v => !!v || '请输入昵称']" />
+          <v-col
+            cols="12"
+            sm="6"
+          >
+            <v-text-field
+              v-model="guestName"
+              label="昵称 *"
+              variant="outlined"
+              density="compact"
+              :rules="[v => !!v || '请输入昵称']"
+            />
           </v-col>
-          <v-col cols="12" sm="6">
-            <v-text-field v-model="guestEmail" label="邮箱（可选）" variant="outlined" density="compact" />
+          <v-col
+            cols="12"
+            sm="6"
+          >
+            <v-text-field
+              v-model="guestEmail"
+              label="邮箱（可选）"
+              variant="outlined"
+              density="compact"
+            />
           </v-col>
         </v-row>
       </template>
 
-      <v-textarea v-model="newComment" label="发表评论" variant="outlined" rows="3" auto-grow class="mb-4" />
+      <v-textarea
+        v-model="newComment"
+        label="发表评论"
+        variant="outlined"
+        rows="3"
+        auto-grow
+        class="mb-4"
+      />
 
-      <div v-if="!userStore.isLoggedIn && isVerified" class="mb-4 d-flex align-center ga-2 text-success text-body-2">
+      <div
+        v-if="!userStore.isLoggedIn && isVerified"
+        class="mb-4 d-flex align-center ga-2 text-success text-body-2"
+      >
         <v-icon size="small">
           mdi-check-circle
         </v-icon>
         验证通过
       </div>
 
-      <v-btn color="primary" :loading="submitting || isLoading" :disabled="!canSubmitWithoutCaptcha"
-        @click="handleSubmit">
+      <v-btn
+        color="primary"
+        :loading="submitting || isLoading"
+        :disabled="!canSubmitWithoutCaptcha"
+        @click="handleSubmit"
+      >
         发表
       </v-btn>
 
       <v-divider class="my-6" />
 
-      <div v-if="loading" class="text-center py-4">
+      <div
+        v-if="loading"
+        class="text-center py-4"
+      >
         <v-progress-circular indeterminate />
       </div>
 
-      <v-empty-state v-else-if="comments.length === 0" icon="mdi-comment-outline" title="暂无评论" text="快来发表第一条评论吧！" />
+      <v-empty-state
+        v-else-if="comments.length === 0"
+        icon="mdi-comment-outline"
+        title="暂无评论"
+        text="快来发表第一条评论吧！"
+      />
 
       <div v-else>
-        <ArticleCommentItem v-for="comment in comments" :key="comment.id" :comment="comment" :article-id="articleId"
-          @reply="handleReply" @deleted="loadComments" />
+        <ArticleCommentItem
+          v-for="comment in comments"
+          :key="comment.id"
+          :comment="comment"
+          :article-id="articleId"
+          @reply="handleReply"
+          @deleted="loadComments"
+        />
       </div>
     </template>
   </div>

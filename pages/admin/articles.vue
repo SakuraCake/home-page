@@ -2,7 +2,10 @@
   <v-container max-width="1200">
     <v-row>
       <v-col cols="12">
-        <v-breadcrumbs :items="breadcrumbs" class="pa-0 mb-4" />
+        <v-breadcrumbs
+          :items="breadcrumbs"
+          class="pa-0 mb-4"
+        />
       </v-col>
     </v-row>
     <v-row>
@@ -17,9 +20,16 @@
       <v-col cols="12">
         <v-card>
           <ClientOnly>
-            <v-data-table :headers="headers" :items="articles" :loading="loading">
+            <v-data-table
+              :headers="headers"
+              :items="articles"
+              :loading="loading"
+            >
               <template #item.status="{ item }">
-                <v-chip size="small" :color="item.status === 'published' ? 'success' : 'warning'">
+                <v-chip
+                  size="small"
+                  :color="item.status === 'published' ? 'success' : 'warning'"
+                >
                   {{ item.status === 'published' ? '已发布' : '草稿' }}
                 </v-chip>
               </template>
@@ -27,13 +37,26 @@
                 {{ formatDate(item.createdAt) }}
               </template>
               <template #item.actions="{ item }">
-                <v-btn size="small" variant="text" :to="`/article/${item.id}`">
+                <v-btn
+                  size="small"
+                  variant="text"
+                  :to="`/article/${item.id}`"
+                >
                   查看
                 </v-btn>
-                <v-btn size="small" variant="text" :to="`/article/${item.id}/edit`">
+                <v-btn
+                  size="small"
+                  variant="text"
+                  :to="`/article/${item.id}/edit`"
+                >
                   编辑
                 </v-btn>
-                <v-btn size="small" variant="text" color="error" @click="handleDelete(item.id)">
+                <v-btn
+                  size="small"
+                  variant="text"
+                  color="error"
+                  @click="handleDelete(item.id)"
+                >
                   删除
                 </v-btn>
               </template>

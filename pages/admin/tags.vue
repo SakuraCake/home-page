@@ -2,7 +2,10 @@
   <v-container max-width="1200">
     <v-row>
       <v-col cols="12">
-        <v-breadcrumbs :items="breadcrumbs" class="pa-0 mb-4" />
+        <v-breadcrumbs
+          :items="breadcrumbs"
+          class="pa-0 mb-4"
+        />
       </v-col>
     </v-row>
     <v-row>
@@ -11,7 +14,10 @@
           <h1 class="text-h4">
             标签管理
           </h1>
-          <v-btn color="primary" @click="openDialog()">
+          <v-btn
+            color="primary"
+            @click="openDialog()"
+          >
             <v-icon start>
               mdi-plus
             </v-icon>
@@ -22,7 +28,11 @@
 
       <v-col cols="12">
         <v-card>
-          <v-data-table :headers="headers" :items="tags" :loading="loading">
+          <v-data-table
+            :headers="headers"
+            :items="tags"
+            :loading="loading"
+          >
             <template #item.articleCount="{ item }">
               {{ item.articleCount || 0 }}
             </template>
@@ -30,10 +40,19 @@
               {{ formatDate(item.createdAt) }}
             </template>
             <template #item.actions="{ item }">
-              <v-btn size="small" variant="text" @click="openDialog(item)">
+              <v-btn
+                size="small"
+                variant="text"
+                @click="openDialog(item)"
+              >
                 编辑
               </v-btn>
-              <v-btn size="small" variant="text" color="error" @click="handleDelete(item)">
+              <v-btn
+                size="small"
+                variant="text"
+                color="error"
+                @click="handleDelete(item)"
+              >
                 删除
               </v-btn>
             </template>
@@ -42,21 +61,40 @@
       </v-col>
     </v-row>
 
-    <v-dialog v-model="dialog" max-width="500">
+    <v-dialog
+      v-model="dialog"
+      max-width="500"
+    >
       <v-card>
         <v-card-title>{{ editingTag ? '编辑标签' : '添加标签' }}</v-card-title>
         <v-card-text>
           <v-form @submit.prevent="handleSave">
-            <v-text-field v-model="form.name" label="名称" variant="outlined" class="mb-4" />
-            <v-text-field v-model="form.slug" label="Slug" variant="outlined" />
+            <v-text-field
+              v-model="form.name"
+              label="名称"
+              variant="outlined"
+              class="mb-4"
+            />
+            <v-text-field
+              v-model="form.slug"
+              label="Slug"
+              variant="outlined"
+            />
           </v-form>
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn variant="text" @click="dialog = false">
+          <v-btn
+            variant="text"
+            @click="dialog = false"
+          >
             取消
           </v-btn>
-          <v-btn color="primary" :loading="saving" @click="handleSave">
+          <v-btn
+            color="primary"
+            :loading="saving"
+            @click="handleSave"
+          >
             保存
           </v-btn>
         </v-card-actions>

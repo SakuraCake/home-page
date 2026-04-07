@@ -2,7 +2,7 @@ import { Ability, AbilityBuilder } from '@casl/ability'
 import type { AbilityClass, MongoQuery, ExtractSubjectType } from '@casl/ability'
 import { createError } from 'h3'
 import type { UserSession } from './session'
-import type { users, articles, categories, tags, comments } from '~/database/schema'
+import type { users, articles, categories, tags, comments } from '~/server/database/schema'
 
 export type User = typeof users.$inferSelect
 export type Article = typeof articles.$inferSelect

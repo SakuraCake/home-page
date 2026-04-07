@@ -3,7 +3,10 @@
     <v-app-bar-nav-icon @click="toggleExpand" />
     <v-app-bar-title>{{ pageTitle }}</v-app-bar-title>
     <v-spacer />
-    <v-btn icon @click="handleToggleTheme">
+    <v-btn
+      icon
+      @click="handleToggleTheme"
+    >
       <v-icon>{{ isDark ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
     </v-btn>
   </v-app-bar>

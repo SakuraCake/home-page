@@ -1,6 +1,6 @@
 import { defineEventHandler, getRouterParam } from 'h3'
-import { db } from '~/database'
-import { tags, articleTags } from '~/database/schema'
+import { db } from '~/server/database'
+import { tags, articleTags } from '~/server/database/schema'
 import { requireAuth } from '~/server/utils/session'
 import { eq } from 'drizzle-orm'
 

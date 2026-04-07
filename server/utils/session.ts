@@ -1,7 +1,7 @@
 import type { H3Event } from 'h3'
 import { getHeader, getCookie, setCookie, createError } from 'h3'
 import { jwtVerify, SignJWT } from 'jose'
-import type { users } from '~/database/schema'
+import type { users } from '~/server/database/schema'
 
 export interface UserSession {
   userId: number
@@ -80,7 +80,7 @@ export async function createSession(event: H3Event, user: User, rememberMe: bool
 
   const csrfToken = crypto.randomUUID()
   setCookie(event, 'csrf_token', csrfToken, {
-    httpOnly: true,
+    httpOnly: false,
     secure: secure,
     sameSite: 'lax',
     maxAge: cookieMaxAge,

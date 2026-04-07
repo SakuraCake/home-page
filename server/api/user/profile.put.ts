@@ -1,13 +1,13 @@
 import { defineEventHandler, readBody } from 'h3'
 import { eq } from 'drizzle-orm'
-import { db } from '~/database'
-import { users } from '~/database/schema'
+import { db } from '~/server/database'
+import { users } from '~/server/database/schema'
 import { requireAuth } from '~/server/utils/session'
 
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
   const body = await readBody(event)
-  const { email, avatar } = body
+  const { email, avatar, bio, website, github, twitter, weibo } = body
 
   const updateData: Record<string, any> = {
     updatedAt: Date.now()
@@ -19,6 +19,26 @@ export default defineEventHandler(async (event) => {
 
   if (avatar !== undefined) {
     updateData.avatar = avatar || null
+  }
+
+  if (bio !== undefined) {
+    updateData.bio = bio || null
+  }
+
+  if (website !== undefined) {
+    updateData.website = website || null
+  }
+
+  if (github !== undefined) {
+    updateData.github = github || null
+  }
+
+  if (twitter !== undefined) {
+    updateData.twitter = twitter || null
+  }
+
+  if (weibo !== undefined) {
+    updateData.weibo = weibo || null
   }
 
   const result = await db
@@ -44,6 +64,11 @@ export default defineEventHandler(async (event) => {
       email: updatedUser.email,
       role: updatedUser.role,
       avatar: updatedUser.avatar,
+      bio: updatedUser.bio,
+      website: updatedUser.website,
+      github: updatedUser.github,
+      twitter: updatedUser.twitter,
+      weibo: updatedUser.weibo,
       createdAt: updatedUser.createdAt,
       updatedAt: updatedUser.updatedAt
     }

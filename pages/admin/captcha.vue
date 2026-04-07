@@ -8,19 +8,48 @@
           </v-card-title>
           <v-divider />
           <v-card-text class="pa-6">
-            <div v-if="loading" class="text-center py-4">
+            <div
+              v-if="loading"
+              class="text-center py-4"
+            >
               <v-progress-circular indeterminate />
             </div>
 
-            <v-form v-else ref="form" @submit.prevent="saveConfig">
-              <v-switch v-model="config.enabled" label="启用验证码" color="tertiary" class="mb-4" inset />
+            <v-form
+              v-else
+              ref="form"
+              @submit.prevent="saveConfig"
+            >
+              <v-switch
+                v-model="config.enabled"
+                label="启用验证码"
+                color="tertiary"
+                class="mb-4"
+                inset
+              />
 
-              <v-select v-model="config.provider" label="验证码提供商" :items="providers" variant="outlined" class="mb-4" />
+              <v-select
+                v-model="config.provider"
+                label="验证码提供商"
+                :items="providers"
+                variant="outlined"
+                class="mb-4"
+              />
 
-              <v-text-field v-model="config.siteKey" label="Site Key / ID" variant="outlined" class="mb-4" />
+              <v-text-field
+                v-model="config.siteKey"
+                label="Site Key / ID"
+                variant="outlined"
+                class="mb-4"
+              />
 
-              <v-text-field v-model="config.secretKey" label="Secret Key" variant="outlined" type="password"
-                class="mb-4" />
+              <v-text-field
+                v-model="config.secretKey"
+                label="Secret Key"
+                variant="outlined"
+                type="password"
+                class="mb-4"
+              />
 
               <v-divider class="my-4" />
 
@@ -28,13 +57,35 @@
                 应用场景
               </div>
 
-              <v-switch v-model="config.loginEnabled" label="登录时启用" color="tertiary" class="mb-2" inset />
+              <v-switch
+                v-model="config.loginEnabled"
+                label="登录时启用"
+                color="tertiary"
+                class="mb-2"
+                inset
+              />
 
-              <v-switch v-model="config.registerEnabled" label="注册时启用" color="tertiary" class="mb-2" inset />
+              <v-switch
+                v-model="config.registerEnabled"
+                label="注册时启用"
+                color="tertiary"
+                class="mb-2"
+                inset
+              />
 
-              <v-switch v-model="config.commentEnabled" label="评论时启用（匿名用户）" color="tertiary" class="mb-4" inset />
+              <v-switch
+                v-model="config.commentEnabled"
+                label="评论时启用（匿名用户）"
+                color="tertiary"
+                class="mb-4"
+                inset
+              />
 
-              <v-btn color="primary" type="submit" :loading="saving">
+              <v-btn
+                color="primary"
+                type="submit"
+                :loading="saving"
+              >
                 保存配置
               </v-btn>
             </v-form>

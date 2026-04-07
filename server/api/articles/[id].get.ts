@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm'
-import { db } from '~/database'
-import { articles } from '~/database/schema'
+import { db } from '~/server/database'
+import { articles } from '~/server/database/schema'
 import { renderMarkdown } from '~/server/utils/markdown'
 import { getUserSession } from '~/server/utils/session'
 import { incrementViewCount } from '~/server/utils/viewCount'

@@ -8,6 +8,11 @@ export const users = sqliteTable('users', {
   email: text('email').unique(),
   role: text('role').default('user'),
   avatar: text('avatar'),
+  bio: text('bio'),
+  website: text('website'),
+  github: text('github'),
+  twitter: text('twitter'),
+  weibo: text('weibo'),
   createdAt: integer('created_at').notNull(),
   updatedAt: integer('updated_at').notNull(),
 })
@@ -105,6 +110,13 @@ export const siteConfig = sqliteTable('site_config', {
   allowRegister: integer('allow_register', { mode: 'boolean' }).default(true),
   allowComment: integer('allow_comment', { mode: 'boolean' }).default(true),
   commentNeedReview: integer('comment_need_review', { mode: 'boolean' }).default(false),
+  homeTitle: text('home_title'),
+  homeSubtitle: text('home_subtitle'),
+  homeAvatar: text('home_avatar'),
+  homeDescription: text('home_description'),
+  homeShowArticles: integer('home_show_articles', { mode: 'boolean' }).default(true),
+  socialLinks: text('social_links'),
+  bangumiUsername: text('bangumi_username'),
   updatedAt: integer('updated_at').notNull(),
 })
 
