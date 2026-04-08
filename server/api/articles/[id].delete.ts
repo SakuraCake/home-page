@@ -1,9 +1,9 @@
 import { defineEventHandler, getRouterParam, createError } from 'h3'
 import { eq } from 'drizzle-orm'
-import { db } from '~/server/database'
-import { articles } from '~/server/database/schema'
-import { requireAuth } from '~/server/utils/session'
-import { defineAbilitiesFor, forbid } from '~/server/utils/abilities'
+import { db } from '#server/database'
+import { articles } from '#server/database/schema'
+import { requireAuth } from '#server/utils/session'
+import { defineAbilitiesFor, forbid } from '#server/utils/abilities'
 
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)

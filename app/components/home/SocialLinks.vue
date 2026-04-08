@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { BilibiliIcon, SteamIcon } from 'vue3-simple-icons'
-import type { SocialLink } from '~/types/api'
+import type { SocialLink } from '#shared/types/api'
 
 defineProps<{
   socialLinks: SocialLink[]

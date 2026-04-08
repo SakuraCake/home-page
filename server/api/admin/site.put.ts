@@ -1,8 +1,8 @@
 import { defineEventHandler, readBody } from 'h3'
-import { db } from '~/server/database'
-import { siteConfig } from '~/server/database/schema'
+import { db } from '#server/database'
+import { siteConfig } from '#server/database/schema'
 import { eq } from 'drizzle-orm'
-import { requireAuth } from '~/server/utils/session'
+import { requireAuth } from '#server/utils/session'
 
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
@@ -35,11 +35,15 @@ export default defineEventHandler(async (event) => {
         allowRegister: body.allowRegister ?? config.allowRegister,
         allowComment: body.allowComment ?? config.allowComment,
         commentNeedReview: body.commentNeedReview ?? config.commentNeedReview,
+        homeType: body.homeType ?? config.homeType,
         homeTitle: body.homeTitle ?? config.homeTitle,
         homeSubtitle: body.homeSubtitle ?? config.homeSubtitle,
         homeAvatar: body.homeAvatar ?? config.homeAvatar,
+        homeCustomContent: body.homeCustomContent ?? config.homeCustomContent,
         homeDescription: body.homeDescription ?? config.homeDescription,
         homeShowArticles: body.homeShowArticles ?? config.homeShowArticles,
+        socialLinks: body.socialLinks !== undefined ? JSON.stringify(body.socialLinks) : config.socialLinks,
+        bangumiUsername: body.bangumiUsername ?? config.bangumiUsername,
         updatedAt: now,
       })
       .where(eq(siteConfig.id, config.id))
@@ -58,11 +62,15 @@ export default defineEventHandler(async (event) => {
       allowRegister: body.allowRegister ?? true,
       allowComment: body.allowComment ?? true,
       commentNeedReview: body.commentNeedReview ?? false,
+      homeType: body.homeType ?? 'welcome',
       homeTitle: body.homeTitle ?? '',
       homeSubtitle: body.homeSubtitle ?? '',
       homeAvatar: body.homeAvatar ?? '',
+      homeCustomContent: body.homeCustomContent ?? '',
       homeDescription: body.homeDescription ?? '',
       homeShowArticles: body.homeShowArticles ?? true,
+      socialLinks: body.socialLinks ? JSON.stringify(body.socialLinks) : null,
+      bangumiUsername: body.bangumiUsername ?? '',
       updatedAt: now,
     })
   }

@@ -1,13 +1,4 @@
-export interface ApiResponse<T = unknown> {
-  success: boolean
-  data?: T
-  message?: string
-  error?: {
-    code: string
-    message: string
-    statusCode: number
-  }
-}
+import type { ApiResponse } from '#shared/types/api'
 
 export const ResponseUtil = {
   success<T>(data: T, message?: string): ApiResponse<T> {
@@ -18,14 +9,10 @@ export const ResponseUtil = {
     }
   },
 
-  error(message: string, code = 'ERROR', statusCode = 400): ApiResponse {
+  error(message: string): ApiResponse {
     return {
       success: false,
-      error: {
-        code,
-        message,
-        statusCode,
-      },
+      message,
     }
   },
 

@@ -1,6 +1,6 @@
 import { defineEventHandler } from 'h3'
-import { db } from '~/server/database'
-import { captchaConfig } from '~/server/database/schema'
+import { db } from '#server/database'
+import { captchaConfig } from '#server/database/schema'
 
 export default defineEventHandler(async () => {
   let config = await db.query.captchaConfig.findFirst()

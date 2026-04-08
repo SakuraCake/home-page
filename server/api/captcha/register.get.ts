@@ -1,5 +1,5 @@
 import { defineEventHandler } from 'h3'
-import { registerCaptcha } from '~/server/utils/geetest'
+import { registerCaptcha } from '#server/utils/geetest'
 
 export default defineEventHandler(async (event) => {
   const result = await registerCaptcha(event)

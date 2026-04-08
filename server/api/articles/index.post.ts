@@ -1,11 +1,11 @@
 import { defineEventHandler } from 'h3'
 import { eq } from 'drizzle-orm'
-import { db } from '~/server/database'
-import { articles, articleTags } from '~/server/database/schema'
-import { requireAuth } from '~/server/utils/session'
-import { defineAbilitiesFor, forbid } from '~/server/utils/abilities'
-import { validateBody } from '~/server/utils/validation'
-import { articleSchema } from '~/server/schemas'
+import { db } from '#server/database'
+import { articles, articleTags } from '#server/database/schema'
+import { requireAuth } from '#server/utils/session'
+import { defineAbilitiesFor, forbid } from '#server/utils/abilities'
+import { validateBody } from '#server/utils/validation'
+import { articleSchema } from '#server/schemas'
 
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)

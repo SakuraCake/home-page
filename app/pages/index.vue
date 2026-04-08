@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import type { SiteConfig, Article, ApiResponse } from '~/types/api'
+import type { SiteConfig, Article, ApiResponse } from '#shared/types/api'
 
 const { data: config } = await useAsyncData<SiteConfig | null>(
   'home-config',

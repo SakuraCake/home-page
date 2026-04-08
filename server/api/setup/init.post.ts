@@ -87,7 +87,7 @@ export default defineEventHandler(async (event) => {
       results.dbCreated = true
     }
 
-    const schema = await import('~/server/database/schema')
+    const schema = await import('#server/database/schema')
     const { eq } = await import('drizzle-orm')
     const sqlite = new Database(DB_PATH)
     const db = drizzle(sqlite, { schema })
@@ -110,6 +110,13 @@ export default defineEventHandler(async (event) => {
         allowRegister: true,
         allowComment: true,
         commentNeedReview: false,
+        homeType: 'welcome',
+        homeTitle: '',
+        homeSubtitle: '',
+        homeAvatar: '',
+        homeCustomContent: '',
+        homeDescription: '',
+        homeShowArticles: true,
         socialLinks: '[]',
         bangumiUsername: '',
         updatedAt: now,

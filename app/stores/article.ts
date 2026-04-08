@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { ArticleListItem, ArticleDetail, CategoryWithCount, TagWithCount, ApiResponse, PaginatedResponse } from '~/types/api'
+import type { ArticleListItem, ArticleDetail, CategoryWithCount, TagWithCount, ApiResponse, PaginatedResponse } from '#shared/types/api'
 
 interface ArticleState {
   articles: ArticleListItem[]

@@ -1,13 +1,13 @@
 import { defineEventHandler } from 'h3'
 import { eq } from 'drizzle-orm'
-import { db } from '~/server/database'
-import { users } from '~/server/database/schema'
-import { hashPassword } from '~/server/utils/auth'
-import { createSession } from '~/server/utils/session'
-import { validateCaptcha } from '~/server/utils/geetest'
-import { validateBody } from '~/server/utils/validation'
-import { registerSchema } from '~/server/schemas'
-import { authRateLimit } from '~/server/utils/rateLimit'
+import { db } from '#server/database'
+import { users } from '#server/database/schema'
+import { hashPassword } from '#server/utils/auth'
+import { createSession } from '#server/utils/session'
+import { validateCaptcha } from '#server/utils/geetest'
+import { validateBody } from '#server/utils/validation'
+import { registerSchema } from '#server/schemas'
+import { authRateLimit } from '#server/utils/rateLimit'
 
 async function isCaptchaEnabledForRegister(): Promise<boolean> {
   const config = await db.query.captchaConfig.findFirst()

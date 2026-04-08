@@ -1,8 +1,8 @@
 import { defineEventHandler, getRouterParam, getQuery } from 'h3'
 import { eq, and, desc, isNull } from 'drizzle-orm'
-import { db } from '~/server/database'
-import { comments } from '~/server/database/schema'
-import { getUserSession } from '~/server/utils/session'
+import { db } from '#server/database'
+import { comments } from '#server/database/schema'
+import { getUserSession } from '#server/utils/session'
 
 export default defineEventHandler(async (event) => {
   const session = await getUserSession(event)

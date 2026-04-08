@@ -144,9 +144,11 @@ export interface SiteConfig {
   allowRegister: boolean | null
   allowComment: boolean | null
   commentNeedReview: boolean | null
+  homeType: string | null
   homeTitle: string | null
   homeSubtitle: string | null
   homeAvatar: string | null
+  homeCustomContent: string | null
   homeDescription: string | null
   homeShowArticles: boolean | null
   socialLinks: SocialLink[] | null

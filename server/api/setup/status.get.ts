@@ -23,8 +23,8 @@ export default defineEventHandler(async () => {
 
   if (dbExists) {
     try {
-      const { db } = await import('~/server/database')
-      const { users } = await import('~/server/database/schema')
+      const { db } = await import('#server/database')
+      const { users } = await import('#server/database/schema')
       const { eq } = await import('drizzle-orm')
 
       const adminUser = await db.query.users.findFirst({

@@ -232,7 +232,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ArticleDetail, ApiResponse } from '~/types/api'
+import type { ArticleDetail, ApiResponse } from '#shared/types/api'
 
 const route = useRoute()
 const router = useRouter()

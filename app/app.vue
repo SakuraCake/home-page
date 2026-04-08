@@ -24,6 +24,7 @@ const isExpanded = ref(false)
 
 const { mobile } = useDisplay()
 const snackbar = useSnackbar()
+const siteConfigStore = useSiteConfigStore()
 
 const toggleExpand = () => {
   if (mobile.value) {
@@ -40,4 +41,15 @@ onMounted(() => {
 provide('drawer', drawer)
 provide('isExpanded', isExpanded)
 provide('toggleExpand', toggleExpand)
+
+if (import.meta.server || !siteConfigStore.loaded) {
+  await siteConfigStore.loadConfig()
+}
+
+useHead({
+  titleTemplate: (titleChunk) => {
+    const siteName = siteConfigStore.siteName
+    return titleChunk ? `${titleChunk} - ${siteName}` : siteName
+  }
+})
 </script>

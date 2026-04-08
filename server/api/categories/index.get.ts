@@ -1,7 +1,7 @@
 import { defineEventHandler } from 'h3'
-import { db } from '~/server/database'
+import { db } from '#server/database'
 import { sql, eq } from 'drizzle-orm'
-import { articles } from '~/server/database/schema'
+import { articles } from '#server/database/schema'
 
 export default defineEventHandler(async (_event) => {
   const allCategories = await db.query.categories.findMany({

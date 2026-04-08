@@ -150,7 +150,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CommentWithArticle, ApiResponse, PaginatedResponse } from '~/types/api'
+import type { CommentWithArticle, ApiResponse, PaginatedResponse } from '#shared/types/api'
 
 const userStore = useUserStore()
 const router = useRouter()

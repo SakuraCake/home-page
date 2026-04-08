@@ -16,8 +16,8 @@ async function syncViewCounts() {
 
     if (Object.keys(counts).length === 0) return
 
-    const { db } = await import('~/server/database')
-    const { articles } = await import('~/server/database/schema')
+    const { db } = await import('#server/database')
+    const { articles } = await import('#server/database/schema')
     const { eq, sql } = await import('drizzle-orm')
 
     const articleIds = Object.keys(counts).map(Number)

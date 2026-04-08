@@ -61,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CommentWithReplies } from '~/types/api'
+import type { CommentWithReplies } from '#shared/types/api'
 
 const props = defineProps<{
   comment: CommentWithReplies

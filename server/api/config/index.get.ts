@@ -1,5 +1,5 @@
-import { db } from '~/server/database'
-import { siteConfig, captchaConfig } from '~/server/database/schema'
+import { db } from '#server/database'
+import { siteConfig, captchaConfig } from '#server/database/schema'
 
 export default defineCachedEventHandler(async () => {
   let site = await db.query.siteConfig.findFirst()

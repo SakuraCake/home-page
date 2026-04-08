@@ -1,9 +1,9 @@
 import { defineEventHandler, readBody, getRouterParam } from 'h3'
 import { eq } from 'drizzle-orm'
-import { db } from '~/server/database'
-import { comments, articles } from '~/server/database/schema'
-import { getUserSession } from '~/server/utils/session'
-import { validateCaptcha } from '~/server/utils/geetest'
+import { db } from '#server/database'
+import { comments, articles } from '#server/database/schema'
+import { getUserSession } from '#server/utils/session'
+import { validateCaptcha } from '#server/utils/geetest'
 
 async function isCaptchaEnabledForComment(): Promise<boolean> {
   const config = await db.query.captchaConfig.findFirst()

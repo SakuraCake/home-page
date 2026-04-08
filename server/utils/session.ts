@@ -1,7 +1,7 @@
 import type { H3Event } from 'h3'
 import { getHeader, getCookie, setCookie, createError } from 'h3'
 import { jwtVerify, SignJWT } from 'jose'
-import type { users } from '~/server/database/schema'
+import type { users } from '#server/database/schema'
 
 export interface UserSession {
   userId: number

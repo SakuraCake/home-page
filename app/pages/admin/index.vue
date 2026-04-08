@@ -166,6 +166,34 @@
         md="6"
       >
         <v-card>
+          <v-card-title>系统工具</v-card-title>
+          <v-divider />
+          <v-card-text>
+            <v-row>
+              <v-col cols="12">
+                <v-btn
+                  color="primary"
+                  variant="outlined"
+                  prepend-icon="mdi-cache"
+                  :loading="clearingCache"
+                  @click="clearCache"
+                >
+                  清理缓存
+                </v-btn>
+                <div class="text-caption text-medium-emphasis mt-2">
+                  清理服务器端缓存，包括页面缓存和 API 缓存
+                </div>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-col>
+
+      <v-col
+        cols="12"
+        md="6"
+      >
+        <v-card>
           <v-card-title>最新文章</v-card-title>
           <v-divider />
           <v-list v-if="recentArticles.length">
@@ -193,7 +221,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ArticleListItem, ApiResponse } from '~/types/api'
+import type { ArticleListItem, ApiResponse } from '#shared/types/api'
 
 interface Stats {
   userCount: number
@@ -202,8 +230,15 @@ interface Stats {
   tagCount: number
 }
 
+interface CacheClearResponse {
+  success: boolean
+  message: string
+  clearedCount: number
+}
+
 const userStore = useUserStore()
 const router = useRouter()
+const snackbar = useSnackbar()
 
 const breadcrumbs = [
   { title: '首页', to: '/' },
@@ -218,6 +253,7 @@ const stats = ref<Stats>({
 })
 
 const recentArticles = ref<ArticleListItem[]>([])
+const clearingCache = ref(false)
 
 const formatDate = (timestamp: number) => {
   return new Date(timestamp).toLocaleDateString('zh-CN')
@@ -244,6 +280,25 @@ const fetchRecentArticles = async () => {
       recentArticles.value = response.data
     }
   } catch (_e) {
+  }
+}
+
+const clearCache = async () => {
+  clearingCache.value = true
+  try {
+    const response = await $fetch<CacheClearResponse>('/api/admin/cache/clear', {
+      method: 'POST',
+      headers: userStore.getAuthHeaders()
+    })
+    if (response.success) {
+      snackbar.success(response.message)
+    } else {
+      snackbar.error('清理缓存失败')
+    }
+  } catch {
+    snackbar.error('清理缓存失败')
+  } finally {
+    clearingCache.value = false
   }
 }
 

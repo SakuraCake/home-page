@@ -97,7 +97,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ApiResponse } from '~/types/api'
+import type { ApiResponse } from '#shared/types/api'
 
 interface CaptchaConfigResponse {
   enabled: boolean

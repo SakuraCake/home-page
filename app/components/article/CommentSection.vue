@@ -96,7 +96,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CommentWithReplies, ApiResponse } from '~/types/api'
+import type { CommentWithReplies, ApiResponse } from '#shared/types/api'
 
 const props = defineProps<{
   articleId: number

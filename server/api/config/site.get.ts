@@ -1,7 +1,7 @@
 import { defineEventHandler } from 'h3'
-import { db } from '~/server/database'
-import { siteConfig } from '~/server/database/schema'
-import type { SocialLink } from '~/types/api'
+import { db } from '#server/database'
+import { siteConfig } from '#server/database/schema'
+import type { SocialLink } from '#shared/types/api'
 
 export default defineEventHandler(async () => {
   let config = await db.query.siteConfig.findFirst()
@@ -15,6 +15,7 @@ export default defineEventHandler(async () => {
       allowRegister: true,
       allowComment: true,
       commentNeedReview: false,
+      homeType: 'welcome',
       homeShowArticles: true,
       socialLinks: '[]',
       bangumiUsername: '',
@@ -48,9 +49,11 @@ export default defineEventHandler(async () => {
       allowRegister: config?.allowRegister ?? true,
       allowComment: config?.allowComment ?? true,
       commentNeedReview: config?.commentNeedReview ?? false,
+      homeType: config?.homeType ?? 'welcome',
       homeTitle: config?.homeTitle ?? '',
       homeSubtitle: config?.homeSubtitle ?? '',
       homeAvatar: config?.homeAvatar ?? '',
+      homeCustomContent: config?.homeCustomContent ?? '',
       homeDescription: config?.homeDescription ?? '',
       homeShowArticles: config?.homeShowArticles ?? true,
       socialLinks,

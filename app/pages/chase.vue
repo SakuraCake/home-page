@@ -52,7 +52,7 @@
 
 <script setup lang="ts">
 import type { CollectionType } from '~/composables/useBangumi'
-import type { SiteConfig, ApiResponse } from '~/types/api'
+import type { SiteConfig, ApiResponse } from '#shared/types/api'
 
 definePageMeta({
   ssr: false

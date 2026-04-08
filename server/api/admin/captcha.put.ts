@@ -1,8 +1,8 @@
 import { defineEventHandler, readBody } from 'h3'
-import { db } from '~/server/database'
-import { captchaConfig } from '~/server/database/schema'
+import { db } from '#server/database'
+import { captchaConfig } from '#server/database/schema'
 import { eq } from 'drizzle-orm'
-import { requireAuth } from '~/server/utils/session'
+import { requireAuth } from '#server/utils/session'
 
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)

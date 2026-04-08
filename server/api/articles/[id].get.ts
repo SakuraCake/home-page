@@ -1,10 +1,10 @@
 import { eq } from 'drizzle-orm'
-import { db } from '~/server/database'
-import { articles } from '~/server/database/schema'
-import { renderMarkdown } from '~/server/utils/markdown'
-import { getUserSession } from '~/server/utils/session'
-import { incrementViewCount } from '~/server/utils/viewCount'
-import { createApiError } from '~/server/utils/errors'
+import { db } from '#server/database'
+import { articles } from '#server/database/schema'
+import { renderMarkdown } from '#server/utils/markdown'
+import { getUserSession } from '#server/utils/session'
+import { incrementViewCount } from '#server/utils/viewCount'
+import { createApiError } from '#server/utils/errors'
 
 export default defineCachedEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')

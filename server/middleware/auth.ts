@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
 import { defineEventHandler, getRequestURL, createError } from 'h3'
-import { getUserSession } from '~/server/utils/session'
+import { getUserSession } from '#server/utils/session'
 
 declare module 'h3' {
   interface H3EventContext {

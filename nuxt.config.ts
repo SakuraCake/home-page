@@ -10,9 +10,6 @@ export default defineNuxtConfig({
     rateLimitMax: 100,
     rateLimitWindowMs: 900000,
     sessionMaxAge: 604800,
-    public: {
-      siteName: 'My Blog',
-    },
   },
   vuetify: {
     vuetifyOptions: {
@@ -64,10 +61,11 @@ export default defineNuxtConfig({
   },
   routeRules: {
     '/': { swr: 300 },
-    '/chase': { ssr: false },
-    '/admin/**': { ssr: false },
+    '/article': { swr: 300 },
     '/article/create': { ssr: false },
     '/article/*/edit': { ssr: false },
+    '/chase': { ssr: false },
+    '/admin/**': { ssr: false },
     '/user/**': { ssr: false },
     '/login': { ssr: false },
     '/register': { ssr: false },
@@ -78,9 +76,4 @@ export default defineNuxtConfig({
     '/api/config': { swr: 3600 },
     '/api/config/site': { swr: 3600 },
   },
-  app: {
-    head: {
-      titleTemplate: '%s - SakuraCake',
-    }
-  }
 })

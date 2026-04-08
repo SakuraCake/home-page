@@ -100,9 +100,10 @@
 </template>
 
 <script setup lang="ts">
-import type { SiteConfig, ApiResponse } from '~/types/api'
+import type { SiteConfig, ApiResponse } from '#shared/types/api'
 
 const userStore = useUserStore()
+const siteConfigStore = useSiteConfigStore()
 const router = useRouter()
 const snackbar = useSnackbar()
 
@@ -130,9 +131,11 @@ const config = ref<SiteConfig>({
   allowRegister: true,
   allowComment: true,
   commentNeedReview: false,
+  homeType: 'welcome',
   homeTitle: '',
   homeSubtitle: '',
   homeAvatar: '',
+  homeCustomContent: '',
   homeDescription: '',
   homeShowArticles: true,
   socialLinks: null,
@@ -165,6 +168,8 @@ const saveConfig = async () => {
 
     if (response.success) {
       snackbar.success('保存成功')
+      siteConfigStore.updateConfig(config.value)
+      refreshNuxtData('home-config')
     } else {
       snackbar.error(response.message || '保存失败')
     }

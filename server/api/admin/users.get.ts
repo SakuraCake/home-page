@@ -1,7 +1,7 @@
 import { defineEventHandler } from 'h3'
-import { db } from '~/server/database'
-import { users } from '~/server/database/schema'
-import { requireAuth } from '~/server/utils/session'
+import { db } from '#server/database'
+import { users } from '#server/database/schema'
+import { requireAuth } from '#server/utils/session'
 import { desc } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
